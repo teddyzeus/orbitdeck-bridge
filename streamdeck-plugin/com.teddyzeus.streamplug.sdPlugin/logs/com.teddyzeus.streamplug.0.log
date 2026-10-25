@@ -1,7 +1,0 @@
-2026-10-25T23:19:42.238Z DEBUG RegistrationParameters: port=28196
-2026-10-25T23:19:42.239Z DEBUG RegistrationParameters: pluginUUID=9d19ab5029eef598919224c9d099dcc1
-2026-10-25T23:19:42.239Z DEBUG RegistrationParameters: registerEvent=registerPlugin
-2026-10-25T23:19:42.239Z DEBUG RegistrationParameters: info={"application":{"font":"Segoe UI","language":"fr","platform":"windows","platformVersion":"10.0.26200","version":"7.4.2.22730"},"colors":{"buttonMouseOverBackgroundColor":"#464646FF","buttonPressedBackgroundColor":"#303030FF","buttonPressedBorderColor":"#646464FF","buttonPressedTextColor":"#969696FF","highlightColor":"#0078FFFF"},"devicePixelRatio":1,"devices":[{"id":"810898dd88f3c7f27522f7ecf8135711","name":"Stream Deck","size":{"columns":5,"rows":3},"type":0},{"id":"1cecc8902ad69bce3f50e108947cf06f","name":"Stream Deck Mobile","size":{"columns":8,"rows":8},"type":3}],"plugin":{"uuid":"com.teddyzeus.streamplug","version":"0.1.0.0"}}
-2026-10-25T23:19:42.434Z INFO  Connexion au jeu : connecting
-2026-10-25T23:19:42.434Z INFO  Connexion au mod StreamPlug sur ws://127.0.0.1:8765/
-2026-10-25T23:19:42.444Z INFO  Connexion au jeu : connected

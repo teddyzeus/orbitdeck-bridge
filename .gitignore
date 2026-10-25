@@ -10,8 +10,8 @@ Directory.Build.props.user
 node_modules/
 dist/
 *.streamDeckPlugin
-*.sdPlugin/bin/
-*.sdPlugin/logs/
+**/*.sdPlugin/bin/
+**/*.sdPlugin/logs/
 
 # Artefacts de release
 /release/
