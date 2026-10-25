@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Client de test du mod StreamPlug : se connecte, affiche les messages reçus et permet d'envoyer des commandes.
 //
-//   node client.mjs                      affiche l'état en continu (une ligne lisible par message)
+//   node client.mjs                      affiche un état à chaque changement de poussée, SAS, RCS, mode, véhicule…
+//   node client.mjs --all                affiche tous les états (10 par seconde)
 //   node client.mjs --raw                affiche le JSON brut
 //   node client.mjs --port 9000          autre port
 //   node client.mjs --send '{"v":1,"type":"ping"}'   envoie un message puis continue d'écouter
@@ -22,6 +23,7 @@ const option = (name) => {
 
 const port = Number(option('--port') ?? 8765);
 const raw = args.includes('--raw');
+const showAll = args.includes('--all');
 const once = args.includes('--once');
 const initialMessage = option('--send');
 const url = `ws://127.0.0.1:${port}/`;
@@ -103,19 +105,46 @@ socket.on('open', () => {
   }
 });
 
+// Par défaut, un état n'est affiché que si un élément « discret » a changé (pas l'altitude ni les vitesses,
+// qui varient en continu). --all affiche tous les états.
+let lastDiscrete = null;
+function discreteKey(message) {
+  return JSON.stringify([
+    message.status,
+    message.gameState,
+    message.vessel?.name,
+    message.speed?.mode,
+    message.speed?.target === null || message.speed?.target === undefined ? 'sans-cible' : 'cible',
+    Math.round((message.throttle ?? 0) * 100),
+    message.sas?.enabled,
+    message.sas?.mode,
+    message.rcs?.enabled,
+  ]);
+}
+
+function shouldPrint(message) {
+  if (showAll || message.type !== 'state') return true;
+  const key = discreteKey(message);
+  if (key === lastDiscrete) return false;
+  lastDiscrete = key;
+  return true;
+}
+
 socket.on('message', (data) => {
   const text = data.toString();
-  if (raw) {
-    console.log(text);
-  } else {
-    try {
-      console.log(describe(JSON.parse(text)));
-    } catch {
-      console.log(`(message non JSON) ${text}`);
-    }
+  let message;
+  try {
+    message = JSON.parse(text);
+  } catch {
+    console.log(`(message non JSON) ${text}`);
+    return;
   }
 
-  if (once && JSON.parse(text).type === 'state') {
+  if (shouldPrint(message)) {
+    console.log(raw ? text : describe(message));
+  }
+
+  if (once && message.type === 'state') {
     socket.close();
   }
 });

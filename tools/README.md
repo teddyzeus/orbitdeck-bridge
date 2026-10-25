@@ -11,8 +11,12 @@ Nécessitent Node.js ≥ 20 : `cd tools && npm install`.
 # Faux serveur : vol simulé (ou --scenario menu | cycle)
 npm run fake-server
 
-# Client : état lisible, ou JSON brut avec --raw
+# Client : n'affiche un état que lorsqu'un élément « discret » change
+# (poussée, SAS, RCS, mode de vitesse, statut, véhicule) ; les réponses ACK / ERREUR s'affichent toujours
 npm run client
+
+# Tous les états (10 par seconde), JSON brut, un seul état
+npm run client -- --all
 npm run client -- --raw --once
 ```
 
