@@ -13,16 +13,24 @@ namespace StreamPlug.Mod.Telemetry
             if (manager == null || manager.Game == null || manager.Game.ViewController == null)
                 return TelemetrySnapshot.NoVessel;
 
+            // Hors vol (menu, centre spatial, éditeur…), le jeu peut conserver le dernier véhicule en mémoire :
+            // l'état global du jeu fait foi.
+            var stateConfig = manager.Game.GlobalGameState?.GetGameState();
+            var gameStateName = stateConfig?.GameState.ToString();
+            if (stateConfig != null && !stateConfig.IsFlightMode)
+                return TelemetrySnapshot.NoVesselIn(gameStateName);
+
             var viewController = manager.Game.ViewController;
             VesselVehicle vehicle = viewController.ActiveVesselVehicle;
             if (vehicle == null || !viewController.TryGetActiveSimVessel(out VesselComponent vessel, true) || vessel == null)
-                return TelemetrySnapshot.NoVessel;
+                return TelemetrySnapshot.NoVesselIn(gameStateName);
 
             var autopilot = vessel.Autopilot;
 
             return new TelemetrySnapshot
             {
                 Status = vessel.IsControllable ? VesselStatus.Connected : VesselStatus.NotControllable,
+                GameStateName = gameStateName,
                 VesselName = vessel.DisplayName,
                 AltitudeSeaLevel = vehicle.AltitudeFromSeaLevel,
                 AltitudeSurface = vehicle.AltitudeFromSurface,

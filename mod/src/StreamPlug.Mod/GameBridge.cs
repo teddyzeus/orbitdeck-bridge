@@ -103,11 +103,11 @@ namespace StreamPlug.Mod
         {
             var culture = CultureInfo.InvariantCulture;
             if (s.Status == VesselStatus.NoVessel)
-                return string.Format(culture, "[StreamPlug] #{0} aucun véhicule", sequence);
+                return string.Format(culture, "[StreamPlug] #{0} aucun véhicule (état du jeu : {1})", sequence, s.GameStateName ?? "?");
 
             return string.Format(
                 culture,
-                "[StreamPlug] #{0} {1} '{2}' | alt mer={3:F1} surface={4:F1} m | vitesse sol={5:F1} orbite={6:F1} cible={7} (affichée: {8}) m/s | poussée={9:P0} | SAS={10} ({11}) | RCS={12}",
+                "[StreamPlug] #{0} {1} '{2}' (état du jeu : " + (s.GameStateName ?? "?") + ") | alt mer={3:F1} surface={4:F1} m | vitesse sol={5:F1} orbite={6:F1} cible={7} (affichée: {8}) m/s | poussée={9:P0} | SAS={10} ({11}) | RCS={12}",
                 sequence,
                 s.Status,
                 s.VesselName,

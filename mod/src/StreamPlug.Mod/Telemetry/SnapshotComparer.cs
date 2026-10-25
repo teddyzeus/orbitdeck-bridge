@@ -22,6 +22,7 @@ namespace StreamPlug.Mod.Telemetry
                 return !ReferenceEquals(previous, current);
 
             return previous.Status != current.Status
+                   || previous.GameStateName != current.GameStateName
                    || previous.VesselName != current.VesselName
                    || previous.SpeedMode != current.SpeedMode
                    || previous.SasEnabled != current.SasEnabled

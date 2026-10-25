@@ -119,6 +119,16 @@ public class SnapshotComparerTests
     }
 
     [Fact]
+    public void Game_state_change_is_a_mode_change()
+    {
+        var inFlight = TelemetrySnapshot.NoVesselIn("FlightView");
+        var inMenu = TelemetrySnapshot.NoVesselIn("MainMenu");
+
+        Assert.True(SnapshotComparer.HasModeChange(inFlight, inMenu));
+        Assert.False(SnapshotComparer.HasChanged(inMenu, TelemetrySnapshot.NoVesselIn("MainMenu")));
+    }
+
+    [Fact]
     public void Throttle_alone_is_not_a_mode_change()
     {
         var next = new TelemetrySnapshot

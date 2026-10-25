@@ -37,7 +37,14 @@ namespace StreamPlug.Mod.Telemetry
     {
         public static TelemetrySnapshot NoVessel { get; } = new TelemetrySnapshot { Status = VesselStatus.NoVessel };
 
+        /// <summary>Aucun véhicule, en précisant l'état global du jeu (diagnostic).</summary>
+        public static TelemetrySnapshot NoVesselIn(string gameStateName) =>
+            new TelemetrySnapshot { Status = VesselStatus.NoVessel, GameStateName = gameStateName };
+
         public VesselStatus Status { get; init; }
+
+        /// <summary>État global du jeu (FlightView, MainMenu, KerbalSpaceCenter…) ; null si inconnu. Sert au diagnostic.</summary>
+        public string GameStateName { get; init; }
 
         public string VesselName { get; init; }
 
