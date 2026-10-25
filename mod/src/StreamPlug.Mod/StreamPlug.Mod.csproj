@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <AssemblyName>StreamPlug.Mod</AssemblyName>
+    <RootNamespace>StreamPlug.Mod</RootNamespace>
+    <Version>0.1.0</Version>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- Les DLL du jeu ne sont jamais copiées dans la sortie -->
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <Target Name="CheckKsp2Dir" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="!Exists('$(Ksp2ManagedDir)\Assembly-CSharp.dll')"
+           Text="Dossier du jeu introuvable : définir Ksp2Dir dans mod/Directory.Build.props.user ou la variable d'environnement KSP2_DIR (valeur actuelle : '$(Ksp2Dir)')." />
+  </Target>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp"><HintPath>$(Ksp2ManagedDir)\Assembly-CSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="ReduxLib"><HintPath>$(Ksp2ManagedDir)\ReduxLib.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="SpaceWarp2"><HintPath>$(Ksp2ManagedDir)\SpaceWarp2.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(Ksp2ManagedDir)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>$(Ksp2ManagedDir)\Newtonsoft.Json.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(Ksp2ManagedDir)\0Harmony.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\package\swinfo.json" Link="package\swinfo.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Déploiement : copie la DLL et swinfo.json dans <jeu>\mods\streamplug\ -->
+  <Target Name="DeployToGame" AfterTargets="Build" Condition="Exists('$(Ksp2Dir)')">
+    <PropertyGroup>
+      <ModDeployDir>$(Ksp2Dir)\mods\streamplug</ModDeployDir>
+    </PropertyGroup>
+    <MakeDir Directories="$(ModDeployDir)" />
+    <Copy SourceFiles="$(OutputPath)StreamPlug.Mod.dll" DestinationFolder="$(ModDeployDir)" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\..\..\package\swinfo.json" DestinationFolder="$(ModDeployDir)" />
+    <Message Importance="high" Text="StreamPlug déployé dans $(ModDeployDir)" />
+  </Target>
+
+</Project>

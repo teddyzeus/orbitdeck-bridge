@@ -1,0 +1,10 @@
+<Project>
+  <!-- Réglages locaux (non versionnés) : définir Ksp2Dir dans Directory.Build.props.user -->
+  <Import Project="$(MSBuildThisFileDirectory)Directory.Build.props.user" Condition="Exists('$(MSBuildThisFileDirectory)Directory.Build.props.user')" />
+
+  <PropertyGroup>
+    <!-- Repli : variable d'environnement KSP2_DIR -->
+    <Ksp2Dir Condition="'$(Ksp2Dir)' == ''">$(KSP2_DIR)</Ksp2Dir>
+    <Ksp2ManagedDir>$(Ksp2Dir)\KSP2_x64_Data\Managed</Ksp2ManagedDir>
+  </PropertyGroup>
+</Project>

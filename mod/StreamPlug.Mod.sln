@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FE1DFAFF-3E26-413F-880F-6CF5A37A1628}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamPlug.Mod", "src\StreamPlug.Mod\StreamPlug.Mod.csproj", "{3AD65D2D-C7D8-43EB-A4D2-284C4AE90887}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3AD65D2D-C7D8-43EB-A4D2-284C4AE90887}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AD65D2D-C7D8-43EB-A4D2-284C4AE90887}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AD65D2D-C7D8-43EB-A4D2-284C4AE90887}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AD65D2D-C7D8-43EB-A4D2-284C4AE90887}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3AD65D2D-C7D8-43EB-A4D2-284C4AE90887} = {FE1DFAFF-3E26-413F-880F-6CF5A37A1628}
+	EndGlobalSection
+EndGlobal

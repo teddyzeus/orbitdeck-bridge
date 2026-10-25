@@ -1,0 +1,11 @@
+{
+  "spec": "1.3",
+  "mod_id": "com.teddyzeus.streamplug",
+  "name": "StreamPlug",
+  "author": "teddyzeus",
+  "description": "Affiche et pilote KSP 2 depuis un Stream Deck.",
+  "source": "https://github.com/teddyzeus/StreamPlug",
+  "version": "0.1.0",
+  "main_assembly": "StreamPlug.Mod.dll",
+  "ksp2_version": { "min": "*", "max": "*" }
+}
