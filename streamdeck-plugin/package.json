@@ -1,0 +1,36 @@
+{
+  "name": "streamplug-streamdeck-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plugin Stream Deck pour afficher et piloter KSP 2 Redux (client du mod StreamPlug).",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.teddyzeus.streamplug\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@elgato/streamdeck": "^3.0.3",
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {
+    "@elgato/cli": "^1.10.3",
+    "@elgato/utils": "^0.6.1",
+    "@rollup/plugin-commonjs": "^29.0.2",
+    "@rollup/plugin-node-resolve": "^15.2.2",
+    "@rollup/plugin-terser": "^1.0.0",
+    "@rollup/plugin-typescript": "^12.1.0",
+    "@tsconfig/node20": "^20.1.2",
+    "@types/node": "~24.1.0",
+    "@types/ws": "^8.18.0",
+    "rollup": "^4.0.2",
+    "tslib": "^2.6.2",
+    "typescript": "^5.9.0",
+    "vitest": "^4.1.12"
+  }
+}

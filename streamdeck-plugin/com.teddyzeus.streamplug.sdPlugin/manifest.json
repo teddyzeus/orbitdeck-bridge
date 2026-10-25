@@ -1,0 +1,83 @@
+{
+	"Name": "StreamPlug",
+	"Version": "0.1.0.0",
+	"Author": "teddyzeus",
+	"Actions": [
+		{
+			"Name": "Altitude",
+			"UUID": "com.teddyzeus.streamplug.altitude",
+			"Icon": "imgs/actions/altitude/icon",
+			"Tooltip": "Altitude du véhicule. Un appui bascule entre l'altitude au-dessus du sol et du niveau de la mer.",
+			"PropertyInspectorPath": "ui/altitude.html",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "imgs/actions/altitude/key",
+					"ShowTitle": false
+				}
+			]
+		},
+		{
+			"Name": "Vitesse",
+			"UUID": "com.teddyzeus.streamplug.speed",
+			"Icon": "imgs/actions/speed/icon",
+			"Tooltip": "Vitesse du véhicule. Un appui change le type de vitesse du navball (surface, orbite, cible).",
+			"PropertyInspectorPath": "ui/settings.html",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "imgs/actions/speed/key",
+					"ShowTitle": false
+				}
+			]
+		},
+		{
+			"Name": "Poussée",
+			"UUID": "com.teddyzeus.streamplug.throttle",
+			"Icon": "imgs/actions/throttle/icon",
+			"Tooltip": "Affiche la poussée actuelle du véhicule.",
+			"PropertyInspectorPath": "ui/settings.html",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "imgs/actions/throttle/key",
+					"ShowTitle": false
+				}
+			]
+		},
+		{
+			"Name": "État de la connexion",
+			"UUID": "com.teddyzeus.streamplug.status",
+			"Icon": "imgs/actions/status/icon",
+			"Tooltip": "Indique si le jeu est connecté. Un appui force une nouvelle tentative de connexion.",
+			"PropertyInspectorPath": "ui/settings.html",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "imgs/actions/status/key",
+					"ShowTitle": false
+				}
+			]
+		}
+	],
+	"Category": "StreamPlug",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"CodePath": "bin/plugin.js",
+	"Description": "Affiche et pilote Kerbal Space Program 2 (Redux) depuis votre Stream Deck.",
+	"Icon": "imgs/plugin/marketplace",
+	"SDKVersion": 3,
+	"Software": {
+		"MinimumVersion": "7.1"
+	},
+	"OS": [
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Nodejs": {
+		"Version": "24",
+		"Debug": "enabled"
+	},
+	"UUID": "com.teddyzeus.streamplug"
+}

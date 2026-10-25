@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="fr">
+	<head>
+		<title>Réglages StreamPlug</title>
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+
+	<body>
+		<!-- Réglage commun à toutes les touches StreamPlug (réglage global). -->
+		<sdpi-item label="Port du mod">
+			<sdpi-textfield setting="port" global placeholder="8765" pattern="[0-9]{4,5}"></sdpi-textfield>
+		</sdpi-item>
+		<sdpi-item>
+			<details>
+				<summary>Aide</summary>
+				<p>
+					Doit correspondre au port de <code>streamplug-config.json</code> dans le dossier du mod
+					(8765 par défaut). Laissez vide pour utiliser la valeur par défaut.
+				</p>
+			</details>
+		</sdpi-item>
+	</body>
+</html>
