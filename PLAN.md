@@ -45,7 +45,9 @@ T0 ─► T1 ─► T2 ─► T3 ─► T4 ──────┐
 **Critère de fin** : `Ksp2.log` affiche `[StreamPlug]` et l'altitude change pendant le vol.
 **Risques** : mod non chargé (R7), types `internal` (R2), version netstandard/Mono. 🚦 **Validation** : vous confirmez la ligne de log.
 
-## Étape T2 — Collecte complète (taille M)
+## Étape T2 — Collecte complète (taille M) ✅
+
+> Terminée et validée en jeu : poussée, SAS (bascule et mode), RCS, changement de véhicule (EVA), modes de vitesse Surface/Orbite et vitesse cible sont lus correctement et sans erreur. **Non vu en jeu** (à couvrir dans la recette T6.6) : retour au menu / centre spatial (`aucun véhicule`) et mode d'affichage `Target`. Pour T3 : limiter l'envoi réseau à 10 `state` par seconde (la poussée déclenche un échantillonnage à chaque image pendant qu'on la déplace).
 
 **Objectif** : produire un snapshot complet, thread-safe et testable.
 
