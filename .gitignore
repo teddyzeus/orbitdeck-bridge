@@ -1,0 +1,28 @@
+# .NET
+bin/
+obj/
+*.user
+Directory.Build.props.user
+.vs/
+*.suo
+
+# Node / Stream Deck plugin
+node_modules/
+dist/
+*.streamDeckPlugin
+*.sdPlugin/bin/
+*.sdPlugin/logs/
+
+# Artefacts de release
+/release/
+*.zip
+
+# IDE / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+Thumbs.db
+.DS_Store
+
+# Claude Code (réglages locaux)
+.claude/settings.local.json
