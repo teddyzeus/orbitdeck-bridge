@@ -25,7 +25,9 @@ T0 ─► T1 ─► T2 ─► T3 ─► T4 ──────┐
 | T0.3 | Premier commit (`feat/t0-structure-depot`) | ✅ |
 | T0.4 | Fusion dans `main` et push vers GitHub | ☐ à votre demande |
 
-## Étape T1 — Mod « hello world » (taille M)
+## Étape T1 — Mod « hello world » (taille M) ✅
+
+> Terminée : le mod est chargé par Redux (`[StreamPlug] Mod chargé.` dans `Ksp2.log`) et logue l'altitude chaque seconde en vol. La publicisation des types n'a pas été nécessaire (membres publics). Le logger du jeu est `ReduxLib.Logging.ILogger`.
 
 **Objectif** : prouver que notre DLL est chargée par Redux et lit l'altitude.
 
