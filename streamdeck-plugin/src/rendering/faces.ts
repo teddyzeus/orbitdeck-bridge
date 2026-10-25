@@ -69,6 +69,42 @@ export function throttleFace(ctx: FaceContext): KeyFace {
 	};
 }
 
+/** Touche de commande : libellé et tiret grisé tant que le jeu ne peut pas recevoir d'ordre. */
+function commandFace(label: string, value: string, tone: Tone, ctx: FaceContext, dot?: Tone): KeyFace {
+	return hasData(ctx) ? { label, value, tone, ...(dot ? { dot } : {}) } : { label, value: NO_QUANTITY.value, tone: "dim" };
+}
+
+function switchFace(label: string, enabled: boolean | undefined, ctx: FaceContext): KeyFace {
+	if (enabled === undefined) {
+		return commandFace(label, "", "dim", { ...ctx, state: undefined });
+	}
+
+	return commandFace(label, enabled ? ctx.strings.on : ctx.strings.off, enabled ? "ok" : "normal", ctx, enabled ? "ok" : undefined);
+}
+
+/** SAS : allumé (vert) ou éteint ; un appui inverse l'état. */
+export function sasFace(ctx: FaceContext): KeyFace {
+	return switchFace("SAS", ctx.state?.sas?.enabled, ctx);
+}
+
+/** RCS : allumé (vert) ou éteint ; un appui inverse l'état. */
+export function rcsFace(ctx: FaceContext): KeyFace {
+	return switchFace("RCS", ctx.state?.rcs?.enabled, ctx);
+}
+
+/** Poussée à fixer : en bleu quand le véhicule est déjà à cette valeur. */
+export function throttleSetFace(ctx: FaceContext, percent: number): KeyFace {
+	const current = ctx.state?.throttle;
+	const atTarget = current !== undefined && Math.abs(current * 100 - percent) < 0.5;
+	return commandFace(ctx.strings.throttleSet, `${percent}%`, atTarget ? "accent" : "normal", ctx);
+}
+
+/** Pas de poussée (+10 %, −10 %…). */
+export function throttleStepFace(ctx: FaceContext, deltaPercent: number): KeyFace {
+	const sign = deltaPercent < 0 ? "−" : "+";
+	return commandFace(ctx.strings.throttle, `${sign}${Math.abs(deltaPercent)}%`, "normal", ctx);
+}
+
 /** Nom du véhicule raccourci pour tenir sous la valeur. */
 function shortName(name: string | null | undefined): string | undefined {
 	if (!name) {

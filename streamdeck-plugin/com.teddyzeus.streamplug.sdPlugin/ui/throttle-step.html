@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+	<head>
+		<title>Réglages du pas de poussée</title>
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+
+	<body>
+		<sdpi-item label="Pas">
+			<sdpi-select setting="step" default="10" placeholder="Choisir">
+				<option value="5">5 %</option>
+				<option value="10">10 %</option>
+				<option value="25">25 %</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item>
+			<p>Chaque appui modifie la poussée de ce pas (entre 0 et 100 %).</p>
+		</sdpi-item>
+
+		<!-- Réglage commun à toutes les touches StreamPlug (réglage global). -->
+		<sdpi-item label="Port du mod">
+			<sdpi-textfield setting="port" global placeholder="8765" pattern="[0-9]{4,5}"></sdpi-textfield>
+		</sdpi-item>
+	</body>
+</html>

@@ -76,6 +76,19 @@ export abstract class DisplayAction<TSettings extends JsonObject = JsonObject> e
 		}
 	}
 
+	/**
+	 * Envoie une commande au jeu ; l'alerte de la touche (croix rouge) signale tout échec : jeu non lancé,
+	 * commande refusée par le mod ou sans réponse. Retourne `true` si le jeu l'a exécutée.
+	 */
+	protected async command(action: { showAlert(): Promise<void> }, name: string, args?: Record<string, unknown>): Promise<boolean> {
+		const outcome = await this.client.sendCommand(name, args);
+		if (!outcome.ok) {
+			await action.showAlert();
+		}
+
+		return outcome.ok;
+	}
+
 	/** Mémorise de nouveaux réglages (et les persiste) puis redessine la touche. */
 	protected async updateSettings(action: KeyAction<TSettings>, settings: TSettings): Promise<void> {
 		this.#settings.set(action.id, settings);

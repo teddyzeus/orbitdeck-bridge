@@ -7,6 +7,9 @@ export interface Strings {
 	speedOrbit: string;
 	speedTarget: string;
 	throttle: string;
+	throttleSet: string;
+	on: string;
+	off: string;
 	statusTitle: string;
 	statusOnline: string;
 	statusOffline: string;
@@ -21,6 +24,9 @@ const fr: Strings = {
 	speedOrbit: "VIT. ORBITE",
 	speedTarget: "VIT. CIBLE",
 	throttle: "POUSSÉE",
+	throttleSet: "RÉGLER",
+	on: "ON",
+	off: "OFF",
 	statusTitle: "KSP 2",
 	statusOnline: "EN LIGNE",
 	statusOffline: "JEU NON\nLANCÉ",
@@ -35,6 +41,9 @@ const en: Strings = {
 	speedOrbit: "SPD ORBIT",
 	speedTarget: "SPD TARGET",
 	throttle: "THROTTLE",
+	throttleSet: "SET",
+	on: "ON",
+	off: "OFF",
 	statusTitle: "KSP 2",
 	statusOnline: "ONLINE",
 	statusOffline: "GAME NOT\nRUNNING",

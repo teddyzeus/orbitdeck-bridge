@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { stringsFor, type Locale } from "../src/i18n/strings.js";
 import type { StateMessage } from "../src/protocol.js";
-import { altitudeFace, nextAltitudeMode, nextSpeedMode, speedFace, statusFace, throttleFace, type FaceContext } from "../src/rendering/faces.js";
+import { altitudeFace, nextAltitudeMode, nextSpeedMode, rcsFace, sasFace, speedFace, statusFace, throttleFace, throttleSetFace, throttleStepFace, type FaceContext } from "../src/rendering/faces.js";
 import { renderFace, renderFaceSvg, valueFontSize } from "../src/rendering/renderFace.js";
 import type { Availability } from "../src/state/Store.js";
 
@@ -207,9 +207,38 @@ describe("rendu SVG", () => {
 		];
 
 		for (const ctx of contexts) {
-			for (const face of [altitudeFace(ctx, "surface"), altitudeFace(ctx, "sea"), speedFace(ctx), throttleFace(ctx), statusFace(ctx)]) {
+			for (const face of [altitudeFace(ctx, "surface"), altitudeFace(ctx, "sea"), speedFace(ctx), throttleFace(ctx), statusFace(ctx), sasFace(ctx), rcsFace(ctx), throttleSetFace(ctx, 50), throttleStepFace(ctx, -10)]) {
 				expect(renderFaceSvg(face)).toContain("<svg");
 			}
 		}
+	});
+});
+
+describe("touches de commande", () => {
+	it("SAS et RCS reflètent l'état du jeu", () => {
+		expect(sasFace(ready())).toMatchObject({ label: "SAS", value: "ON", tone: "ok", dot: "ok" });
+		expect(rcsFace(ready())).toMatchObject({ label: "RCS", value: "OFF", tone: "normal" });
+		expect(rcsFace(ready()).dot).toBeUndefined();
+	});
+
+	it("SAS et RCS sont neutres hors connexion ou sans véhicule", () => {
+		expect(sasFace(context("offline", undefined))).toMatchObject({ label: "SAS", value: "—", tone: "dim" });
+		expect(rcsFace(context("noVessel", { v: 1, type: "state", seq: 1, status: "noVessel" }))).toMatchObject({ value: "—", tone: "dim" });
+	});
+
+	it("SAS reste neutre si l'état n'est pas fourni", () => {
+		expect(sasFace(ready({ sas: undefined }))).toMatchObject({ value: "—", tone: "dim" });
+	});
+
+	it("la touche de poussée fixe passe en bleu quand la valeur est atteinte", () => {
+		expect(throttleSetFace(ready({ throttle: 0.5 }), 50)).toMatchObject({ label: "RÉGLER", value: "50%", tone: "accent" });
+		expect(throttleSetFace(ready({ throttle: 0.3 }), 50)).toMatchObject({ value: "50%", tone: "normal" });
+		expect(throttleSetFace(context("offline", undefined), 50)).toMatchObject({ value: "—", tone: "dim" });
+	});
+
+	it("les touches de pas affichent le signe", () => {
+		expect(throttleStepFace(ready(), 10)).toMatchObject({ label: "POUSSÉE", value: "+10%" });
+		expect(throttleStepFace(ready(), -10)).toMatchObject({ value: "−10%" });
+		expect(throttleStepFace(context("offline", undefined), 10)).toMatchObject({ value: "—", tone: "dim" });
 	});
 });

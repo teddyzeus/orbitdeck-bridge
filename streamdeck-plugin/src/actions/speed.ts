@@ -21,9 +21,6 @@ export class SpeedAction extends DisplayAction {
 			return;
 		}
 
-		const outcome = await this.client.sendCommand("setSpeedMode", { mode: next });
-		if (!outcome.ok) {
-			await ev.action.showAlert();
-		}
+		await this.command(ev.action, "setSpeedMode", { mode: next });
 	}
 }

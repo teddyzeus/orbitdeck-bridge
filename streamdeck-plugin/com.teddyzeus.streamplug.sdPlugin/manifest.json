@@ -9,7 +9,9 @@
 			"Icon": "imgs/actions/altitude/icon",
 			"Tooltip": "Altitude du véhicule. Un appui bascule entre l'altitude au-dessus du sol et du niveau de la mer.",
 			"PropertyInspectorPath": "ui/altitude.html",
-			"Controllers": ["Keypad"],
+			"Controllers": [
+				"Keypad"
+			],
 			"States": [
 				{
 					"Image": "imgs/actions/altitude/key",
@@ -23,7 +25,9 @@
 			"Icon": "imgs/actions/speed/icon",
 			"Tooltip": "Vitesse du véhicule. Un appui change le type de vitesse du navball (surface, orbite, cible).",
 			"PropertyInspectorPath": "ui/settings.html",
-			"Controllers": ["Keypad"],
+			"Controllers": [
+				"Keypad"
+			],
 			"States": [
 				{
 					"Image": "imgs/actions/speed/key",
@@ -37,7 +41,9 @@
 			"Icon": "imgs/actions/throttle/icon",
 			"Tooltip": "Affiche la poussée actuelle du véhicule.",
 			"PropertyInspectorPath": "ui/settings.html",
-			"Controllers": ["Keypad"],
+			"Controllers": [
+				"Keypad"
+			],
 			"States": [
 				{
 					"Image": "imgs/actions/throttle/key",
@@ -51,10 +57,92 @@
 			"Icon": "imgs/actions/status/icon",
 			"Tooltip": "Indique si le jeu est connecté. Un appui force une nouvelle tentative de connexion.",
 			"PropertyInspectorPath": "ui/settings.html",
-			"Controllers": ["Keypad"],
+			"Controllers": [
+				"Keypad"
+			],
 			"States": [
 				{
 					"Image": "imgs/actions/status/key",
+					"ShowTitle": false
+				}
+			]
+		},
+		{
+			"Name": "SAS",
+			"UUID": "com.teddyzeus.streamplug.sas",
+			"Icon": "imgs/actions/sas/icon",
+			"Tooltip": "Affiche l'état du SAS. Un appui l'active ou le coupe.",
+			"PropertyInspectorPath": "ui/settings.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/sas/key",
+					"ShowTitle": false
+				}
+			]
+		},
+		{
+			"Name": "RCS",
+			"UUID": "com.teddyzeus.streamplug.rcs",
+			"Icon": "imgs/actions/rcs/icon",
+			"Tooltip": "Affiche l'état du RCS. Un appui l'active ou le coupe.",
+			"PropertyInspectorPath": "ui/settings.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/rcs/key",
+					"ShowTitle": false
+				}
+			]
+		},
+		{
+			"Name": "Poussée : fixer",
+			"UUID": "com.teddyzeus.streamplug.throttle-set",
+			"Icon": "imgs/actions/throttle-set/icon",
+			"Tooltip": "Un appui fixe la poussée à la valeur choisie (0, 25, 50, 75 ou 100 %).",
+			"PropertyInspectorPath": "ui/throttle-set.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/throttle-set/key",
+					"ShowTitle": false
+				}
+			]
+		},
+		{
+			"Name": "Poussée : augmenter",
+			"UUID": "com.teddyzeus.streamplug.throttle-up",
+			"Icon": "imgs/actions/throttle-up/icon",
+			"Tooltip": "Un appui augmente la poussée d'un pas (10 % par défaut).",
+			"PropertyInspectorPath": "ui/throttle-step.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/throttle-up/key",
+					"ShowTitle": false
+				}
+			]
+		},
+		{
+			"Name": "Poussée : diminuer",
+			"UUID": "com.teddyzeus.streamplug.throttle-down",
+			"Icon": "imgs/actions/throttle-down/icon",
+			"Tooltip": "Un appui diminue la poussée d'un pas (10 % par défaut).",
+			"PropertyInspectorPath": "ui/throttle-step.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/throttle-down/key",
 					"ShowTitle": false
 				}
 			]
