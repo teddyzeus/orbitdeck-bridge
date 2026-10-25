@@ -1,0 +1,17 @@
+{
+  "name": "streamplug-tools",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Outils de développement StreamPlug : client de test et faux serveur du mod.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "client": "node client.mjs",
+    "fake-server": "node fake-server.mjs"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
