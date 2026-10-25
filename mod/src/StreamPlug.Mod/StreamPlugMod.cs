@@ -1,4 +1,7 @@
+using System.IO;
+using System.Reflection;
 using SpaceWarp2.API.Mods;
+using StreamPlug.Mod.Config;
 using UnityEngine;
 
 namespace StreamPlug.Mod
@@ -10,12 +13,19 @@ namespace StreamPlug.Mod
 
         public override void OnInitialized()
         {
-            SWLogger.LogInfo("[StreamPlug] Mod chargé.");
+            var modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var config = StreamPlugConfig.Load(
+                Path.Combine(modFolder ?? ".", StreamPlugConfig.FileName),
+                message => SWLogger.LogWarning($"[StreamPlug] {message}"));
+
+            SWLogger.LogInfo(
+                $"[StreamPlug] Mod chargé (port {config.Port}, {config.SampleRateHz} Hz, logs détaillés : {config.VerboseLogging}).");
 
             _host = new GameObject("StreamPlug");
             Object.DontDestroyOnLoad(_host);
             var bridge = _host.AddComponent<GameBridge>();
             bridge.Logger = SWLogger;
+            bridge.Config = config;
         }
     }
 }

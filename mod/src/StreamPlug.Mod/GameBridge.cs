@@ -1,53 +1,124 @@
 using System;
-using KSP.Game;
-using KSP.Sim.impl;
+using System.Globalization;
+using StreamPlug.Mod.Config;
+using StreamPlug.Mod.Telemetry;
 using UnityEngine;
 using ILogger = ReduxLib.Logging.ILogger;
 
 namespace StreamPlug.Mod
 {
     /// <summary>
-    /// Seul code qui touche l'API du jeu. Tourne sur le thread principal Unity.
-    /// T1 : journalise l'altitude du véhicule actif une fois par seconde.
+    /// Seul composant qui échantillonne le jeu. Tourne sur le thread principal Unity et publie
+    /// le dernier <see cref="TelemetrySnapshot"/> pour les autres threads (serveur réseau, T3).
     /// </summary>
     public class GameBridge : MonoBehaviour
     {
-        private const float LogIntervalSeconds = 1f;
+        private const float VerboseLogIntervalSeconds = 1f;
+        private const float ErrorLogIntervalSeconds = 5f;
 
-        private float _nextLogTime;
+        private IGameState _gameState = new GameState();
+        private GameEventWatcher _watcher;
+        private volatile TelemetrySnapshot _latest = TelemetrySnapshot.NoVessel;
+        private long _sequence;
+
+        private float _nextSampleTime;
+        private float _nextVerboseLogTime;
+        private float _nextErrorLogTime;
 
         public ILogger Logger { get; set; }
 
+        public StreamPlugConfig Config { get; set; } = new StreamPlugConfig();
+
+        /// <summary>Dernier snapshot publié (lisible depuis n'importe quel thread).</summary>
+        public TelemetrySnapshot Latest => _latest;
+
+        /// <summary>Numéro du dernier snapshot publié ; croît à chaque changement.</summary>
+        public long Sequence => System.Threading.Interlocked.Read(ref _sequence);
+
+        /// <summary>Remplace la source de données (tests).</summary>
+        internal void UseGameState(IGameState gameState) => _gameState = gameState;
+
+        private void Awake()
+        {
+            _watcher = new GameEventWatcher();
+        }
+
+        private void OnDestroy()
+        {
+            _watcher?.Dispose();
+        }
+
         private void Update()
         {
-            if (Time.unscaledTime < _nextLogTime)
-                return;
-            _nextLogTime = Time.unscaledTime + LogIntervalSeconds;
-
             try
             {
-                LogAltitude();
+                _watcher.Refresh();
+                var eventPending = _watcher.ConsumeEvent();
+
+                var now = Time.unscaledTime;
+                if (!eventPending && now < _nextSampleTime)
+                    return;
+                _nextSampleTime = now + 1f / Config.SampleRateHz;
+
+                Sample(now);
             }
             catch (Exception exception)
             {
                 // Ne jamais laisser une exception sortir d'Update() (cf. SPECS-TECHNIQUES §4.4)
-                Logger?.LogError($"[StreamPlug] Erreur de lecture : {exception}");
+                LogErrorThrottled(exception);
             }
         }
 
-        private void LogAltitude()
+        private void Sample(float now)
         {
-            var manager = GameManager.Instance;
-            if (manager == null || manager.Game == null || manager.Game.ViewController == null)
+            var next = _gameState.Read();
+            var previous = _latest;
+
+            if (!SnapshotComparer.HasChanged(previous, next))
                 return;
 
-            VesselVehicle vehicle = manager.Game.ViewController.ActiveVesselVehicle;
-            if (vehicle == null)
-                return;
+            var discrete = SnapshotComparer.HasDiscreteChange(previous, next);
+            _latest = next;
+            var sequence = System.Threading.Interlocked.Increment(ref _sequence);
 
-            Logger?.LogInfo(
-                $"[StreamPlug] altitude mer={vehicle.AltitudeFromSeaLevel:F1} m, " +
-                $"surface={vehicle.AltitudeFromSurface:F1} m, vitesse sol={vehicle.SurfaceSpeed:F1} m/s");
+            if (Config.VerboseLogging && (discrete || now >= _nextVerboseLogTime))
+            {
+                _nextVerboseLogTime = now + VerboseLogIntervalSeconds;
+                Logger?.LogInfo(Describe(sequence, next));
+            }
+        }
+
+        private void LogErrorThrottled(Exception exception)
+        {
+            var now = Time.unscaledTime;
+            if (now < _nextErrorLogTime)
+                return;
+            _nextErrorLogTime = now + ErrorLogIntervalSeconds;
+            Logger?.LogError($"[StreamPlug] Erreur de lecture : {exception}");
+        }
+
+        private static string Describe(long sequence, TelemetrySnapshot s)
+        {
+            var culture = CultureInfo.InvariantCulture;
+            if (s.Status == VesselStatus.NoVessel)
+                return string.Format(culture, "[StreamPlug] #{0} aucun véhicule", sequence);
+
+            return string.Format(
+                culture,
+                "[StreamPlug] #{0} {1} '{2}' | alt mer={3:F1} surface={4:F1} m | vitesse sol={5:F1} orbite={6:F1} cible={7} (affichée: {8}) m/s | poussée={9:P0} | SAS={10} ({11}) | RCS={12}",
+                sequence,
+                s.Status,
+                s.VesselName,
+                s.AltitudeSeaLevel,
+                s.AltitudeSurface,
+                s.SpeedSurface,
+                s.SpeedOrbital,
+                s.SpeedTarget.HasValue ? s.SpeedTarget.Value.ToString("F1", culture) : "-",
+                s.SpeedMode,
+                s.Throttle,
+                s.SasEnabled ? "on" : "off",
+                s.SasMode ?? "-",
+                s.RcsEnabled ? "on" : "off");
         }
     }
 }

@@ -1,0 +1,5 @@
+{
+  "port": 8765,
+  "sampleRateHz": 10,
+  "verboseLogging": true
+}

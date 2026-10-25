@@ -38,6 +38,9 @@
     <MakeDir Directories="$(ModDeployDir)" />
     <Copy SourceFiles="$(OutputPath)StreamPlug.Mod.dll" DestinationFolder="$(ModDeployDir)" />
     <Copy SourceFiles="$(MSBuildProjectDirectory)\..\..\package\swinfo.json" DestinationFolder="$(ModDeployDir)" />
+    <!-- La configuration n'est copiée que si elle n'existe pas encore (ne jamais écraser les réglages de l'utilisateur) -->
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\..\..\package\streamplug-config.json" DestinationFolder="$(ModDeployDir)"
+          Condition="!Exists('$(ModDeployDir)\streamplug-config.json')" />
     <Message Importance="high" Text="StreamPlug déployé dans $(ModDeployDir)" />
   </Target>
 
