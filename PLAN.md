@@ -118,7 +118,7 @@ T0 ─► T1 ─► T2 ─► T3 ─► T4 ──────┐
 **Critère de fin** : altitude, vitesse et statut s'affichent en direct ; reconnexion automatique après redémarrage du jeu.
 🚦 **Validation** : lisibilité des touches validée par vous (taille, couleurs).
 
-## Étape T6 — Plugin : commandes et états dégradés (taille M)
+## Étape T6 — Plugin : commandes et états dégradés (taille M) ✅
 
 | # | Tâche | Détail |
 |---|-------|--------|
@@ -129,7 +129,7 @@ T0 ─► T1 ─► T2 ─► T3 ─► T4 ──────┐
 | T6.5 | Disposition par défaut 3 × 5 | Vérifier la grille du §4.6 de SPECS.md |
 | T6.6 | 🧪 Recette complète | Checklist `docs/test-checklist.md` (vol Kerbin, SAS/RCS, throttle, changement de véhicule, menu, redémarrage) |
 
-**Critère de fin** : tous les critères d'acceptation du MVP (SPECS.md §8) sont cochés.
+**Critère de fin** : tous les critères d'acceptation du MVP (SPECS.md §8) sont cochés. ✅
 🚦 **Validation** : recette signée par vous.
 
 ## Étape T7 — Packaging et release (taille M)
