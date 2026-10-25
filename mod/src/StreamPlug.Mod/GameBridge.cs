@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using StreamPlug.Mod.Commands;
 using StreamPlug.Mod.Config;
 using StreamPlug.Mod.Server;
 using StreamPlug.Mod.Telemetry;
@@ -22,6 +23,7 @@ namespace StreamPlug.Mod
         private volatile TelemetrySnapshot _latest = TelemetrySnapshot.NoVessel;
         private long _sequence;
 
+        private int _forcedSamples;
         private float _nextSampleTime;
         private float _nextVerboseLogTime;
         private float _nextErrorLogTime;
@@ -47,6 +49,12 @@ namespace StreamPlug.Mod
         /// <summary>Serveur à arrêter proprement quand le jeu se ferme ou que le composant est détruit.</summary>
         internal StreamPlugServer Server { get; set; }
 
+        /// <summary>Commandes reçues du Stream Deck, exécutées ici sur le thread principal.</summary>
+        internal CommandQueue Commands { get; set; }
+
+        /// <summary>Remplace l'exécuteur de commandes (tests).</summary>
+        internal IGameControls Controls { get; set; } = new GameControls();
+
         private void OnDestroy()
         {
             _watcher?.Dispose();
@@ -63,7 +71,15 @@ namespace StreamPlug.Mod
             try
             {
                 _watcher.Refresh();
-                var eventPending = _watcher.ConsumeEvent();
+
+                // Les commandes d'abord, puis une relecture immédiate (et celle de l'image suivante, car certains
+                // effets du jeu ne sont visibles qu'après sa mise à jour) pour que le Stream Deck voie le résultat.
+                if (Commands != null && Commands.ProcessPending(Controls) > 0)
+                    _forcedSamples = 2;
+
+                var eventPending = _watcher.ConsumeEvent() || _forcedSamples > 0;
+                if (_forcedSamples > 0)
+                    _forcedSamples--;
 
                 var now = Time.unscaledTime;
                 if (!eventPending && now < _nextSampleTime)

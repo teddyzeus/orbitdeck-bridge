@@ -19,4 +19,4 @@ npm run client -- --raw --once
 En mode interactif, le client accepte : `ping`, `throttle 0.5`, `throttle +0.1`, `sas on|off|toggle`,
 `rcs on|off|toggle`, `speed surface|orbit|target`, ou un objet JSON.
 
-Le faux serveur applique les commandes à son état simulé. Le vrai mod les refuse (`UNKNOWN_COMMAND`) jusqu'à l'étape T4.
+Le faux serveur applique les commandes à son état simulé, avec la même validation que le vrai mod.

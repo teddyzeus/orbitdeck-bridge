@@ -12,7 +12,7 @@ public sealed class StreamPlugServerTests : IDisposable
 
     public StreamPlugServerTests()
     {
-        _server = new StreamPlugServer(_ws, _source, "0.1.0", "0.2.8.5", () => Interlocked.Read(ref _now));
+        _server = new StreamPlugServer(_ws, _source, new StreamPlug.Mod.Commands.CommandQueue(), "0.1.0", "0.2.8.5", () => Interlocked.Read(ref _now));
         Assert.True(_server.Start());
     }
 
@@ -176,20 +176,6 @@ public sealed class StreamPlugServerTests : IDisposable
     }
 
     [Fact]
-    public async Task Command_is_refused_until_commands_are_implemented()
-    {
-        using var client = await ConnectAsync();
-        client.Expect("hello");
-        client.Expect("state");
-
-        await client.SendAsync("{\"v\":1,\"type\":\"command\",\"id\":\"c-17\",\"name\":\"setThrottle\",\"args\":{\"value\":0.5}}");
-
-        var error = client.Expect("error");
-        Assert.Equal("c-17", (string?)error["id"]);
-        Assert.Equal("UNKNOWN_COMMAND", (string?)error["code"]);
-    }
-
-    [Fact]
     public async Task Command_with_missing_name_gets_bad_request_with_id()
     {
         using var client = await ConnectAsync();
@@ -225,7 +211,7 @@ public sealed class StreamPlugServerTests : IDisposable
     [Fact]
     public void Start_returns_false_when_the_port_is_taken()
     {
-        using var other = new StreamPlugServer(new WsServer(_ws.Port), _source, "0.1.0", "x");
+        using var other = new StreamPlugServer(new WsServer(_ws.Port), _source, new StreamPlug.Mod.Commands.CommandQueue(), "0.1.0", "x");
 
         Assert.False(other.Start());
         Assert.False(other.IsRunning);

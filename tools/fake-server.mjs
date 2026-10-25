@@ -41,6 +41,7 @@ let seq = 0;
 let lastSent = '';
 
 const round = (value, decimals = 2) => Math.round(value * 10 ** decimals) / 10 ** decimals;
+const isNumberIn = (value, min, max) => typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
 
 function snapshot() {
   const base = { v: 1, type: 'state', seq, status: state.status, gameState: state.gameState };
@@ -97,21 +98,23 @@ function handleCommand(socket, message) {
 
   switch (name) {
     case 'setThrottle':
-      if (typeof commandArgs.value !== 'number') return error(socket, id, 'BAD_REQUEST', 'args.value (nombre) requis');
-      state.throttle = Math.min(1, Math.max(0, commandArgs.value));
+      if (!isNumberIn(commandArgs.value, 0, 1)) return error(socket, id, 'BAD_REQUEST', 'args.value doit être un nombre entre 0 et 1.');
+      state.throttle = commandArgs.value;
       break;
     case 'adjustThrottle':
-      if (typeof commandArgs.delta !== 'number') return error(socket, id, 'BAD_REQUEST', 'args.delta (nombre) requis');
+      if (!isNumberIn(commandArgs.delta, -1, 1)) return error(socket, id, 'BAD_REQUEST', 'args.delta doit être un nombre entre -1 et 1.');
       state.throttle = Math.min(1, Math.max(0, state.throttle + commandArgs.delta));
       break;
     case 'setSas':
-      state.sas = { ...state.sas, enabled: Boolean(commandArgs.enabled) };
+      if (typeof commandArgs.enabled !== 'boolean') return error(socket, id, 'BAD_REQUEST', 'args.enabled doit être un booléen.');
+      state.sas = { ...state.sas, enabled: commandArgs.enabled };
       break;
     case 'toggleSas':
       state.sas = { ...state.sas, enabled: !state.sas.enabled };
       break;
     case 'setRcs':
-      state.rcs = Boolean(commandArgs.enabled);
+      if (typeof commandArgs.enabled !== 'boolean') return error(socket, id, 'BAD_REQUEST', 'args.enabled doit être un booléen.');
+      state.rcs = commandArgs.enabled;
       break;
     case 'toggleRcs':
       state.rcs = !state.rcs;

@@ -1,5 +1,3 @@
-using KSP.Game;
-using KSP.Sim.impl;
 using GameSpeedMode = KSP.Sim.SpeedDisplayMode;
 
 namespace StreamPlug.Mod.Telemetry
@@ -9,20 +7,7 @@ namespace StreamPlug.Mod.Telemetry
     {
         public TelemetrySnapshot Read()
         {
-            var manager = GameManager.Instance;
-            if (manager == null || manager.Game == null || manager.Game.ViewController == null)
-                return TelemetrySnapshot.NoVessel;
-
-            // Hors vol (menu, centre spatial, éditeur…), le jeu peut conserver le dernier véhicule en mémoire :
-            // l'état global du jeu fait foi.
-            var stateConfig = manager.Game.GlobalGameState?.GetGameState();
-            var gameStateName = stateConfig?.GameState.ToString();
-            if (stateConfig != null && !stateConfig.IsFlightMode)
-                return TelemetrySnapshot.NoVesselIn(gameStateName);
-
-            var viewController = manager.Game.ViewController;
-            VesselVehicle vehicle = viewController.ActiveVesselVehicle;
-            if (vehicle == null || !viewController.TryGetActiveSimVessel(out VesselComponent vessel, true) || vessel == null)
+            if (!GameAccess.TryGetFlightVessel(out var vehicle, out var vessel, out var gameStateName))
                 return TelemetrySnapshot.NoVesselIn(gameStateName);
 
             var autopilot = vessel.Autopilot;

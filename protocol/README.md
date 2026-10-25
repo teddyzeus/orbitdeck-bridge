@@ -41,8 +41,27 @@ Codes d'erreur : `BAD_REQUEST`, `UNKNOWN_COMMAND`, `NO_VESSEL`, `NOT_CONTROLLABL
 | `command` | `id` (chaîne unique), `name`, `args` | [client-message.schema.json](schema/client-message.schema.json) |
 | `ping` | — (réponse : `pong`) | idem |
 
-Commandes (étape T4) : `setThrottle {value}`, `adjustThrottle {delta}`, `setSas {enabled}`, `toggleSas`, `setRcs {enabled}`, `toggleRcs`, `setSpeedMode {mode}`.
-Tant que T4 n'est pas livrée, toute commande reçoit une erreur `UNKNOWN_COMMAND`.
+### Commandes
+
+| `name` | `args` | Effet |
+|--------|--------|-------|
+| `setThrottle` | `value` : nombre de 0 à 1 | Règle la poussée |
+| `adjustThrottle` | `delta` : nombre de -1 à 1 | Modifie la poussée (le résultat reste entre 0 et 1) |
+| `setSas` | `enabled` : booléen | Active ou coupe le SAS |
+| `toggleSas` | — | Inverse le SAS |
+| `setRcs` | `enabled` : booléen | Active ou coupe le RCS |
+| `toggleRcs` | — | Inverse le RCS |
+| `setSpeedMode` | `mode` : `surface`, `orbit` ou `target` | Change le type de vitesse affiché par le jeu |
+
+Règles :
+- Chaque commande reçoit **une réponse** : `ack` (même `id`) si le jeu l'a exécutée, sinon `error` (même `id`).
+- La réponse arrive après l'exécution, qui a lieu sur la prochaine image du jeu. L'état résultant suit dans un message `state`.
+- Les valeurs **hors bornes sont refusées** (`BAD_REQUEST`), jamais corrigées : `setThrottle` avec `5` ne met pas la poussée à 100 %.
+- `set*` est **idempotent** : demander un état déjà actif renvoie `ack` sans rien changer. Préférez `set*` à `toggle*`.
+- Erreurs d'exécution : `NO_VESSEL` (menu, centre spatial…), `NOT_CONTROLLABLE` (pas de pilote, contrôle insuffisant),
+  `REJECTED_BY_GAME` (poussée verrouillée pendant l'accélération du temps ou en EVA, `target` sans cible, RCS indisponible…),
+  `INTERNAL` (file de commandes pleine, erreur inattendue).
+- La file de commandes du jeu est bornée (64) : au-delà, `INTERNAL` est renvoyé immédiatement.
 
 ## Exemples
 Dans [examples/](examples/). Ils sont vérifiés par les tests du mod contre les schémas.

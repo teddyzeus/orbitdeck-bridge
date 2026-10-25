@@ -1,6 +1,7 @@
 using System.IO;
 using System.Reflection;
 using SpaceWarp2.API.Mods;
+using StreamPlug.Mod.Commands;
 using StreamPlug.Mod.Config;
 using StreamPlug.Mod.Server;
 using UnityEngine;
@@ -34,9 +35,20 @@ namespace StreamPlug.Mod
                 logInfo: message => SWLogger.LogInfo($"[StreamPlug] {message}"),
                 logError: message => SWLogger.LogError($"[StreamPlug] {message}"));
 
+            var commands = new CommandQueue(message => SWLogger.LogError($"[StreamPlug] {message}"));
+            if (config.VerboseLogging)
+            {
+                commands.Processed = (pending, result) => SWLogger.LogInfo(
+                    $"[StreamPlug] commande {pending.Id} {pending.Command.Kind} → "
+                    + (result.Success ? "ok" : $"{result.ErrorCode} ({result.Message})"));
+            }
+
+            bridge.Commands = commands;
+
             var server = new StreamPlugServer(
                 webSocket,
                 bridge,
+                commands,
                 modVersion: Assembly.GetExecutingAssembly().GetName().Version.ToString(3),
                 gameVersion: Application.version,
                 logError: message => SWLogger.LogError($"[StreamPlug] {message}"));

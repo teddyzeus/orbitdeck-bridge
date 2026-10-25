@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using StreamPlug.Mod.Commands;
 using StreamPlug.Mod.Protocol;
 using StreamPlug.Mod.Telemetry;
 
@@ -20,6 +21,7 @@ namespace StreamPlug.Mod.Server
 
         private readonly WsServer _ws;
         private readonly ITelemetrySource _source;
+        private readonly CommandQueue _commands;
         private readonly string _modVersion;
         private readonly string _gameVersion;
         private readonly Func<long> _clockMs;
@@ -32,6 +34,7 @@ namespace StreamPlug.Mod.Server
         public StreamPlugServer(
             WsServer ws,
             ITelemetrySource source,
+            CommandQueue commands,
             string modVersion,
             string gameVersion,
             Func<long> clockMs = null,
@@ -39,6 +42,7 @@ namespace StreamPlug.Mod.Server
         {
             _ws = ws;
             _source = source;
+            _commands = commands;
             _modVersion = modVersion;
             _gameVersion = gameVersion;
             _clockMs = clockMs ?? DefaultClock();
@@ -158,13 +162,23 @@ namespace StreamPlug.Mod.Server
                     break;
 
                 case ClientMessageKind.Command:
-                    // Les commandes seront branchées à l'étape T4.
-                    client.Send(ProtocolMessages.Error(
-                        message.Id,
-                        ErrorCodes.UnknownCommand,
-                        $"Commande « {message.CommandName} » non supportée."));
+                    HandleCommand(client, message);
                     break;
             }
+        }
+
+        // Validé ici (thread réseau), exécuté plus tard sur le thread principal du jeu, qui répond ack ou error.
+        private void HandleCommand(IWsClient client, ParsedMessage message)
+        {
+            var validation = CommandValidator.Validate(message.CommandName, message.Args);
+            if (!validation.IsValid)
+            {
+                client.Send(ProtocolMessages.Error(message.Id, validation.ErrorCode, validation.ErrorMessage));
+                return;
+            }
+
+            if (!_commands.TryEnqueue(new PendingCommand(message.Id, validation.Command, client.Send)))
+                client.Send(ProtocolMessages.Error(message.Id, ErrorCodes.Internal, "File de commandes pleine, réessayez."));
         }
 
         private static Func<long> DefaultClock()
