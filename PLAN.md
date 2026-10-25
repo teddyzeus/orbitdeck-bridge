@@ -64,7 +64,9 @@ T0 ─► T1 ─► T2 ─► T3 ─► T4 ──────┐
 **Critère de fin** : le snapshot loggé reflète correctement l'état du jeu dans tous les cas du tableau §7 de SPECS-TECHNIQUES.
 🚦 **Validation** : vous confirmez les valeurs (altitude, vitesses) par rapport à l'affichage du jeu.
 
-## Étape T3 — Serveur WebSocket et protocole v1 (taille L)
+## Étape T3 — Serveur WebSocket et protocole v1 (taille L) ✅
+
+> Terminée et validée en jeu. **Décision R3 : serveur WebSocket maison** (RFC 6455, sans dépendance, `TcpListener` sur `127.0.0.1`) ; protocole v1 gelé (`protocol/`). 130 tests dont des tests d'intégration avec un vrai client WebSocket ; interopérabilité vérifiée avec le client Node `ws`. Outils de développement dans `tools/` (client de test, faux serveur). Les commandes sont reconnues mais refusées (`UNKNOWN_COMMAND`) jusqu'à T4.
 
 **Objectif** : exposer le snapshot à un client externe.
 
