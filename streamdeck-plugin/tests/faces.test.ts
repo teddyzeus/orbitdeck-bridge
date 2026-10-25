@@ -110,7 +110,7 @@ describe("statusFace", () => {
 	it.each([
 		["offline", "JEU NON\nLANCÉ", "alert"],
 		["noVessel", "AUCUN\nVÉHICULE", "warn"],
-		["notControllable", "NON\nCONTRÔLABLE", "warn"],
+		["notControllable", "PAS DE\nCONTRÔLE", "warn"],
 	] as const)("état %s", (availability, value, dot) => {
 		expect(statusFace(context(availability, undefined))).toMatchObject({ value, dot });
 	});

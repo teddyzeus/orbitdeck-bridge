@@ -12,7 +12,8 @@
     "watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.teddyzeus.streamplug\"",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "gallery": "node scripts/gallery.mjs"
   },
   "dependencies": {
     "@elgato/streamdeck": "^3.0.3",

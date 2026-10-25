@@ -26,3 +26,6 @@ Thumbs.db
 
 # Claude Code (réglages locaux)
 .claude/settings.local.json
+
+# Sorties générées (galerie des touches)
+out/

@@ -25,7 +25,7 @@ const fr: Strings = {
 	statusOnline: "EN LIGNE",
 	statusOffline: "JEU NON\nLANCÉ",
 	statusNoVessel: "AUCUN\nVÉHICULE",
-	statusNotControllable: "NON\nCONTRÔLABLE",
+	statusNotControllable: "PAS DE\nCONTRÔLE",
 };
 
 const en: Strings = {
@@ -39,7 +39,7 @@ const en: Strings = {
 	statusOnline: "ONLINE",
 	statusOffline: "GAME NOT\nRUNNING",
 	statusNoVessel: "NO\nVESSEL",
-	statusNotControllable: "NOT\nCONTROLLABLE",
+	statusNotControllable: "NO\nCONTROL",
 };
 
 const catalog: Record<Locale, Strings> = { fr, en };

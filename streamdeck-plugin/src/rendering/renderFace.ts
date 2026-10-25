@@ -48,18 +48,18 @@ export function valueFontSize(longestLineLength: number, lineCount: number): num
 	}
 
 	if (longestLineLength <= 3) {
-		return 60;
+		return 56;
 	}
 
 	if (longestLineLength === 4) {
-		return 52;
+		return 50;
 	}
 
 	if (longestLineLength === 5) {
-		return 44;
+		return 42;
 	}
 
-	return longestLineLength === 6 ? 38 : 32;
+	return longestLineLength === 6 ? 36 : 30;
 }
 
 export function renderFaceSvg(face: KeyFace): string {
@@ -70,7 +70,7 @@ export function renderFaceSvg(face: KeyFace): string {
 	const valueColor = COLORS[face.tone];
 
 	// Centre vertical de la zone de valeur : un peu plus haut quand une unité ou une jauge occupe le bas.
-	const centerY = face.unit || hasBar ? 82 : 90;
+	const centerY = face.unit || hasBar ? 77 : 88;
 	const lineHeight = fontSize * 1.12;
 	const firstBaseline = centerY - ((lines.length - 1) * lineHeight) / 2 + fontSize * 0.34;
 
