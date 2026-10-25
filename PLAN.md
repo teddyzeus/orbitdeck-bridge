@@ -47,7 +47,7 @@ T0 ─► T1 ─► T2 ─► T3 ─► T4 ──────┐
 
 ## Étape T2 — Collecte complète (taille M) ✅
 
-> Terminée et validée en jeu : poussée, SAS (bascule et mode), RCS, changement de véhicule (EVA), modes de vitesse Surface/Orbite et vitesse cible sont lus correctement et sans erreur. **Non vu en jeu** (à couvrir dans la recette T6.6) : retour au menu / centre spatial (`aucun véhicule`) et mode d'affichage `Target`. Pour T3 : limiter l'envoi réseau à 10 `state` par seconde (la poussée déclenche un échantillonnage à chaque image pendant qu'on la déplace).
+> Terminée et validée en jeu : poussée, SAS (bascule et mode), RCS, changement de véhicule (EVA), modes de vitesse Surface/Orbite, vitesse cible, et états hors vol (`MainMenu`, `Loading`, `KerbalSpaceCenter` → `aucun véhicule`). Le jeu conserve un véhicule figé hors vol : l'état global (`GlobalGameState.IsFlightMode`) est utilisé pour le détecter. **Non vu en jeu** (recette T6.6) : mode d'affichage `Target`, éditeur de véhicule, vue carte. Pour T3 : limiter l'envoi réseau à 10 `state` par seconde (la poussée déclenche un échantillonnage à chaque image pendant qu'on la déplace).
 
 **Objectif** : produire un snapshot complet, thread-safe et testable.
 
