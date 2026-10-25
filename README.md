@@ -2,9 +2,9 @@
 
 Affichez et pilotez **Kerbal Space Program 2 (KSP 2 Redux)** depuis un **Stream Deck 15 touches**.
 
-> Statut : en conception (étape T0). Rien n'est encore utilisable.
+> Statut : version 0.1.0 (MVP). Voir [docs/installation.md](docs/installation.md) pour installer le mod et le plugin.
 
-## Fonctionnalités prévues (MVP)
+## Fonctionnalités (MVP)
 
 - Lecture : altitude (mer ↔ surface), vitesse (surface / orbitale / cible).
 - Commandes : throttle (0 / 50 / 100 %, ±10 %), SAS, RCS.
@@ -20,6 +20,9 @@ Le protocole d'échange est décrit dans `protocol/`.
 
 ## Documentation
 
+- [Installation](docs/installation.md)
+- [Recette de test](docs/test-checklist.md)
+- [Protocole](protocol/README.md)
 - [Spécifications fonctionnelles](SPECS.md)
 - [Spécifications techniques](SPECS-TECHNIQUES.md)
 
@@ -29,4 +32,11 @@ KSP 2 Redux v0.2.8.5.103184-beta, Windows 10/11.
 
 ## Distribution
 
-GitHub Releases uniquement.
+GitHub Releases uniquement : le mod (`.zip`) et le plugin (`.streamDeckPlugin`) sont joints à chaque version.
+
+## Développement
+
+- **Mod** : `mod/` (SDK .NET 8, DLL du jeu référencées via `KSP2_DIR` ou `mod/Directory.Build.props.user`), tests : `dotnet test mod/StreamPlug.Mod.sln`.
+- **Plugin** : `streamdeck-plugin/` (Node 24) : `npm ci`, `npm test`, `npm run build`, `npm run gallery` pour prévisualiser les touches.
+- **Release** : `node scripts/package.mjs` produit `release/StreamPlug-Mod-vX.Y.Z.zip` et le `.streamDeckPlugin`. Les versions de `mod/package/swinfo.json` et du manifeste du plugin doivent concorder.
+- **Outils** : `tools/` (client et faux serveur en ligne de commande).

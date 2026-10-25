@@ -1,0 +1,28 @@
+name: Plugin Stream Deck
+
+on:
+  push:
+    branches: [main]
+    paths: ["streamdeck-plugin/**", "protocol/**", ".github/workflows/plugin.yml"]
+  pull_request:
+    paths: ["streamdeck-plugin/**", "protocol/**", ".github/workflows/plugin.yml"]
+
+# Le mod C# n'est pas construit ici : il référence les DLL du jeu, non redistribuables.
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: streamdeck-plugin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: streamdeck-plugin/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npx streamdeck validate com.teddyzeus.streamplug.sdPlugin --no-update-check
