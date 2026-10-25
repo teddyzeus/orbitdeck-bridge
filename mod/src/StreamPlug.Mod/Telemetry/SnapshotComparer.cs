@@ -12,8 +12,11 @@ namespace StreamPlug.Mod.Telemetry
         public const double SpeedThreshold = 0.05;
         public const float ThrottleThreshold = 0.005f;
 
-        /// <summary>Changement d'un état « discret » (statut, SAS, RCS, mode, poussée…) à signaler immédiatement.</summary>
-        public static bool HasDiscreteChange(TelemetrySnapshot previous, TelemetrySnapshot current)
+        /// <summary>
+        /// Changement d'un état « tout ou rien » (statut, véhicule, mode de vitesse, SAS, RCS).
+        /// Contrairement à la poussée, ces changements sont rares : ils sont toujours signalés immédiatement.
+        /// </summary>
+        public static bool HasModeChange(TelemetrySnapshot previous, TelemetrySnapshot current)
         {
             if (previous == null || current == null)
                 return !ReferenceEquals(previous, current);
@@ -23,8 +26,19 @@ namespace StreamPlug.Mod.Telemetry
                    || previous.SpeedMode != current.SpeedMode
                    || previous.SasEnabled != current.SasEnabled
                    || previous.SasMode != current.SasMode
-                   || previous.RcsEnabled != current.RcsEnabled
-                   || Math.Abs(previous.Throttle - current.Throttle) > ThrottleThreshold;
+                   || previous.RcsEnabled != current.RcsEnabled;
+        }
+
+        /// <summary>Changement d'un état discret : <see cref="HasModeChange"/> ou poussée au-delà du seuil.</summary>
+        public static bool HasDiscreteChange(TelemetrySnapshot previous, TelemetrySnapshot current)
+        {
+            if (HasModeChange(previous, current))
+                return true;
+
+            if (previous == null || current == null)
+                return false;
+
+            return Math.Abs(previous.Throttle - current.Throttle) > ThrottleThreshold;
         }
 
         /// <summary>Changement discret ou variation continue (altitude, vitesses) au-delà des seuils.</summary>

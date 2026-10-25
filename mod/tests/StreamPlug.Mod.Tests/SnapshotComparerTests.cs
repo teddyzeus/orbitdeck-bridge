@@ -119,6 +119,31 @@ public class SnapshotComparerTests
     }
 
     [Fact]
+    public void Throttle_alone_is_not_a_mode_change()
+    {
+        var next = new TelemetrySnapshot
+        {
+            Status = VesselStatus.Connected, VesselName = "Kerbal X", AltitudeSeaLevel = 1000, AltitudeSurface = 990,
+            SpeedSurface = 100, SpeedOrbital = 200, SpeedMode = SpeedMode.Surface, Throttle = 0.9f,
+            SasEnabled = true, SasMode = "StabilityAssist"
+        };
+        Assert.False(SnapshotComparer.HasModeChange(Base(), next));
+        Assert.True(SnapshotComparer.HasDiscreteChange(Base(), next));
+    }
+
+    [Fact]
+    public void Sas_toggle_is_a_mode_change()
+    {
+        var next = new TelemetrySnapshot
+        {
+            Status = VesselStatus.Connected, VesselName = "Kerbal X", AltitudeSeaLevel = 1000, AltitudeSurface = 990,
+            SpeedSurface = 100, SpeedOrbital = 200, SpeedMode = SpeedMode.Surface, Throttle = 0.5f,
+            SasEnabled = false, SasMode = "StabilityAssist"
+        };
+        Assert.True(SnapshotComparer.HasModeChange(Base(), next));
+    }
+
+    [Fact]
     public void Target_speed_appearing_is_a_change()
     {
         var withTarget = new TelemetrySnapshot

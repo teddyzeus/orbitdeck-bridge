@@ -77,11 +77,13 @@ namespace StreamPlug.Mod
             if (!SnapshotComparer.HasChanged(previous, next))
                 return;
 
-            var discrete = SnapshotComparer.HasDiscreteChange(previous, next);
+            // Seules les bascules (SAS, RCS, véhicule, mode…) sont journalisées immédiatement ;
+            // la poussée et les valeurs continues le sont au plus une fois par seconde.
+            var modeChange = SnapshotComparer.HasModeChange(previous, next);
             _latest = next;
             var sequence = System.Threading.Interlocked.Increment(ref _sequence);
 
-            if (Config.VerboseLogging && (discrete || now >= _nextVerboseLogTime))
+            if (Config.VerboseLogging && (modeChange || now >= _nextVerboseLogTime))
             {
                 _nextVerboseLogTime = now + VerboseLogIntervalSeconds;
                 Logger?.LogInfo(Describe(sequence, next));
