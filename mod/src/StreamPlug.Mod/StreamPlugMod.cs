@@ -2,6 +2,7 @@ using System.IO;
 using System.Reflection;
 using SpaceWarp2.API.Mods;
 using StreamPlug.Mod.Config;
+using StreamPlug.Mod.Server;
 using UnityEngine;
 
 namespace StreamPlug.Mod
@@ -26,6 +27,24 @@ namespace StreamPlug.Mod
             var bridge = _host.AddComponent<GameBridge>();
             bridge.Logger = SWLogger;
             bridge.Config = config;
+
+            var webSocket = new WsServer(
+                config.Port,
+                verbose: config.VerboseLogging,
+                logInfo: message => SWLogger.LogInfo($"[StreamPlug] {message}"),
+                logError: message => SWLogger.LogError($"[StreamPlug] {message}"));
+
+            var server = new StreamPlugServer(
+                webSocket,
+                bridge,
+                modVersion: Assembly.GetExecutingAssembly().GetName().Version.ToString(3),
+                gameVersion: Application.version,
+                logError: message => SWLogger.LogError($"[StreamPlug] {message}"));
+
+            if (server.Start())
+                bridge.Server = server;
+            else
+                SWLogger.LogError($"[StreamPlug] Le serveur n'a pas pu démarrer (port {config.Port}). Le mod continue sans Stream Deck.");
         }
     }
 }

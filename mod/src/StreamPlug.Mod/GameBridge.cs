@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using StreamPlug.Mod.Config;
+using StreamPlug.Mod.Server;
 using StreamPlug.Mod.Telemetry;
 using UnityEngine;
 using ILogger = ReduxLib.Logging.ILogger;
@@ -11,7 +12,7 @@ namespace StreamPlug.Mod
     /// Seul composant qui échantillonne le jeu. Tourne sur le thread principal Unity et publie
     /// le dernier <see cref="TelemetrySnapshot"/> pour les autres threads (serveur réseau, T3).
     /// </summary>
-    public class GameBridge : MonoBehaviour
+    public class GameBridge : MonoBehaviour, ITelemetrySource
     {
         private const float VerboseLogIntervalSeconds = 1f;
         private const float ErrorLogIntervalSeconds = 5f;
@@ -43,9 +44,18 @@ namespace StreamPlug.Mod
             _watcher = new GameEventWatcher();
         }
 
+        /// <summary>Serveur à arrêter proprement quand le jeu se ferme ou que le composant est détruit.</summary>
+        internal StreamPlugServer Server { get; set; }
+
         private void OnDestroy()
         {
             _watcher?.Dispose();
+            Server?.Stop();
+        }
+
+        private void OnApplicationQuit()
+        {
+            Server?.Stop();
         }
 
         private void Update()

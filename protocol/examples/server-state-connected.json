@@ -1,0 +1,13 @@
+{
+  "v": 1,
+  "type": "state",
+  "seq": 1042,
+  "status": "connected",
+  "gameState": "FlightView",
+  "vessel": { "name": "Kerbal X" },
+  "altitude": { "seaLevel": 12400.5, "surface": 12380.1 },
+  "speed": { "mode": "surface", "surface": 245.3, "orbital": 2300.1, "target": null },
+  "throttle": 0.5,
+  "sas": { "enabled": true, "mode": "StabilityAssist" },
+  "rcs": { "enabled": false }
+}

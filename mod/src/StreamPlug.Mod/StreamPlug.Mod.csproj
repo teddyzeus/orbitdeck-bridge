@@ -12,6 +12,10 @@
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="StreamPlug.Mod.Tests" />
+  </ItemGroup>
+
   <Target Name="CheckKsp2Dir" BeforeTargets="ResolveAssemblyReferences">
     <Error Condition="!Exists('$(Ksp2ManagedDir)\Assembly-CSharp.dll')"
            Text="Dossier du jeu introuvable : définir Ksp2Dir dans mod/Directory.Build.props.user ou la variable d'environnement KSP2_DIR (valeur actuelle : '$(Ksp2Dir)')." />

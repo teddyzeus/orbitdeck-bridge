@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "streamplug/server-message.schema.json",
+  "title": "Message serveur → client (protocole StreamPlug v1)",
+  "type": "object",
+  "required": ["v", "type"],
+  "properties": {
+    "v": { "const": 1 },
+    "type": { "enum": ["hello", "state", "ack", "error", "pong"] }
+  },
+  "oneOf": [
+    {
+      "title": "hello",
+      "properties": {
+        "type": { "const": "hello" },
+        "mod": { "type": "string" },
+        "game": { "type": "string" }
+      },
+      "required": ["v", "type", "mod", "game"]
+    },
+    {
+      "title": "state",
+      "properties": {
+        "type": { "const": "state" },
+        "seq": { "type": "integer", "minimum": 0 },
+        "status": { "enum": ["connected", "noVessel", "notControllable"] },
+        "gameState": { "type": ["string", "null"] },
+        "vessel": {
+          "type": "object",
+          "properties": { "name": { "type": ["string", "null"] } }
+        },
+        "altitude": {
+          "type": "object",
+          "properties": {
+            "seaLevel": { "type": ["number", "null"] },
+            "surface": { "type": ["number", "null"] }
+          }
+        },
+        "speed": {
+          "type": "object",
+          "properties": {
+            "mode": { "enum": ["surface", "orbit", "target"] },
+            "surface": { "type": ["number", "null"] },
+            "orbital": { "type": ["number", "null"] },
+            "target": { "type": ["number", "null"] }
+          }
+        },
+        "throttle": { "type": "number", "minimum": 0, "maximum": 1 },
+        "sas": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "mode": { "type": ["string", "null"] }
+          }
+        },
+        "rcs": {
+          "type": "object",
+          "properties": { "enabled": { "type": "boolean" } }
+        }
+      },
+      "required": ["v", "type", "seq", "status"]
+    },
+    {
+      "title": "ack",
+      "properties": {
+        "type": { "const": "ack" },
+        "id": { "type": "string" }
+      },
+      "required": ["v", "type", "id"]
+    },
+    {
+      "title": "error",
+      "properties": {
+        "type": { "const": "error" },
+        "id": { "type": "string" },
+        "code": { "enum": ["BAD_REQUEST", "UNKNOWN_COMMAND", "NO_VESSEL", "NOT_CONTROLLABLE", "REJECTED_BY_GAME", "INTERNAL"] },
+        "message": { "type": "string" }
+      },
+      "required": ["v", "type", "code", "message"]
+    },
+    {
+      "title": "pong",
+      "properties": { "type": { "const": "pong" } },
+      "required": ["v", "type"]
+    }
+  ]
+}

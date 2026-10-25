@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "streamplug/client-message.schema.json",
+  "title": "Message client → serveur (protocole StreamPlug v1)",
+  "type": "object",
+  "required": ["v", "type"],
+  "properties": {
+    "v": { "const": 1 },
+    "type": { "enum": ["command", "ping"] }
+  },
+  "oneOf": [
+    {
+      "title": "command",
+      "properties": {
+        "type": { "const": "command" },
+        "id": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "name": {
+          "enum": ["setThrottle", "adjustThrottle", "setSas", "toggleSas", "setRcs", "toggleRcs", "setSpeedMode"]
+        },
+        "args": { "type": "object" }
+      },
+      "required": ["v", "type", "id", "name"]
+    },
+    {
+      "title": "ping",
+      "properties": { "type": { "const": "ping" } },
+      "required": ["v", "type"]
+    }
+  ]
+}
