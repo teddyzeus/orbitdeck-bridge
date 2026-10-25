@@ -101,7 +101,7 @@ T0 ─► T1 ─► T2 ─► T3 ─► T4 ──────┐
 **Critère de fin** : toutes les commandes du MVP fonctionnent et le retour d'état est instantané.
 **Risques** : R4 (timewarp, SAS sans pilote). 🚦 **Validation** : liste des comportements limites documentée.
 
-## Étape T5 — Plugin Stream Deck : connexion et affichage (taille L)
+## Étape T5 — Plugin Stream Deck : connexion et affichage (taille L) ✅
 
 **Objectif** : afficher altitude, vitesse et état de connexion sur le Stream Deck.
 
@@ -113,7 +113,7 @@ T0 ─► T1 ─► T2 ─► T3 ─► T4 ──────┐
 | T5.4 | `rendering/` + `format/` | SVG de touche, unités (m/km/Mm, m/s/km/s), FR/EN |
 | T5.5 | Actions `altitude`, `speed`, `throttle-display`, `status` | Bascule mer↔surface (local), cycle de vitesse (commande `setSpeedMode`) |
 | T5.6 | Tests unitaires | Formatage, machine d'état, SVG |
-| T5.7 | 🧪 Test sur le Stream Deck | Avec le faux serveur puis avec le jeu |
+| T5.7 | 🧪 Test sur le Stream Deck | Avec le faux serveur puis avec le jeu ✅ |
 
 **Critère de fin** : altitude, vitesse et statut s'affichent en direct ; reconnexion automatique après redémarrage du jeu.
 🚦 **Validation** : lisibilité des touches validée par vous (taille, couleurs).
