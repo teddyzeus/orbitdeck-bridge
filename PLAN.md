@@ -83,7 +83,9 @@ T0 ─► T1 ─► T2 ─► T3 ─► T4 ──────┐
 **Critère de fin** : le client CLI reçoit des `state` en direct, sans impact visible sur les FPS, et le jeu se ferme proprement.
 🚦 **Validation** : décision R3 prise, protocole v1 gelé.
 
-## Étape T4 — Commandes (taille M)
+## Étape T4 — Commandes (taille M) ✅
+
+> Terminée et validée en jeu. Les commandes reproduisent les chemins et garde-fous de la saisie du jeu (décompilation en lecture seule) : poussée verrouillée pendant le timewarp et en EVA, niveaux de contrôle, `SetState` + groupe d'actions pour le RCS, SAS refusé sans contrôle. Valeurs hors bornes refusées (`BAD_REQUEST`), jamais corrigées ; `set*` idempotent ; file bornée à 64 ; réponse `ack` / `error` avec l'`id`. 198 tests.
 
 **Objectif** : piloter throttle, SAS, RCS depuis un client.
 
