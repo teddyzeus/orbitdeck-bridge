@@ -74,6 +74,34 @@ public sealed class OrbitDeckConfigTests : IDisposable
     }
 
     [Theory]
+    [InlineData("{ \"port\": \"9000\" }")]
+    [InlineData("{ \"port\": 9000.5 }")]
+    [InlineData("{ \"verboseLogging\": \"oui\" }")]
+    [InlineData("[1, 2]")]
+    public void Wrongly_typed_values_give_defaults_and_a_warning(string content)
+    {
+        File.WriteAllText(ConfigPath, content);
+
+        var config = OrbitDeckConfig.Load(ConfigPath, _warnings.Add);
+
+        Assert.Equal(18765, config.Port);
+        Assert.False(config.VerboseLogging);
+        Assert.Single(_warnings);
+    }
+
+    [Fact]
+    public void The_created_file_can_be_read_back()
+    {
+        OrbitDeckConfig.Load(ConfigPath, _warnings.Add);
+
+        var config = OrbitDeckConfig.Load(ConfigPath, _warnings.Add);
+
+        Assert.Equal(18765, config.Port);
+        Assert.Equal(10, config.SampleRateHz);
+        Assert.Empty(_warnings);
+    }
+
+    [Theory]
     [InlineData(0, 1)]
     [InlineData(500, 60)]
     public void Sample_rate_is_clamped(int value, int expected)

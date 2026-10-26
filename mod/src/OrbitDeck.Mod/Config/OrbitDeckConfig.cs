@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OrbitDeck.Mod.Config
 {
@@ -14,13 +15,10 @@ namespace OrbitDeck.Mod.Config
         public const int MinSampleRateHz = 1;
         public const int MaxSampleRateHz = 60;
 
-        [JsonProperty("port")]
         public int Port { get; set; } = 18765;
 
-        [JsonProperty("sampleRateHz")]
         public int SampleRateHz { get; set; } = 10;
 
-        [JsonProperty("verboseLogging")]
         public bool VerboseLogging { get; set; }
 
         /// <summary>
@@ -34,9 +32,9 @@ namespace OrbitDeck.Mod.Config
             try
             {
                 if (File.Exists(path))
-                    JsonConvert.PopulateObject(File.ReadAllText(path), config);
+                    config.Apply(JObject.Parse(File.ReadAllText(path)));
                 else
-                    File.WriteAllText(path, JsonConvert.SerializeObject(config, Formatting.Indented));
+                    File.WriteAllText(path, config.ToJson());
             }
             catch (Exception exception)
             {
@@ -46,6 +44,39 @@ namespace OrbitDeck.Mod.Config
 
             config.Clamp(warn);
             return config;
+        }
+
+        // Lecture par l'arbre JSON (JObject) et non par la sérialisation automatique (JsonConvert) : cette dernière
+        // charge System.Data, absent de KSP 1.
+        private void Apply(JObject json)
+        {
+            Port = ReadInt(json, "port", Port);
+            SampleRateHz = ReadInt(json, "sampleRateHz", SampleRateHz);
+            VerboseLogging = ReadBool(json, "verboseLogging", VerboseLogging);
+        }
+
+        private string ToJson() =>
+            new JObject { ["port"] = Port, ["sampleRateHz"] = SampleRateHz, ["verboseLogging"] = VerboseLogging }
+                .ToString(Formatting.Indented);
+
+        private static int ReadInt(JObject json, string name, int fallback)
+        {
+            var token = json[name];
+            if (token == null)
+                return fallback;
+            if (token.Type != JTokenType.Integer)
+                throw new FormatException($"« {name} » doit être un nombre entier.");
+            return checked((int)token.Value<long>());
+        }
+
+        private static bool ReadBool(JObject json, string name, bool fallback)
+        {
+            var token = json[name];
+            if (token == null)
+                return fallback;
+            if (token.Type != JTokenType.Boolean)
+                throw new FormatException($"« {name} » doit être vrai ou faux.");
+            return token.Value<bool>();
         }
 
         private void Clamp(Action<string> warn)
