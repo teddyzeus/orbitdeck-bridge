@@ -132,7 +132,7 @@ T0 ─► T1 ─► T2 ─► T3 ─► T4 ──────┐
 **Critère de fin** : tous les critères d'acceptation du MVP (SPECS.md §8) sont cochés. ✅
 🚦 **Validation** : recette signée par vous.
 
-## Étape T7 — Packaging et release (taille M)
+## Étape T7 — Packaging et release (taille M) ✅
 
 | # | Tâche | Détail |
 |---|-------|--------|
