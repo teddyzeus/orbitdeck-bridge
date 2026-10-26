@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using KSP.Game;
 using KSP.Messages;
 using KSP.Sim;
@@ -171,10 +172,35 @@ namespace OrbitDeck.Mod.Commands
             return CommandResult.Ok;
         }
 
-        // Le déclenchement d'étage passe, dans le jeu, par la gestion du lancement (séquence de pré-lancement, vol) :
-        // pas encore pris en charge pour KSP 2.
-        public CommandResult ActivateStage() =>
-            CommandResult.Rejected("Le déclenchement d'étage n'est pas encore pris en charge dans le mod pour KSP 2.");
+        // Dans le jeu, la touche d'étage ne déclenche rien directement : elle arme un indicateur du gestionnaire d'entrées,
+        // lu à l'image suivante par la gestion du lancement (séquence de pré-lancement, vol, accélération du temps).
+        // On appelle donc le même gestionnaire de touche (méthode privée « OnStage »), ce qui reproduit exactement la touche.
+        private static readonly MethodInfo OnStageMethod =
+            typeof(KSP.Sim.impl.FlightInputHandler).GetMethod("OnStage", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        public CommandResult ActivateStage()
+        {
+            if (!TryGetControllableVessel(out _, out var vessel, out var failure))
+                return failure;
+
+            if (!vessel.HasControlForEditingStagingStack())
+            {
+                vessel.NotifyInsufficientVesselControl();
+                return CommandResult.NotControllable("Contrôle insuffisant du véhicule pour déclencher un étage.");
+            }
+
+            var game = GameManager.Instance.Game;
+            var timeWarp = game.ViewController.TimeWarp;
+            if (timeWarp.IsWarping && !timeWarp.IsPhysicsTimeWarp && !game.ViewController.IsPaused)
+                return CommandResult.Rejected("Étage verrouillé pendant l'accélération du temps.");
+
+            var handler = game.ViewController.flightInputHandler;
+            if (handler == null || OnStageMethod == null)
+                return CommandResult.Rejected("Le déclenchement d'étage n'est pas disponible dans cette version du jeu.");
+
+            OnStageMethod.Invoke(handler, null);
+            return CommandResult.Ok;
+        }
 
         private static bool TryGetControllableVessel(out VesselVehicle vehicle, out VesselComponent vessel, out CommandResult failure)
         {
