@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using OrbitDeck.Mod.Commands;
 using GameSpeedMode = KSP.Sim.SpeedDisplayMode;
 
 namespace OrbitDeck.Mod.Telemetry
@@ -33,7 +36,8 @@ namespace OrbitDeck.Mod.Telemetry
                 GearEnabled = GroupState(vessel, KSP.Sim.KSPActionGroup.Gear),
                 StageCount = stageCount,
                 // Comme le bouton d'étage du jeu, grisé quand il ne reste qu'un étage.
-                StageExhausted = stageCount.HasValue ? stageCount.Value <= 1 : (bool?)null
+                StageExhausted = stageCount.HasValue ? stageCount.Value <= 1 : (bool?)null,
+                AvailableSasModes = AvailableSasModesOf(vessel)
             };
         }
 
@@ -42,6 +46,29 @@ namespace OrbitDeck.Mod.Telemetry
         {
             var state = vessel.GetActionGroupState(group);
             return state == KSP.Sim.KSPActionGroupState.None ? (bool?)null : state == KSP.Sim.KSPActionGroupState.True;
+        }
+
+        /// <summary>
+        /// Modes du SAS sélectionnables : les mêmes vérifications que la commande « setSasMode » (une cible pour les modes
+        /// cible, puis ce que le pilote automatique du jeu accepte : nœud de manœuvre, navball en mode orbite…).
+        /// </summary>
+        private static IReadOnlyList<SasModeKind> AvailableSasModesOf(KSP.Sim.impl.VesselComponent vessel)
+        {
+            var autopilot = vessel.Autopilot;
+            var available = new List<SasModeKind>();
+            if (autopilot == null)
+                return available;
+
+            foreach (SasModeKind mode in Enum.GetValues(typeof(SasModeKind)))
+            {
+                if ((mode == SasModeKind.Target || mode == SasModeKind.AntiTarget) && vessel.TargetObject == null)
+                    continue;
+
+                if (autopilot.CanSetMode(GameControls.ToGameMode(mode)))
+                    available.Add(mode);
+            }
+
+            return available;
         }
 
         /// <summary>Nombre d'étages restants du véhicule ; null s'il n'a pas de pile d'étagement lisible.</summary>

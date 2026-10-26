@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace System.Runtime.CompilerServices
 {
     // Permet les propriétés `init` sous netstandard2.1
@@ -101,5 +103,11 @@ namespace OrbitDeck.Mod.Telemetry
         /// KSP 1 : étage 0 atteint), d'où une information explicite plutôt que de laisser le client la déduire du compteur.
         /// </summary>
         public bool? StageExhausted { get; init; }
+
+        /// <summary>
+        /// Modes du SAS sélectionnables en ce moment (les autres sont grisés dans le jeu : pas de cible, pas de nœud de
+        /// manœuvre, navball hors mode orbite, SAS indisponible…). Liste vide : SAS inutilisable ; null : le jeu ne permet pas de le lire.
+        /// </summary>
+        public IReadOnlyList<SasModeKind> AvailableSasModes { get; init; }
     }
 }

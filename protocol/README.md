@@ -32,6 +32,8 @@ Reference (in French): [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 `gameState`: global game state (`FlightView`, `MainMenu`, `KerbalSpaceCenter`, `Loading`…), informational.
 `speed.mode`: `surface`, `orbit` or `target`; `speed.target` is `null` without a target.
 `sas.mode`: current SAS mode, one of `StabilityAssist`, `Prograde`, `Retrograde`, `Normal`, `Antinormal`, `RadialIn`, `RadialOut`, `Target`, `AntiTarget`, `Maneuver` (casing may differ between games: compare case-insensitively).
+
+`sas.available`: the SAS modes that can be selected right now, with the same names as the `setSasMode` command (`stabilityAssist`, `prograde`, …). A mode missing from the list is greyed in the game (no target selected, no maneuver node, navball not in orbit mode, SAS unusable on this vessel…) and `setSasMode` would be refused. An empty list means the SAS cannot be used at all. The field is **absent** with an older mod: a client then assumes every mode is selectable.
 `lights`, `brakes`, `gear`: objects `{ "enabled": boolean }`, **absent** when the game does not provide the information (a client must treat them as optional).
 
 `stage`: object `{ "count": integer, "exhausted": boolean }`, the number shown on the game's stage button and whether there is nothing left to fire (the button is greyed). `exhausted` is decided by the mod because the threshold depends on the game (KSP 2: one stage left; KSP 1: stage 0 reached) and may be absent: a client then treats `count <= 1` as exhausted. The whole object is **absent** when the vessel has no readable staging stack.

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace OrbitDeck.Mod.Telemetry
 {
@@ -31,7 +32,8 @@ namespace OrbitDeck.Mod.Telemetry
                    || previous.LightsEnabled != current.LightsEnabled
                    || previous.BrakesEnabled != current.BrakesEnabled
                    || previous.GearEnabled != current.GearEnabled
-                   || previous.StageCount != current.StageCount;
+                   || previous.StageCount != current.StageCount
+                   || !SameModes(previous.AvailableSasModes, current.AvailableSasModes);
         }
 
         /// <summary>Changement d'un état discret : <see cref="HasModeChange"/> ou poussée au-delà du seuil.</summary>
@@ -60,6 +62,22 @@ namespace OrbitDeck.Mod.Telemetry
                    || Differs(previous.SpeedSurface, current.SpeedSurface, SpeedThreshold)
                    || Differs(previous.SpeedOrbital, current.SpeedOrbital, SpeedThreshold)
                    || DiffersNullable(previous.SpeedTarget, current.SpeedTarget, SpeedThreshold);
+        }
+
+        private static bool SameModes(IReadOnlyList<SasModeKind> a, IReadOnlyList<SasModeKind> b)
+        {
+            if (ReferenceEquals(a, b))
+                return true;
+            if (a == null || b == null || a.Count != b.Count)
+                return false;
+
+            for (var i = 0; i < a.Count; i++)
+            {
+                if (a[i] != b[i])
+                    return false;
+            }
+
+            return true;
         }
 
         private static bool Differs(double a, double b, double threshold) => Math.Abs(a - b) > threshold;

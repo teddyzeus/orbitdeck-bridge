@@ -50,7 +50,11 @@
           "type": "object",
           "properties": {
             "enabled": { "type": "boolean" },
-            "mode": { "type": ["string", "null"] }
+            "mode": { "type": ["string", "null"] },
+            "available": {
+              "type": "array",
+              "items": { "enum": ["stabilityAssist", "prograde", "retrograde", "normal", "antinormal", "radialIn", "radialOut", "target", "antiTarget", "maneuver"] }
+            }
           }
         },
         "rcs": {
