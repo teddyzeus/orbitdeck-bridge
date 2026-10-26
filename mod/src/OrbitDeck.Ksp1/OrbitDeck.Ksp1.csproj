@@ -9,8 +9,8 @@
     <RootNamespace>OrbitDeck.Ksp1</RootNamespace>
     <Version>0.1.0</Version>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <!-- Les DLL du jeu ne sont jamais copiées dans la sortie -->
-    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <!-- Les DLL du jeu ne sont jamais copiées (Private=false) ; seule Newtonsoft.Json l'est -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <Target Name="CheckKsp1Dir" BeforeTargets="ResolveAssemblyReferences">
@@ -23,20 +23,30 @@
     <Reference Include="UnityEngine.CoreModule"><HintPath>$(Ksp1ManagedDir)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
 
-  <!-- Code commun avec le mod KSP 2 : types de télémétrie sans dépendance au jeu -->
+  <!-- Code commun avec le mod KSP 2 : tout ce qui ne dépend pas du jeu (serveur, protocole, commandes, télémétrie) -->
   <ItemGroup>
-    <Compile Include="..\OrbitDeck.Mod\Telemetry\TelemetrySnapshot.cs" Link="Shared\TelemetrySnapshot.cs" />
-    <Compile Include="..\OrbitDeck.Mod\Telemetry\IGameState.cs" Link="Shared\IGameState.cs" />
-    <Compile Include="..\OrbitDeck.Mod\Telemetry\SnapshotComparer.cs" Link="Shared\SnapshotComparer.cs" />
+    <Compile Include="..\OrbitDeck.Mod\Server\*.cs" Link="Shared\Server\%(Filename)%(Extension)" />
+    <Compile Include="..\OrbitDeck.Mod\Protocol\*.cs" Link="Shared\Protocol\%(Filename)%(Extension)" />
+    <Compile Include="..\OrbitDeck.Mod\Commands\GameCommand.cs;..\OrbitDeck.Mod\Commands\IGameControls.cs;..\OrbitDeck.Mod\Commands\CommandValidator.cs;..\OrbitDeck.Mod\Commands\CommandQueue.cs" Link="Shared\Commands\%(Filename)%(Extension)" />
+    <Compile Include="..\OrbitDeck.Mod\Config\OrbitDeckConfig.cs" Link="Shared\Config\%(Filename)%(Extension)" />
+    <Compile Include="..\OrbitDeck.Mod\Telemetry\TelemetrySnapshot.cs;..\OrbitDeck.Mod\Telemetry\IGameState.cs;..\OrbitDeck.Mod\Telemetry\ITelemetrySource.cs;..\OrbitDeck.Mod\Telemetry\SnapshotComparer.cs" Link="Shared\Telemetry\%(Filename)%(Extension)" />
   </ItemGroup>
 
-  <!-- Déploiement : copie la DLL dans <jeu>\GameData\OrbitDeck\Plugins\ -->
+  <!-- KSP 1 ne fournit pas Newtonsoft.Json : la DLL est livrée avec le mod -->
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <!-- Déploiement : copie les DLL dans <jeu>\GameData\OrbitDeck\Plugins\ -->
   <Target Name="DeployToKsp1" AfterTargets="Build" Condition="Exists('$(Ksp1Dir)')">
     <PropertyGroup>
       <ModDeployDir>$(Ksp1Dir)\GameData\OrbitDeck\Plugins</ModDeployDir>
     </PropertyGroup>
     <MakeDir Directories="$(ModDeployDir)" />
-    <Copy SourceFiles="$(OutputPath)OrbitDeck.Ksp1.dll" DestinationFolder="$(ModDeployDir)" />
+    <Copy SourceFiles="$(OutputPath)OrbitDeck.Ksp1.dll;$(OutputPath)Newtonsoft.Json.dll" DestinationFolder="$(ModDeployDir)" />
+    <!-- La configuration n'est copiée que si elle n'existe pas encore (ne jamais écraser les réglages de l'utilisateur) -->
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\..\..\package\orbitdeck-config.json" DestinationFolder="$(ModDeployDir)"
+          Condition="!Exists('$(ModDeployDir)\orbitdeck-config.json')" />
     <Message Importance="high" Text="OrbitDeck (KSP 1) déployé dans $(ModDeployDir)" />
   </Target>
 

@@ -1,77 +1,62 @@
-using System;
-using System.Globalization;
-using OrbitDeck.Mod.Telemetry;
+using System.IO;
+using System.Reflection;
+using OrbitDeck.Mod.Commands;
+using OrbitDeck.Mod.Config;
+using OrbitDeck.Mod.Server;
 using UnityEngine;
 
 namespace OrbitDeck.Ksp1
 {
     /// <summary>
-    /// Point d'entrée du mod, chargé une seule fois au démarrage du jeu. Étape K2 : échantillonne l'état du jeu
-    /// et l'écrit dans le journal (pas encore de serveur ni de commandes).
+    /// Point d'entrée du mod, chargé une seule fois au démarrage du jeu : lit la configuration, démarre le serveur
+    /// WebSocket local et crée le composant qui échantillonne le jeu.
     /// </summary>
     [KSPAddon(KSPAddon.Startup.Instantly, true)]
     public class OrbitDeckAddon : MonoBehaviour
     {
-        private const float SampleIntervalSeconds = 0.1f;
-        private const float HeartbeatLogSeconds = 2f;
-        private const float ErrorLogSeconds = 5f;
-
-        private readonly IGameState _gameState = new Ksp1GameState();
-        private TelemetrySnapshot _last;
-        private float _nextSample;
-        private float _nextLog;
-        private float _nextErrorLog;
-
         private void Awake()
         {
-            Log($"Mod chargé (v{typeof(OrbitDeckAddon).Assembly.GetName().Version}).");
+            var assembly = Assembly.GetExecutingAssembly();
+            var modFolder = Path.GetDirectoryName(assembly.Location);
+            var config = OrbitDeckConfig.Load(
+                Path.Combine(modFolder ?? ".", OrbitDeckConfig.FileName),
+                message => Debug.LogWarning($"[OrbitDeck] {message}"));
+
+            Log($"Mod chargé (v{assembly.GetName().Version.ToString(3)}, port {config.Port}, {config.SampleRateHz} Hz, logs détaillés : {config.VerboseLogging}).");
             Log($"Jeu : KSP {Versioning.GetVersionString()}, Unity {Application.unityVersion}.");
             DontDestroyOnLoad(gameObject);
-        }
 
-        private void Update()
-        {
-            var now = Time.unscaledTime;
-            if (now < _nextSample)
-                return;
-            _nextSample = now + SampleIntervalSeconds;
+            var bridge = gameObject.AddComponent<Ksp1Bridge>();
+            bridge.Config = config;
 
-            try
+            var webSocket = new WsServer(
+                config.Port,
+                verbose: config.VerboseLogging,
+                logInfo: Log,
+                logError: message => Debug.LogError($"[OrbitDeck] {message}"));
+
+            var commands = new CommandQueue(message => Debug.LogError($"[OrbitDeck] {message}"));
+            if (config.VerboseLogging)
             {
-                var snapshot = _gameState.Read();
-                var modeChange = SnapshotComparer.HasModeChange(_last, snapshot);
-                if (modeChange || (now >= _nextLog && SnapshotComparer.HasChanged(_last, snapshot)))
-                {
-                    _nextLog = now + HeartbeatLogSeconds;
-                    Log(Describe(snapshot));
-                    _last = snapshot;
-                }
+                commands.Processed = (pending, result) => Log(
+                    $"commande {pending.Id} {pending.Command.Kind} → "
+                    + (result.Success ? "ok" : $"{result.ErrorCode} ({result.Message})"));
             }
-            catch (Exception exception)
-            {
-                // Ne jamais laisser une exception sortir d'Update() : elle serait répétée à chaque image.
-                if (now >= _nextErrorLog)
-                {
-                    _nextErrorLog = now + ErrorLogSeconds;
-                    Debug.LogError($"[OrbitDeck] Erreur de lecture : {exception}");
-                }
-            }
-        }
 
-        private static string Describe(TelemetrySnapshot s)
-        {
-            if (s.Status == VesselStatus.NoVessel)
-                return $"AUCUN VÉHICULE (scène : {s.GameStateName ?? "?"})";
+            bridge.Commands = commands;
 
-            var inv = CultureInfo.InvariantCulture;
-            var vessel = FlightGlobals.ActiveVessel;
-            return string.Format(inv,
-                "{0} « {1} » | alt mer={2:F1} m sol(radar)={3:F1} m sol(terrain)={4:F1} m | vitesse({5}) sol={6:F1} orb={7:F1} cible={8} | gaz={9:P0} | SAS={10}({11}) | RCS={12}",
-                s.Status, s.VesselName, s.AltitudeSeaLevel, s.AltitudeSurface,
-                vessel != null ? vessel.heightFromTerrain : float.NaN,
-                s.SpeedMode, s.SpeedSurface, s.SpeedOrbital,
-                s.SpeedTarget.HasValue ? s.SpeedTarget.Value.ToString("F1", inv) : "-",
-                s.Throttle, s.SasEnabled ? "on" : "off", s.SasMode ?? "-", s.RcsEnabled ? "on" : "off");
+            var server = new OrbitDeckServer(
+                webSocket,
+                bridge,
+                commands,
+                modVersion: assembly.GetName().Version.ToString(3),
+                gameVersion: Versioning.GetVersionString(),
+                logError: message => Debug.LogError($"[OrbitDeck] {message}"));
+
+            if (server.Start())
+                bridge.Server = server;
+            else
+                Debug.LogError($"[OrbitDeck] Le serveur n'a pas pu démarrer (port {config.Port}). Le mod continue sans Stream Deck.");
         }
 
         internal static void Log(string message)
