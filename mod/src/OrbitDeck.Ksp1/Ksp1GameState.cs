@@ -1,3 +1,4 @@
+using System;
 using OrbitDeck.Mod.Telemetry;
 
 namespace OrbitDeck.Ksp1
@@ -15,6 +16,9 @@ namespace OrbitDeck.Ksp1
                 return TelemetrySnapshot.NoVesselIn(HighLogic.LoadedScene.ToString());
 
             var autopilot = vessel.Autopilot;
+            // « ActivateNextStage » déclenche l'étage currentStage - 1 : c'est le numéro du prochain étage (les étages de KSP 1
+            // vont jusqu'à 0, d'où le « - 1 »), celui qu'affiche la pile d'étagement.
+            var stageCount = Math.Max(0, vessel.currentStage - 1);
 
             return new TelemetrySnapshot
             {
@@ -33,7 +37,10 @@ namespace OrbitDeck.Ksp1
                 RcsEnabled = vessel.ActionGroups[KSPActionGroup.RCS],
                 LightsEnabled = vessel.ActionGroups[KSPActionGroup.Light],
                 BrakesEnabled = vessel.ActionGroups[KSPActionGroup.Brakes],
-                GearEnabled = vessel.ActionGroups[KSPActionGroup.Gear]
+                GearEnabled = vessel.ActionGroups[KSPActionGroup.Gear],
+                StageCount = stageCount,
+                // Sur KSP 1, l'étage 0 est le dernier : la touche ne se grise que lorsqu'il n'y en a plus.
+                StageExhausted = vessel.currentStage <= 0
             };
         }
 

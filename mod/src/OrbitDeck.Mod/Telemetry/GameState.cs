@@ -11,6 +11,7 @@ namespace OrbitDeck.Mod.Telemetry
                 return TelemetrySnapshot.NoVesselIn(gameStateName);
 
             var autopilot = vessel.Autopilot;
+            var stageCount = StageCountOf(vessel);
 
             return new TelemetrySnapshot
             {
@@ -29,7 +30,10 @@ namespace OrbitDeck.Mod.Telemetry
                 RcsEnabled = vessel.IsRCSEnabled,
                 LightsEnabled = GroupState(vessel, KSP.Sim.KSPActionGroup.Lights),
                 BrakesEnabled = GroupState(vessel, KSP.Sim.KSPActionGroup.Brakes),
-                GearEnabled = GroupState(vessel, KSP.Sim.KSPActionGroup.Gear)
+                GearEnabled = GroupState(vessel, KSP.Sim.KSPActionGroup.Gear),
+                StageCount = stageCount,
+                // Comme le bouton d'étage du jeu, grisé quand il ne reste qu'un étage.
+                StageExhausted = stageCount.HasValue ? stageCount.Value <= 1 : (bool?)null
             };
         }
 
@@ -38,6 +42,13 @@ namespace OrbitDeck.Mod.Telemetry
         {
             var state = vessel.GetActionGroupState(group);
             return state == KSP.Sim.KSPActionGroupState.None ? (bool?)null : state == KSP.Sim.KSPActionGroupState.True;
+        }
+
+        /// <summary>Nombre d'étages restants du véhicule ; null s'il n'a pas de pile d'étagement lisible.</summary>
+        private static int? StageCountOf(KSP.Sim.impl.VesselComponent vessel)
+        {
+            var staging = vessel.SimulationObject?.Staging;
+            return staging != null && staging.HaveStages ? staging.StageCount : (int?)null;
         }
 
         private static SpeedMode ToSpeedMode(GameSpeedMode mode)

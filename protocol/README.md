@@ -23,7 +23,7 @@ Reference (in French): [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 | `type` | Content | Schema |
 |--------|---------|--------|
 | `hello` | `mod` (mod version), `game` (game version) | [server-message.schema.json](schema/server-message.schema.json) |
-| `state` | `seq`, `status`, `gameState`, `vessel`, `altitude`, `speed`, `throttle`, `sas`, `rcs`, `lights`, `brakes`, `gear` | same |
+| `state` | `seq`, `status`, `gameState`, `vessel`, `altitude`, `speed`, `throttle`, `sas`, `rcs`, `lights`, `brakes`, `gear`, `stage` | same |
 | `ack` | `id` of the accepted command | same |
 | `error` | `id` (optional), `code`, `message` | same |
 | `pong` | — | same |
@@ -33,6 +33,8 @@ Reference (in French): [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 `speed.mode`: `surface`, `orbit` or `target`; `speed.target` is `null` without a target.
 `sas.mode`: current SAS mode, one of `StabilityAssist`, `Prograde`, `Retrograde`, `Normal`, `Antinormal`, `RadialIn`, `RadialOut`, `Target`, `AntiTarget`, `Maneuver` (casing may differ between games: compare case-insensitively).
 `lights`, `brakes`, `gear`: objects `{ "enabled": boolean }`, **absent** when the game does not provide the information (a client must treat them as optional).
+
+`stage`: object `{ "count": integer, "exhausted": boolean }`, the number shown on the game's stage button and whether there is nothing left to fire (the button is greyed). `exhausted` is decided by the mod because the threshold depends on the game (KSP 2: one stage left; KSP 1: stage 0 reached) and may be absent: a client then treats `count <= 1` as exhausted. The whole object is **absent** when the vessel has no readable staging stack.
 
 An unavailable SAS mode (target, maneuver node or orbit-mode navball required) is refused with `REJECTED_BY_GAME`.
 
