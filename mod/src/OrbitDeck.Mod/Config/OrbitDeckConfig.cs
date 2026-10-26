@@ -15,7 +15,7 @@ namespace OrbitDeck.Mod.Config
         public const int MaxSampleRateHz = 60;
 
         [JsonProperty("port")]
-        public int Port { get; set; } = 8765;
+        public int Port { get; set; } = 18765;
 
         [JsonProperty("sampleRateHz")]
         public int SampleRateHz { get; set; } = 10;

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Faux serveur OrbitDeck : imite le mod (protocole v1) pour développer le plugin Stream Deck sans lancer le jeu.
 //
-//   node fake-server.mjs                       vol simulé sur le port 8765
+//   node fake-server.mjs                       vol simulé sur le port 18765
 //   node fake-server.mjs --port 9000
 //   node fake-server.mjs --scenario menu       reste dans le menu (aucun véhicule)
 //   node fake-server.mjs --scenario cycle      alterne menu → vol → véhicule non contrôlable
@@ -17,7 +17,7 @@ const option = (name) => {
   return index >= 0 ? args[index + 1] : undefined;
 };
 
-const port = Number(option('--port') ?? 8765);
+const port = Number(option('--port') ?? 18765);
 const scenario = option('--scenario') ?? 'flight';
 const MIN_INTERVAL_MS = 100;
 const HEARTBEAT_MS = 1000;

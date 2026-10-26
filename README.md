@@ -1,6 +1,6 @@
 # OrbitDeck Bridge
 
-Mod gratuit et open source (licence MIT) qui expose en local les données de **Kerbal Space Program 2 (KSP 2 Redux)** et reçoit des commandes, par WebSocket sur `127.0.0.1:8765`. Il alimente le plugin Stream Deck **OrbitDeck**, mais le protocole est documenté et ouvert : vous pouvez écrire votre propre client.
+Mod gratuit et open source (licence MIT) qui expose en local les données de **Kerbal Space Program 2 (KSP 2 Redux)** et reçoit des commandes, par WebSocket sur `127.0.0.1:18765`. Il alimente le plugin Stream Deck **OrbitDeck**, mais le protocole est documenté et ouvert : vous pouvez écrire votre propre client.
 
 > Statut : version 0.2.0. **[Télécharger la dernière version](https://github.com/teddyzeus/orbitdeck-bridge/releases/latest)**, puis suivre [docs/installation.md](docs/installation.md).
 

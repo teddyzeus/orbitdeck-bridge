@@ -57,6 +57,24 @@ namespace OrbitDeck.Mod.Server
         public event Action<IWsClient, string> MessageReceived;
 
         /// <summary>Démarre l'écoute. Retourne false (sans lever d'exception) si le port est indisponible.</summary>
+        /// <summary>
+        /// Explique les deux causes habituelles d'un port inutilisable : déjà pris par un autre programme, ou réservé par Windows
+        /// (plages d'exclusion de Hyper-V, WSL, Docker…), qui se traduit par « accès interdit ».
+        /// </summary>
+        internal static string DescribeBindFailure(SocketException exception)
+        {
+            switch (exception.SocketErrorCode)
+            {
+                case SocketError.AccessDenied:
+                    return " Le port est probablement réservé par Windows (voir « netsh interface ipv4 show excludedportrange protocol=tcp »)"
+                           + " : choisissez un autre port dans orbitdeck-config.json et dans le plugin.";
+                case SocketError.AddressAlreadyInUse:
+                    return " Le port est déjà utilisé (un autre jeu OrbitDeck ouvert ?) : fermez-le ou choisissez un autre port dans orbitdeck-config.json.";
+                default:
+                    return string.Empty;
+            }
+        }
+
         public bool Start()
         {
             if (_listener != null)
@@ -71,7 +89,7 @@ namespace OrbitDeck.Mod.Server
             }
             catch (SocketException exception)
             {
-                LogError($"Impossible d'ouvrir le port {_requestedPort} : {exception.Message}");
+                LogError($"Impossible d'ouvrir le port {_requestedPort} : {exception.Message}{DescribeBindFailure(exception)}");
                 return false;
             }
 

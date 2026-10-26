@@ -18,13 +18,13 @@ Pour afficher les données sur un Stream Deck, il faut aussi le plugin **OrbitDe
     orbitdeck-config.json
 ```
 
-5. Lancez le jeu. Dans son journal (`%USERPROFILE%\AppData\LocalLow\Intercept Games\Kerbal Space Program 2\Player.log`), cherchez la ligne `[OrbitDeck] Serveur WebSocket à l'écoute sur ws://127.0.0.1:8765/`.
+5. Lancez le jeu. Dans son journal (`%USERPROFILE%\AppData\LocalLow\Intercept Games\Kerbal Space Program 2\Player.log`), cherchez la ligne `[OrbitDeck] Serveur WebSocket à l'écoute sur ws://127.0.0.1:18765/`.
 
 Le mod n'écoute que sur votre machine (`127.0.0.1`) : rien n'est exposé sur le réseau.
 
 ## Réglages (`orbitdeck-config.json`)
 
-- `port` : port d'écoute (8765 par défaut). Indiquez le même port dans le plugin.
+- `port` : port d'écoute (18765 par défaut). Indiquez le même port dans le plugin.
 - `sampleRateHz` : fréquence d'envoi des états (10 par défaut).
 - `verboseLogging` : `true` pour un journal détaillé en cas de problème.
 
@@ -36,7 +36,15 @@ Fermez le jeu, remplacez le contenu de `mods\orbitdeck\` (gardez votre `orbitdec
 
 ## Si vous aviez StreamPlug (versions 0.1.x)
 
-Le mod s'appelait StreamPlug. Supprimez le dossier `mods\streamplug\` avant d'installer OrbitDeck Bridge, sinon les deux se disputent le port 8765.
+Le mod s'appelait StreamPlug. Supprimez le dossier `mods\streamplug\` avant d'installer OrbitDeck Bridge, sinon les deux se disputent le port 18765.
+
+## Dépannage
+
+| Symptôme | Piste |
+|----------|-------|
+| Le journal dit « Impossible d'ouvrir le port 18765 : … accès … interdite » | Windows a réservé ce port (Hyper-V, WSL, Docker : les plages changent après un redémarrage ou une mise à jour). Vérifiez avec `netsh interface ipv4 show excludedportrange protocol=tcp`, puis choisissez un port hors de ces plages (par exemple 24765) dans `orbitdeck-config.json` **et** dans le plugin. |
+| Le journal dit que le port est déjà utilisé | Un autre programme, ou un autre jeu avec le mod, utilise le même port. Fermez-le ou changez le port. |
+| Pas de ligne `[OrbitDeck]` dans le journal | Le mod n'est pas chargé : vérifiez que le dossier est bien `mods\orbitdeck\` (KSP 2) et qu'il contient les trois fichiers. |
 
 ## Désinstallation
 

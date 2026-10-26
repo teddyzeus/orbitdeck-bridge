@@ -21,7 +21,7 @@ const option = (name) => {
   return index >= 0 ? args[index + 1] : undefined;
 };
 
-const port = Number(option('--port') ?? 8765);
+const port = Number(option('--port') ?? 18765);
 const raw = args.includes('--raw');
 const showAll = args.includes('--all');
 const once = args.includes('--once');

@@ -135,7 +135,7 @@ Chaque commande reçoit une réponse `ack` ou `error` (voir §6). Les commandes 
 🔶 Points à tester en jeu : le throttle est-il bien appliqué quand le joueur ne touche pas aux commandes ? Le verrouillage pendant le timewarp (`VesselThrottleLockedDueToTimewarpingMessage`) bloque-t-il `SetMainThrottle` ? `SetAutopilotEnableDisable(true)` active-t-il le mode précédent ?
 
 ### 4.7 Serveur WebSocket (🔶)
-- **Liaison** : `127.0.0.1` uniquement, port par défaut **`8765`**, configurable.
+- **Liaison** : `127.0.0.1` uniquement, port par défaut **`18765`**, configurable.
 - **Implémentation proposée** : serveur minimal maison (RFC 6455, frames texte uniquement, ping/pong, close) sur `System.Net.Sockets.TcpListener`, ~300 lignes, **sans dépendance** à embarquer. Justification : aucune bibliothèque WebSocket n'est fournie par le jeu, et le support serveur WebSocket de `HttpListener` sous Mono est incertain. Alternative : embarquer une bibliothèque légère dans `lib/` (à évaluer : compatibilité netstandard et licence).
 - **Sécurité** : en plus de la liaison locale, vérifier l'en-tête `Origin` à l'ouverture (refuser les origines de navigateur ; le plugin Node n'en envoie pas) et limiter la taille des messages (ex. 4 Ko). Pas d'authentification pour le MVP (risque accepté : usage local).
 - **Clients multiples** : autorisés (ex. le plugin + un outil de debug) ; chaque client reçoit l'état courant à la connexion.
@@ -287,7 +287,7 @@ Pour rendre le mod testable : l'accès à l'API du jeu est caché derrière une 
 | R6 | Dépendance à la version de Node du logiciel Stream Deck | Utiliser le SDK officiel et la CLI qui fixent la version |
 | R7 | Dossier `mods` « introuvable » signalé dans un ancien log | Vérifier au premier démarrage que le mod est bien chargé (log `[OrbitDeck]`) |
 | Q1 | ~~Altitude par défaut~~ | **Tranché** : bascule par appui entre surface et niveau de la mer ; surface par défaut |
-| Q2 | ~~Port par défaut 8765~~ | **Tranché** : validé |
+| Q2 | ~~Port par défaut 18765~~ | **Tranché** : validé |
 | Q3 | ~~Identifiant du plugin `com.teddyzeus.orbitdeck`~~ | **Tranché** : validé |
 
 ## 12. Plan de réalisation (technique)

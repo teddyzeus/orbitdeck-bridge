@@ -18,7 +18,7 @@ public sealed class OrbitDeckConfigTests : IDisposable
     {
         var config = OrbitDeckConfig.Load(ConfigPath, _warnings.Add);
 
-        Assert.Equal(8765, config.Port);
+        Assert.Equal(18765, config.Port);
         Assert.Equal(10, config.SampleRateHz);
         Assert.False(config.VerboseLogging);
         Assert.True(File.Exists(ConfigPath));
@@ -56,7 +56,7 @@ public sealed class OrbitDeckConfigTests : IDisposable
 
         var config = OrbitDeckConfig.Load(ConfigPath, _warnings.Add);
 
-        Assert.Equal(8765, config.Port);
+        Assert.Equal(18765, config.Port);
         Assert.Single(_warnings);
     }
 

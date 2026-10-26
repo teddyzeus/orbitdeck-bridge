@@ -6,7 +6,7 @@
     <Nullable>disable</Nullable>
     <AssemblyName>OrbitDeck.Mod</AssemblyName>
     <RootNamespace>OrbitDeck.Mod</RootNamespace>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <!-- Les DLL du jeu ne sont jamais copiées dans la sortie -->
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
