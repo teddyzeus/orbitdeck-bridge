@@ -55,14 +55,26 @@ namespace OrbitDeck.Mod
         /// <summary>Remplace l'exécuteur de commandes (tests).</summary>
         internal IGameControls Controls { get; set; } = new GameControls();
 
+        /// <summary>
+        /// Appelé quand le jeu détruit ce composant alors qu'il continue de tourner (par exemple au retour au menu
+        /// principal, à la fin de « Game Shutdown ») : le serveur est alors arrêté, et le mod doit le relancer.
+        /// </summary>
+        internal Action HostDestroyed { get; set; }
+
+        private bool _quitting;
+
         private void OnDestroy()
         {
             _watcher?.Dispose();
             Server?.Stop();
+
+            if (!_quitting)
+                HostDestroyed?.Invoke();
         }
 
         private void OnApplicationQuit()
         {
+            _quitting = true;
             Server?.Stop();
         }
 
@@ -133,7 +145,7 @@ namespace OrbitDeck.Mod
 
             return string.Format(
                 culture,
-                "[OrbitDeck] #{0} {1} '{2}' (état du jeu : " + (s.GameStateName ?? "?") + ") | alt mer={3:F1} surface={4:F1} m | vitesse sol={5:F1} orbite={6:F1} cible={7} (affichée: {8}) m/s | poussée={9:P0} | SAS={10} ({11}) | RCS={12}",
+                "[OrbitDeck] #{0} {1} '{2}' (état du jeu : " + (s.GameStateName ?? "?") + ") | alt mer={3:F1} surface={4:F1} m | vitesse sol={5:F1} orbite={6:F1} cible={7} (affichée: {8}) m/s | poussée={9:P0} | SAS={10} ({11}) | RCS={12} | étages={13}",
                 sequence,
                 s.Status,
                 s.VesselName,
@@ -146,7 +158,8 @@ namespace OrbitDeck.Mod
                 s.Throttle,
                 s.SasEnabled ? "on" : "off",
                 s.SasMode ?? "-",
-                s.RcsEnabled ? "on" : "off");
+                s.RcsEnabled ? "on" : "off",
+                s.StageCount.HasValue ? s.StageCount.Value.ToString(culture) : "-");
         }
     }
 }

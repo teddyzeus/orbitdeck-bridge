@@ -68,6 +68,10 @@
         "gear": {
           "type": "object",
           "properties": { "enabled": { "type": "boolean" } }
+        },
+        "stage": {
+          "type": "object",
+          "properties": { "count": { "type": "integer", "minimum": 0 }, "exhausted": { "type": "boolean" } }
         }
       },
       "required": ["v", "type", "seq", "status"]

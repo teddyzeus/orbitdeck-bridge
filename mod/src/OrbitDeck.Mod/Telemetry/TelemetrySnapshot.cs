@@ -92,5 +92,14 @@ namespace OrbitDeck.Mod.Telemetry
 
         /// <summary>Train d'atterrissage sorti ; null si le jeu ne permet pas de le lire.</summary>
         public bool? GearEnabled { get; init; }
+
+        /// <summary>Nombre d'étages restants (celui qu'affiche le bouton d'étage du jeu) ; null si le jeu ne permet pas de le lire.</summary>
+        public int? StageCount { get; init; }
+
+        /// <summary>
+        /// Plus rien à déclencher : le bouton d'étage du jeu est grisé. Le seuil dépend du jeu (KSP 2 : un étage restant,
+        /// KSP 1 : étage 0 atteint), d'où une information explicite plutôt que de laisser le client la déduire du compteur.
+        /// </summary>
+        public bool? StageExhausted { get; init; }
     }
 }

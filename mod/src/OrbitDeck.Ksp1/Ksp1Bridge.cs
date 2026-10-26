@@ -110,7 +110,7 @@ namespace OrbitDeck.Ksp1
 
             return string.Format(
                 culture,
-                "#{0} {1} « {2} » | alt mer={3:F1} sol={4:F1} m | vitesse sol={5:F1} orbite={6:F1} cible={7} (affichée : {8}) m/s | poussée={9:P0} | SAS={10} ({11}) | RCS={12}",
+                "#{0} {1} « {2} » | alt mer={3:F1} sol={4:F1} m | vitesse sol={5:F1} orbite={6:F1} cible={7} (affichée : {8}) m/s | poussée={9:P0} | SAS={10} ({11}) | RCS={12} | étages={13}",
                 sequence,
                 s.Status,
                 s.VesselName,
@@ -123,7 +123,8 @@ namespace OrbitDeck.Ksp1
                 s.Throttle,
                 s.SasEnabled ? "on" : "off",
                 s.SasMode ?? "-",
-                s.RcsEnabled ? "on" : "off");
+                s.RcsEnabled ? "on" : "off",
+                s.StageCount.HasValue ? s.StageCount.Value.ToString(culture) : "-");
         }
     }
 }

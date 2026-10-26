@@ -2,7 +2,7 @@
 
 Free, open-source mod (MIT license) for **Kerbal Space Program 1** and **Kerbal Space Program 2 (Redux)**. It exposes game data locally and receives commands over WebSocket on `127.0.0.1:18765`. It powers the **OrbitDeck** Stream Deck plugin, but the protocol is documented and open: you can write your own client.
 
-> Status: version 0.4.0. **[Download the latest release](https://github.com/teddyzeus/orbitdeck-bridge/releases/latest)**, then follow [docs/installation.md](docs/installation.md).
+> Status: version 0.4.1. **[Download the latest release](https://github.com/teddyzeus/orbitdeck-bridge/releases/latest)**, then follow [docs/installation.md](docs/installation.md).
 
 ## What the mod provides
 

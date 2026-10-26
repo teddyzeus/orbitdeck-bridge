@@ -67,6 +67,13 @@ namespace OrbitDeck.Mod.Protocol
                     message["brakes"] = new JObject { ["enabled"] = snapshot.BrakesEnabled.Value };
                 if (snapshot.GearEnabled.HasValue)
                     message["gear"] = new JObject { ["enabled"] = snapshot.GearEnabled.Value };
+                if (snapshot.StageCount.HasValue)
+                {
+                    var stage = new JObject { ["count"] = snapshot.StageCount.Value };
+                    if (snapshot.StageExhausted.HasValue)
+                        stage["exhausted"] = snapshot.StageExhausted.Value;
+                    message["stage"] = stage;
+                }
             }
 
             return Serialize(message);
