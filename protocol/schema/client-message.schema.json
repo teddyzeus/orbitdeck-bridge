@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "streamplug/client-message.schema.json",
-  "title": "Message client → serveur (protocole StreamPlug v1)",
+  "$id": "orbitdeck/client-message.schema.json",
+  "title": "Message client → serveur (protocole OrbitDeck v1)",
   "type": "object",
   "required": ["v", "type"],
   "properties": {

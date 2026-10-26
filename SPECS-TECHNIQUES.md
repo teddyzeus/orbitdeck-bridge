@@ -1,6 +1,6 @@
-# StreamPlug — Spécifications techniques
+# OrbitDeck — Spécifications techniques
 
-> Statut : **brouillon v0.1** — découle de [SPECS.md](SPECS.md) (fonctionnel). Les éléments marqués ✅ ont été vérifiés sur l'installation réelle (KSP 2 Redux v0.2.8.5.103184-beta) ; ceux marqués 🔶 sont des choix proposés ou des points à valider par un test.
+> Statut : **brouillon v0.1** — découle des spécifications fonctionnelles (dépôt privé du plugin). Les éléments marqués ✅ ont été vérifiés sur l'installation réelle (KSP 2 Redux v0.2.8.5.103184-beta) ; ceux marqués 🔶 sont des choix proposés ou des points à valider par un test.
 
 ## 1. Périmètre technique du MVP
 
@@ -21,7 +21,7 @@ Cible : Windows 10/11, Stream Deck 15 touches, KSP 2 Redux v0.2.8.5.103184-beta.
 ┌─────────────────────────────┐              ┌──────────────────────────────┐
 │ KSP 2 Redux (Unity / Mono)  │              │ Logiciel Stream Deck (Elgato)│
 │ ┌─────────────────────────┐ │  WebSocket   │ ┌──────────────────────────┐ │
-│ │ Mod StreamPlug (DLL)    │◄├──────────────┤►│ Plugin StreamPlug (Node) │ │
+│ │ Mod OrbitDeck (DLL)    │◄├──────────────┤►│ Plugin OrbitDeck (Node) │ │
 │ │ - Collecte (thread Unity)│ │ 127.0.0.1    │ │ - Client WebSocket       │ │
 │ │ - Serveur WebSocket     │ │ JSON v1      │ │ - Actions / rendu touches│ │
 │ │ - Exécution commandes   │ │              │ │ - Property Inspector     │ │
@@ -36,34 +36,34 @@ Cible : Windows 10/11, Stream Deck 15 touches, KSP 2 Redux v0.2.8.5.103184-beta.
 ## 3. Structure du dépôt (🔶)
 
 ```
-StreamPlug/
+OrbitDeck/
 ├── SPECS.md
 ├── SPECS-TECHNIQUES.md
 ├── README.md
 ├── protocol/                 # définition du protocole (JSON Schema + exemples)
 ├── mod/                      # mod KSP 2 (C#)
-│   ├── StreamPlug.Mod.sln
-│   ├── src/StreamPlug.Mod/
-│   │   ├── StreamPlugMod.cs          # point d'entrée (GeneralMod)
+│   ├── OrbitDeck.Mod.sln
+│   ├── src/OrbitDeck.Mod/
+│   │   ├── OrbitDeckMod.cs          # point d'entrée (GeneralMod)
 │   │   ├── Telemetry/                # lecture de l'état du jeu
 │   │   ├── Commands/                 # exécution des commandes
 │   │   ├── Server/                   # serveur WebSocket + sessions
 │   │   └── Protocol/                 # DTO et sérialisation
-│   ├── tests/StreamPlug.Mod.Tests/   # tests unitaires (sans jeu)
+│   ├── tests/OrbitDeck.Mod.Tests/   # tests unitaires (sans jeu)
 │   └── package/swinfo.json
 └── streamdeck-plugin/        # plugin Stream Deck (TypeScript)
     ├── package.json
     ├── src/ (plugin.ts, actions/, connection/, rendering/)
     ├── ui/ (Property Inspector HTML/JS)
     ├── imgs/
-    └── com.teddyzeus.streamplug.sdPlugin/manifest.json
+    └── com.teddyzeus.orbitdeck.sdPlugin/manifest.json
 ```
 
 ## 4. Mod KSP 2
 
 ### 4.1 Environnement ✅
 - **Chargeur** : celui de Redux (basé sur SpaceWarp 2), pas de BepInEx.
-- **Dossier d'installation du mod** : `<dossier du jeu>\mods\streamplug\` (chemin relatif `./mods`, scanné récursivement). Exemple local : `E:\SteamLibrary\steamapps\common\Kerbal Space Program 2\mods\`.
+- **Dossier d'installation du mod** : `<dossier du jeu>\mods\orbitdeck\` (chemin relatif `./mods`, scanné récursivement). Exemple local : `E:\SteamLibrary\steamapps\common\Kerbal Space Program 2\mods\`.
 - **Manifeste** `swinfo.json` avec `spec` ≥ 1.3, sinon le mod est ignoré. `main_assembly` désigne la DLL principale ; les DLL annexes vont dans `lib/`.
 - **Classe d'entrée** : hérite de `SpaceWarp2.API.Mods.GeneralMod` (dans `SpaceWarp2.dll`). Callbacks disponibles : `OnPreInitialized`, `OnInitialized`, `OnPostInitialized`. `OnCampaignLoaded` / `OnCampaignUnloading` sont **absents** de cette version : ne pas les utiliser.
 - **Runtime** : Mono (Unity), assemblies du jeu en `netstandard` / mscorlib 4.x.
@@ -73,20 +73,20 @@ StreamPlug/
 - Bibliothèque de classes ciblant **`netstandard2.1`** (ou `net48` si une incompatibilité apparaît au chargement) ; langage C# 9 maximum pour rester compatible Unity/Mono.
 - Références **directes aux DLL du jeu** (`Assembly-CSharp.dll`, `SpaceWarp2.dll`, `UnityEngine.CoreModule.dll`, `Newtonsoft.Json.dll`), jamais copiées dans l'artefact (`Private=false`).
 - Chemin du jeu fourni par une propriété MSBuild `Ksp2Dir` (fichier `Directory.Build.props.user`, non versionné) ; valeur par défaut : variable d'environnement `KSP2_DIR`.
-- Cible de build post-compilation : copie de la DLL et de `swinfo.json` dans `$(Ksp2Dir)\mods\streamplug\`.
+- Cible de build post-compilation : copie de la DLL et de `swinfo.json` dans `$(Ksp2Dir)\mods\orbitdeck\`.
 - Si les types du jeu sont `internal`, utiliser le référencement des assemblies « publicisées » (outil de type BepInEx.AssemblyPublicizer) ; à confirmer au premier build.
 
 ### 4.3 Composants
 
 | Composant | Responsabilité |
 |-----------|----------------|
-| `StreamPlugMod` | Point d'entrée ; crée un `GameObject` persistant portant le `MonoBehaviour` de pompe ; démarre / arrête le serveur ; lit la configuration |
+| `OrbitDeckMod` | Point d'entrée ; crée un `GameObject` persistant portant le `MonoBehaviour` de pompe ; démarre / arrête le serveur ; lit la configuration |
 | `GameBridge` (`MonoBehaviour`) | Seul code qui touche l'API du jeu. `Update()` : échantillonne la télémétrie à la fréquence configurée ; vide la file de commandes |
 | `TelemetrySnapshot` | Structure immuable : altitude, vitesse (3 types), throttle, SAS, RCS, état du véhicule |
 | `CommandQueue` | File thread-safe (`ConcurrentQueue`) entre le thread réseau et le thread Unity |
 | `WsServer` | Serveur WebSocket local, gère plusieurs clients, diffuse les snapshots |
 | `ProtocolCodec` | (Dé)sérialisation JSON (Newtonsoft) et validation des messages entrants |
-| `StreamPlugConfig` | Port, fréquence, activation des logs verbeux (fichier `streamplug-config.json`) |
+| `OrbitDeckConfig` | Port, fréquence, activation des logs verbeux (fichier `orbitdeck-config.json`) |
 
 ### 4.4 Règles de threading (critique)
 1. **Tout accès à l'API du jeu se fait sur le thread principal Unity** (dans `GameBridge.Update`).
@@ -142,8 +142,8 @@ Chaque commande reçoit une réponse `ack` ou `error` (voir §6). Les commandes 
 - **Arrêt propre** : le serveur est arrêté à la fermeture du jeu / au déchargement du mod ; aucun thread de premier plan ne doit empêcher la fermeture du processus.
 
 ### 4.8 Journalisation et configuration
-- Logs via `SWLogger` (visibles dans `Ksp2.log`), préfixe `[StreamPlug]`. Niveau verbeux activable par configuration.
-- Fichier de configuration `streamplug-config.json` dans le dossier du mod : `port`, `sampleRateHz`, `verboseLogging`.
+- Logs via `SWLogger` (visibles dans `Ksp2.log`), préfixe `[OrbitDeck]`. Niveau verbeux activable par configuration.
+- Fichier de configuration `orbitdeck-config.json` dans le dossier du mod : `port`, `sampleRateHz`, `verboseLogging`.
 
 ## 5. Plugin Stream Deck
 
@@ -152,7 +152,7 @@ Chaque commande reçoit une réponse `ack` ou `error` (voir §6). Les commandes 
 - Outillage : CLI Elgato (`@elgato/cli`) pour créer, lier (`streamdeck link`) et empaqueter (`streamdeck pack`) le plugin en `.streamDeckPlugin`.
 - Client WebSocket vers le mod : bibliothèque `ws` (ou le `WebSocket` natif de Node si disponible dans la version fournie).
 - Tests : `vitest` (ou équivalent) pour la logique pure.
-- Identifiant de plugin : `com.teddyzeus.streamplug` (🔶 à valider).
+- Identifiant de plugin : `com.teddyzeus.orbitdeck` (🔶 à valider).
 
 ### 5.2 Modules
 
@@ -270,8 +270,8 @@ Pour rendre le mod testable : l'accès à l'API du jeu est caché derrière une 
 ## 10. Build, versionnement et release
 - **Version** : SemVer pour le mod et le plugin, protocole versionné séparément (`v`).
 - **Artefacts de release GitHub** :
-  - `StreamPlug-Mod-<version>.zip` : dossier `streamplug/` (DLL, `swinfo.json`, `lib/` éventuel) à extraire dans `<jeu>\mods\`.
-  - `com.teddyzeus.streamplug-<version>.streamDeckPlugin` : plugin Stream Deck.
+  - `OrbitDeck-Mod-<version>.zip` : dossier `orbitdeck/` (DLL, `swinfo.json`, `lib/` éventuel) à extraire dans `<jeu>\mods\`.
+  - `com.teddyzeus.orbitdeck-<version>.streamDeckPlugin` : plugin Stream Deck.
 - **CI (🔶)** : GitHub Actions — build du plugin, tests des deux côtés. Le build du mod en CI nécessite les DLL du jeu (non redistribuables) : prévoir un stub de références ou un build local uniquement pour le mod.
 - **`swinfo.json`** : champ `ksp2_version` renseigné avec la version de Redux testée ; `source` pointe vers le dépôt GitHub.
 
@@ -285,10 +285,10 @@ Pour rendre le mod testable : l'accès à l'API du jeu est caché derrière une 
 | R4 | Comportement de `SetMainThrottle` / SAS sans entrée joueur ou en timewarp | Tests en jeu (§4.6), codes d'erreur dédiés |
 | R5 | Thread principal : appels depuis un autre thread | Règles §4.4, revue systématique |
 | R6 | Dépendance à la version de Node du logiciel Stream Deck | Utiliser le SDK officiel et la CLI qui fixent la version |
-| R7 | Dossier `mods` « introuvable » signalé dans un ancien log | Vérifier au premier démarrage que le mod est bien chargé (log `[StreamPlug]`) |
+| R7 | Dossier `mods` « introuvable » signalé dans un ancien log | Vérifier au premier démarrage que le mod est bien chargé (log `[OrbitDeck]`) |
 | Q1 | ~~Altitude par défaut~~ | **Tranché** : bascule par appui entre surface et niveau de la mer ; surface par défaut |
 | Q2 | ~~Port par défaut 8765~~ | **Tranché** : validé |
-| Q3 | ~~Identifiant du plugin `com.teddyzeus.streamplug`~~ | **Tranché** : validé |
+| Q3 | ~~Identifiant du plugin `com.teddyzeus.orbitdeck`~~ | **Tranché** : validé |
 
 ## 12. Plan de réalisation (technique)
 

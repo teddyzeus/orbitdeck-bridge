@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Faux serveur StreamPlug : imite le mod (protocole v1) pour développer le plugin Stream Deck sans lancer le jeu.
+// Faux serveur OrbitDeck : imite le mod (protocole v1) pour développer le plugin Stream Deck sans lancer le jeu.
 //
 //   node fake-server.mjs                       vol simulé sur le port 8765
 //   node fake-server.mjs --port 9000
@@ -167,7 +167,7 @@ wss.on('connection', (socket, request) => {
   });
 });
 
-wss.on('listening', () => console.log(`Faux serveur StreamPlug sur ws://127.0.0.1:${port}/ (scénario : ${scenario})`));
+wss.on('listening', () => console.log(`Faux serveur OrbitDeck sur ws://127.0.0.1:${port}/ (scénario : ${scenario})`));
 wss.on('error', (e) => {
   console.error(`Erreur : ${e.message}`);
   process.exit(1);

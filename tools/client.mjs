@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Client de test du mod StreamPlug : se connecte, affiche les messages reçus et permet d'envoyer des commandes.
+// Client de test du mod OrbitDeck : se connecte, affiche les messages reçus et permet d'envoyer des commandes.
 //
 //   node client.mjs                      affiche un état à chaque changement de poussée, SAS, RCS, mode, véhicule…
 //   node client.mjs --all                affiche tous les états (10 par seconde)

@@ -1,11 +1,11 @@
 {
   "spec": "1.3",
-  "mod_id": "com.teddyzeus.streamplug",
-  "name": "StreamPlug",
+  "mod_id": "com.teddyzeus.orbitdeck",
+  "name": "OrbitDeck Bridge",
   "author": "teddyzeus",
-  "description": "Affiche et pilote KSP 2 depuis un Stream Deck.",
-  "source": "https://github.com/teddyzeus/StreamPlug",
-  "version": "0.1.0",
-  "main_assembly": "StreamPlug.Mod.dll",
+  "description": "Expose les données de KSP 2 en local (WebSocket) pour le plugin Stream Deck OrbitDeck.",
+  "source": "https://github.com/teddyzeus/orbitdeck-bridge",
+  "version": "0.2.0",
+  "main_assembly": "OrbitDeck.Mod.dll",
   "ksp2_version": { "min": "*", "max": "*" }
 }

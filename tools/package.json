@@ -1,8 +1,8 @@
 {
-  "name": "streamplug-tools",
+  "name": "orbitdeck-tools",
   "version": "0.1.0",
   "private": true,
-  "description": "Outils de développement StreamPlug : client de test et faux serveur du mod.",
+  "description": "Outils de développement OrbitDeck : client de test et faux serveur du mod.",
   "type": "module",
   "engines": {
     "node": ">=20"

@@ -1,11 +1,11 @@
-# Protocole StreamPlug v1
+# Protocole OrbitDeck v1
 
 Échanges entre le **mod KSP 2** (serveur) et le **plugin Stream Deck** (client).
 Référence : [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 
 ## Transport
 - WebSocket (RFC 6455), un message JSON par frame **texte**, UTF-8.
-- Serveur : `ws://127.0.0.1:8765/` (port configurable dans `streamplug-config.json`).
+- Serveur : `ws://127.0.0.1:8765/` (port configurable dans `orbitdeck-config.json`).
 - Le serveur n'écoute que sur `127.0.0.1`. Il refuse toute requête portant un en-tête `Origin` (navigateurs) et tout en-tête `Host` autre que `127.0.0.1:<port>` ou `localhost:<port>`.
 - Taille maximale d'un message : **4096 octets** (au-delà, fermeture avec le code 1009).
 - Maximum **8 clients** simultanés.
