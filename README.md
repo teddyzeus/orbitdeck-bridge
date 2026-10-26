@@ -1,38 +1,38 @@
 # OrbitDeck Bridge
 
-Mod gratuit et open source (licence MIT) pour **Kerbal Space Program 1** et **Kerbal Space Program 2 (Redux)** : il expose en local les données du jeu et reçoit des commandes, par WebSocket sur `127.0.0.1:18765`. Il alimente le plugin Stream Deck **OrbitDeck**, mais le protocole est documenté et ouvert : vous pouvez écrire votre propre client.
+Free, open-source mod (MIT license) for **Kerbal Space Program 1** and **Kerbal Space Program 2 (Redux)**. It exposes game data locally and receives commands over WebSocket on `127.0.0.1:18765`. It powers the **OrbitDeck** Stream Deck plugin, but the protocol is documented and open: you can write your own client.
 
-> Statut : version 0.4.0. **[Télécharger la dernière version](https://github.com/teddyzeus/orbitdeck-bridge/releases/latest)**, puis suivre [docs/installation.md](docs/installation.md).
+> Status: version 0.4.0. **[Download the latest release](https://github.com/teddyzeus/orbitdeck-bridge/releases/latest)**, then follow [docs/installation.md](docs/installation.md).
 
-## Ce que le mod fournit
+## What the mod provides
 
-- **Lecture** : altitude (mer et sol), vitesse (sol, orbite, cible), poussée, SAS et son mode, RCS, phares, freins, train d'atterrissage, état du véhicule.
-- **Commandes** : poussée (fixer, ajuster), SAS et ses modes (stabilité, prograde, rétrograde, normal, anti-normal, radial, anti-radial, cible, anti-cible, manœuvre), RCS, phares, freins, train d'atterrissage, type de vitesse du navball, déclenchement de l'étage suivant.
-- 100 % local : le serveur n'écoute que sur `127.0.0.1`, vérifie `Host` et `Origin`, limite la taille des messages et le nombre de clients.
+- **Reading**: altitude (sea level and ground), speed (surface, orbit, target), throttle, SAS and its mode, RCS, lights, brakes, landing gear, vessel status.
+- **Commands**: throttle (set, adjust), SAS and its modes (stability, prograde, retrograde, normal, anti-normal, radial, anti-radial, target, anti-target, maneuver), RCS, lights, brakes, landing gear, navball speed mode, next-stage activation.
+- 100% local: the server only listens on `127.0.0.1`, checks `Host` and `Origin`, and limits message size and the number of clients.
 
 ## Documentation
 
-- [Installation](docs/installation.md) (KSP 1 et KSP 2)
-- [Protocole](protocol/README.md) (schémas JSON et exemples)
-- [Recette de test](docs/test-checklist.md)
-- [Spécifications techniques](SPECS-TECHNIQUES.md) (KSP 2) et [étude de faisabilité KSP 1](docs/ksp1-faisabilite.md)
+- [Installation](docs/installation.md) (KSP 1 and KSP 2)
+- [Protocol](protocol/README.md) (JSON schemas and examples)
+- [Test checklist](docs/test-checklist.md)
+- [Technical specifications](SPECS-TECHNIQUES.md) (KSP 2) and [KSP 1 feasibility study](docs/ksp1-faisabilite.md) (in French)
 
-## Compatibilité
+## Compatibility
 
-| Jeu | Version testée | Dossier du mod |
-|-----|----------------|----------------|
+| Game | Tested version | Mod folder |
+|------|----------------|------------|
 | KSP 2 (Redux) | v0.2.8.5.103184-beta | `mods\orbitdeck\` |
 | KSP 1 | 1.12.5 | `GameData\OrbitDeck\` |
 
 Windows 10/11.
 
-## Développement
+## Development
 
-- **Mod KSP 2** : `mod/src/OrbitDeck.Mod` ; **mod KSP 1** : `mod/src/OrbitDeck.Ksp1`. SDK .NET 8, DLL des jeux référencées via `KSP2_DIR` / `KSP1_DIR` ou `mod/Directory.Build.props.user`. Le serveur, le protocole et les commandes sont communs : le projet KSP 1 compile les mêmes fichiers (dossiers `Server`, `Protocol`, `Commands`, `Config`, `Telemetry` de `OrbitDeck.Mod`).
-- **Tests** : `dotnet test mod/OrbitDeck.Mod.sln`.
-- **Release** : `node scripts/package.mjs` produit `release/OrbitDeck-Bridge-KSP2-vX.Y.Z.zip` et `release/OrbitDeck-Bridge-KSP1-vX.Y.Z.zip`.
-- **Outils** : `tools/` (client et faux serveur en ligne de commande, pour essayer le protocole sans le jeu).
+- **KSP 2 mod**: `mod/src/OrbitDeck.Mod`; **KSP 1 mod**: `mod/src/OrbitDeck.Ksp1`. .NET 8 SDK, game DLLs referenced through `KSP2_DIR` / `KSP1_DIR` or `mod/Directory.Build.props.user`. The server, protocol and commands are shared: the KSP 1 project compiles the same files (the `Server`, `Protocol`, `Commands`, `Config` and `Telemetry` folders of `OrbitDeck.Mod`).
+- **Tests**: `dotnet test mod/OrbitDeck.Mod.sln`.
+- **Release**: `node scripts/package.mjs` produces `release/OrbitDeck-Bridge-KSP2-vX.Y.Z.zip` and `release/OrbitDeck-Bridge-KSP1-vX.Y.Z.zip`.
+- **Tools**: `tools/` (command-line client and fake server, to try the protocol without the game).
 
-## Licence
+## License
 
-[MIT](LICENSE). Le nom « OrbitDeck » et le plugin Stream Deck ne sont pas couverts par cette licence. Le mod KSP 1 embarque Newtonsoft.Json (licence MIT, voir `LICENSE-Newtonsoft.Json.txt` dans l'archive).
+[MIT](LICENSE). The "OrbitDeck" name and the Stream Deck plugin are not covered by this license. The KSP 1 mod bundles Newtonsoft.Json (MIT license, see `LICENSE-Newtonsoft.Json.txt` in the archive).

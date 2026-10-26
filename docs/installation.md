@@ -1,40 +1,40 @@
-# Installation du mod OrbitDeck Bridge
+# Installing the OrbitDeck Bridge mod
 
-Le mod expose en local les données du jeu (WebSocket sur `127.0.0.1`, port **18765** par défaut) et reçoit les commandes du plugin Stream Deck **OrbitDeck** (Elgato Marketplace). Le mod seul ne fait rien de visible : installez aussi le plugin.
+The mod exposes the game's data locally (WebSocket on `127.0.0.1`, default port **18765**) and receives commands from the **OrbitDeck** Stream Deck plugin (Elgato Marketplace). The mod alone does nothing visible: install the plugin too.
 
-Téléchargez l'archive de votre jeu dans la dernière [release](https://github.com/teddyzeus/orbitdeck-bridge/releases/latest) :
+Download the archive for your game from the latest [release](https://github.com/teddyzeus/orbitdeck-bridge/releases/latest):
 
-| Jeu | Archive | Versions testées |
-|-----|---------|------------------|
+| Game | Archive | Tested versions |
+|------|---------|-----------------|
 | Kerbal Space Program 2 (Redux) | `OrbitDeck-Bridge-KSP2-vX.Y.Z.zip` | KSP 2 Redux v0.2.8.5.103184-beta |
 | Kerbal Space Program 1 | `OrbitDeck-Bridge-KSP1-vX.Y.Z.zip` | KSP 1.12.5 |
 
-**Prérequis** : Windows 10/11. Un seul jeu à la fois avec le mod (ils utilisent le même port).
+**Requirements:** Windows 10/11. Only one game at a time can run the mod (they use the same port).
 
 ## KSP 2 (Redux)
 
-1. Fermez le jeu.
-2. Ouvrez le dossier d'installation de KSP 2 (Steam : clic droit sur le jeu → Gérer → Parcourir les fichiers locaux).
-3. Dézippez l'archive **dans le dossier `mods`** du jeu (créez-le s'il n'existe pas). Vous obtenez :
+1. Close the game.
+2. Open the KSP 2 installation folder (Steam: right-click the game → Manage → Browse local files).
+3. Unzip the archive **into the game's `mods` folder** (create it if it does not exist). You get:
 
 ```
-<dossier de KSP 2>\mods\orbitdeck\
+<KSP 2 folder>\mods\orbitdeck\
     OrbitDeck.Mod.dll
     swinfo.json
     orbitdeck-config.json
     LICENSE.txt
 ```
 
-4. Lancez le jeu. Dans son journal (`%USERPROFILE%\AppData\LocalLow\Intercept Games\Kerbal Space Program 2\Player.log`), cherchez la ligne `[OrbitDeck] Serveur WebSocket à l'écoute sur ws://127.0.0.1:18765/`.
+4. Start the game. In its log (`%USERPROFILE%\AppData\LocalLow\Intercept Games\Kerbal Space Program 2\Player.log`), look for the line `[OrbitDeck] Serveur WebSocket à l'écoute sur ws://127.0.0.1:18765/` (the mod's log messages are in French).
 
 ## KSP 1
 
-1. Fermez le jeu.
-2. Ouvrez le dossier d'installation de KSP 1 (Steam : clic droit sur le jeu → Gérer → Parcourir les fichiers locaux) : celui qui contient `GameData` et `KSP_x64.exe`.
-3. Dézippez l'archive **à la racine** de ce dossier : le dossier `GameData` de l'archive se fusionne avec le vôtre. Vous obtenez :
+1. Close the game.
+2. Open the KSP 1 installation folder (Steam: right-click the game → Manage → Browse local files): the one that contains `GameData` and `KSP_x64.exe`.
+3. Unzip the archive **into the root** of that folder: the archive's `GameData` folder merges with yours. You get:
 
 ```
-<dossier de KSP 1>\GameData\OrbitDeck\
+<KSP 1 folder>\GameData\OrbitDeck\
     Plugins\
         OrbitDeck.Ksp1.dll
         Newtonsoft.Json.dll
@@ -43,41 +43,43 @@ Téléchargez l'archive de votre jeu dans la dernière [release](https://github.
     LICENSE-Newtonsoft.Json.txt
 ```
 
-4. Lancez le jeu. Dans son journal (`KSP.log`, à la racine du dossier du jeu), cherchez la ligne `[OrbitDeck] Serveur WebSocket à l'écoute sur ws://127.0.0.1:18765/`.
+4. Start the game. In its log (`KSP.log`, at the root of the game folder), look for the line `[OrbitDeck] Serveur WebSocket à l'écoute sur ws://127.0.0.1:18765/`.
 
-`Newtonsoft.Json.dll` est livrée avec le mod : KSP 1 ne la fournit pas.
+`Newtonsoft.Json.dll` ships with the mod: KSP 1 does not provide it.
 
-Le mod n'écoute que sur votre machine (`127.0.0.1`) : rien n'est exposé sur le réseau.
+The mod only listens on your machine (`127.0.0.1`): nothing is exposed on the network.
 
-## Réglages (`orbitdeck-config.json`)
+## Settings (`orbitdeck-config.json`)
 
-Le fichier est dans le dossier du mod (`mods\orbitdeck\` pour KSP 2, `GameData\OrbitDeck\Plugins\` pour KSP 1).
+The file is in the mod folder (`mods\orbitdeck\` for KSP 2, `GameData\OrbitDeck\Plugins\` for KSP 1).
 
-- `port` : port d'écoute (18765 par défaut). Indiquez le même port dans le plugin.
-- `sampleRateHz` : fréquence d'envoi des états (10 par défaut).
-- `verboseLogging` : `true` pour un journal détaillé en cas de problème (valeurs, commandes reçues et leur résultat).
+- `port`: listening port (default 18765). Enter the same port in the plugin.
+- `sampleRateHz`: how often the state is sent (default 10).
+- `verboseLogging`: `true` for a detailed log when troubleshooting (values, received commands and their result).
 
-Relancez le jeu après toute modification.
+Restart the game after any change.
 
-## Mise à jour
+## Updating
 
-Fermez le jeu, remplacez les fichiers du mod (gardez votre `orbitdeck-config.json`), relancez le jeu : l'ancienne DLL reste en mémoire tant que le jeu tourne.
+Close the game, replace the mod files (keep your `orbitdeck-config.json`), then start the game again: the old DLL stays in memory as long as the game is running.
 
-## Si vous aviez StreamPlug (versions 0.1.x)
+## If you had StreamPlug (0.1.x versions)
 
-Le mod s'appelait StreamPlug. Supprimez le dossier `mods\streamplug\` avant d'installer OrbitDeck Bridge, sinon les deux se disputent le port.
+The mod used to be called StreamPlug. Delete the `mods\streamplug\` folder before installing OrbitDeck Bridge, otherwise the two compete for the port.
 
-## Dépannage
+## Troubleshooting
 
-| Symptôme | Piste |
-|----------|-------|
-| Le journal dit « Impossible d'ouvrir le port 18765 : … accès … interdite » | Windows a réservé ce port (Hyper-V, WSL, Docker : les plages changent après un redémarrage ou une mise à jour). Vérifiez avec `netsh interface ipv4 show excludedportrange protocol=tcp`, puis choisissez un port hors de ces plages (par exemple 24765) dans `orbitdeck-config.json` **et** dans le plugin. |
-| Le journal dit que le port est déjà utilisé | Un autre programme, ou l'autre jeu avec le mod, utilise le même port. Fermez-le ou changez le port. |
-| Pas de ligne `[OrbitDeck]` dans le journal | Le mod n'est pas chargé : vérifiez le dossier (`mods\orbitdeck\` pour KSP 2, `GameData\OrbitDeck\Plugins\` pour KSP 1) et son contenu. |
-| KSP 1 : « Could not load file or assembly » dans le journal | Le dossier `Plugins` doit contenir `Newtonsoft.Json.dll` fournie avec le mod (version « net20 ») : ne la remplacez pas par une autre. |
-| Les touches indiquent « AUCUN VÉHICULE » | Normal dans les menus, le centre spatial et l'éditeur : entrez en vol. |
-| Une touche affiche une croix rouge | La commande est refusée par le jeu (en EVA, en accélération du temps sur rails, véhicule sans pilote…). Le journal détaillé (`verboseLogging`) donne la raison. |
+The mod's log messages are in French; the quoted messages below are what you will see in the log.
 
-## Désinstallation
+| Symptom | What to do |
+|---------|------------|
+| The log says "Impossible d'ouvrir le port 18765 : … accès … interdite" (cannot open the port, access forbidden) | Windows has reserved this port (Hyper-V, WSL, Docker: the ranges change after a restart or an update). Check with `netsh interface ipv4 show excludedportrange protocol=tcp`, then choose a port outside those ranges (for example 24765) in `orbitdeck-config.json` **and** in the plugin. |
+| The log says the port is already in use | Another program, or the other game with the mod, is using the same port. Close it or change the port. |
+| No `[OrbitDeck]` line in the log | The mod is not loaded: check the folder (`mods\orbitdeck\` for KSP 2, `GameData\OrbitDeck\Plugins\` for KSP 1) and its contents. |
+| KSP 1: "Could not load file or assembly" in the log | The `Plugins` folder must contain the `Newtonsoft.Json.dll` shipped with the mod (the "net20" build): do not replace it with another one. |
+| Keys show "NO VEHICLE" | Normal in menus, the space center and the editor: go into flight. |
+| A key shows a red cross | The command was refused by the game (in EVA, during time warp on rails, vessel with no pilot or probe core…). The detailed log (`verboseLogging`) gives the reason. |
 
-Supprimez le dossier du mod (`mods\orbitdeck\` pour KSP 2, `GameData\OrbitDeck\` pour KSP 1).
+## Uninstalling
+
+Delete the mod folder (`mods\orbitdeck\` for KSP 2, `GameData\OrbitDeck\` for KSP 1).
