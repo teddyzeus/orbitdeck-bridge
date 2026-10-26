@@ -18,6 +18,9 @@
 
 ## 3. Commandes
 - [ ] SAS : activer et couper depuis le Stream Deck ; l'état du jeu suit (voyant SAS du navball).
+- [ ] Modes du SAS : prograde, rétrograde, normal, anti-normal, radial, anti-radial (navball en mode orbite pour les quatre derniers), cible et anti-cible (avec une cible), manœuvre (avec un nœud), stabilité. Le mode actif est lu en vert ; un mode indisponible est refusé avec la raison.
+- [ ] Phares, freins, train d'atterrissage : l'état du jeu suit dans les deux sens (aussi quand on change au clavier). Sans pièce correspondante, la touche affiche « — ».
+- [ ] Étage : une commande déclenche un étage (pré-lancement compris sur KSP 2) ; refusée en EVA, sur rails, ou si les étages sont verrouillés (Maj + L sur KSP 1).
 - [ ] RCS : idem.
 - [ ] Poussée : fixer à 0, 50 et 100 % ; la jauge du jeu suit et le véhicule accélère en conséquence.
 - [ ] Poussée : +10 % et −10 % en rafale, bornée entre 0 et 100 %.

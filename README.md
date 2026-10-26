@@ -2,12 +2,12 @@
 
 Mod gratuit et open source (licence MIT) pour **Kerbal Space Program 1** et **Kerbal Space Program 2 (Redux)** : il expose en local les données du jeu et reçoit des commandes, par WebSocket sur `127.0.0.1:18765`. Il alimente le plugin Stream Deck **OrbitDeck**, mais le protocole est documenté et ouvert : vous pouvez écrire votre propre client.
 
-> Statut : version 0.3.0. **[Télécharger la dernière version](https://github.com/teddyzeus/orbitdeck-bridge/releases/latest)**, puis suivre [docs/installation.md](docs/installation.md).
+> Statut : version 0.4.0. **[Télécharger la dernière version](https://github.com/teddyzeus/orbitdeck-bridge/releases/latest)**, puis suivre [docs/installation.md](docs/installation.md).
 
 ## Ce que le mod fournit
 
-- **Lecture** : altitude (mer et sol), vitesse (sol, orbite, cible), poussée, SAS, RCS, état du véhicule.
-- **Commandes** : poussée (fixer, ajuster), SAS, RCS, type de vitesse du navball.
+- **Lecture** : altitude (mer et sol), vitesse (sol, orbite, cible), poussée, SAS et son mode, RCS, phares, freins, train d'atterrissage, état du véhicule.
+- **Commandes** : poussée (fixer, ajuster), SAS et ses modes (stabilité, prograde, rétrograde, normal, anti-normal, radial, anti-radial, cible, anti-cible, manœuvre), RCS, phares, freins, train d'atterrissage, type de vitesse du navball, déclenchement de l'étage suivant.
 - 100 % local : le serveur n'écoute que sur `127.0.0.1`, vérifie `Host` et `Origin`, limite la taille des messages et le nombre de clients.
 
 ## Documentation
