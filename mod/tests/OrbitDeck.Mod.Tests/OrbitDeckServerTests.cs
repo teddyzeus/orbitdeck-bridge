@@ -12,7 +12,7 @@ public sealed class OrbitDeckServerTests : IDisposable
 
     public OrbitDeckServerTests()
     {
-        _server = new OrbitDeckServer(_ws, _source, new OrbitDeck.Mod.Commands.CommandQueue(), "0.1.0", "0.2.8.5", () => Interlocked.Read(ref _now));
+        _server = new OrbitDeckServer(_ws, _source, new OrbitDeck.Mod.Commands.CommandQueue(), "0.2.0", "0.2.8.5", () => Interlocked.Read(ref _now));
         Assert.True(_server.Start());
     }
 
@@ -40,7 +40,7 @@ public sealed class OrbitDeckServerTests : IDisposable
         var hello = client.Expect("hello");
         var state = client.Expect("state");
 
-        Assert.Equal("0.1.0", (string?)hello["mod"]);
+        Assert.Equal("0.2.0", (string?)hello["mod"]);
         Assert.Equal("0.2.8.5", (string?)hello["game"]);
         Assert.Equal(1, (long)state["seq"]!);
         Assert.Equal("connected", (string?)state["status"]);
@@ -211,7 +211,7 @@ public sealed class OrbitDeckServerTests : IDisposable
     [Fact]
     public void Start_returns_false_when_the_port_is_taken()
     {
-        using var other = new OrbitDeckServer(new WsServer(_ws.Port), _source, new OrbitDeck.Mod.Commands.CommandQueue(), "0.1.0", "x");
+        using var other = new OrbitDeckServer(new WsServer(_ws.Port), _source, new OrbitDeck.Mod.Commands.CommandQueue(), "0.2.0", "x");
 
         Assert.False(other.Start());
         Assert.False(other.IsRunning);

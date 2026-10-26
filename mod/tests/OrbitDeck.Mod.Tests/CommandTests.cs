@@ -408,7 +408,7 @@ public sealed class CommandEndToEndTests : IDisposable
 
     public CommandEndToEndTests()
     {
-        _server = new OrbitDeckServer(_ws, _source, _commands, "0.1.0", "test");
+        _server = new OrbitDeckServer(_ws, _source, _commands, "0.2.0", "test");
         Assert.True(_server.Start());
     }
 
