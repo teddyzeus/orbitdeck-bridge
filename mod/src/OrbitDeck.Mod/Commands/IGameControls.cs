@@ -33,5 +33,8 @@ namespace OrbitDeck.Mod.Commands
 
         /// <summary>Déclenche l'étage suivant (touche Espace du jeu). Action irréversible : non idempotente.</summary>
         CommandResult ActivateStage();
+
+        /// <summary>Affiche la vue du véhicule ou la carte ; <paramref name="view"/> null = basculer.</summary>
+        CommandResult SetView(ViewKind? view);
     }
 }

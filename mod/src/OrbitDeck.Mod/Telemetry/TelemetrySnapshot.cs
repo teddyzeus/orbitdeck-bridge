@@ -38,6 +38,13 @@ namespace OrbitDeck.Mod.Telemetry
         Maneuver
     }
 
+    /// <summary>Vue du jeu en vol : le véhicule (caméra de vol) ou la carte (orbites).</summary>
+    public enum ViewKind
+    {
+        Ship,
+        Map
+    }
+
     /// <summary>Type de vitesse affiché par le jeu.</summary>
     public enum SpeedMode
     {
@@ -103,6 +110,9 @@ namespace OrbitDeck.Mod.Telemetry
         /// KSP 1 : étage 0 atteint), d'où une information explicite plutôt que de laisser le client la déduire du compteur.
         /// </summary>
         public bool? StageExhausted { get; init; }
+
+        /// <summary>Vue affichée (véhicule ou carte) ; null si le jeu ne permet pas de la lire.</summary>
+        public ViewKind? View { get; init; }
 
         /// <summary>
         /// Modes du SAS sélectionnables en ce moment (les autres sont grisés dans le jeu : pas de cible, pas de nœud de

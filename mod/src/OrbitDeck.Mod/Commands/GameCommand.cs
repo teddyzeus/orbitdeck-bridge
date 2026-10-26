@@ -19,7 +19,9 @@ namespace OrbitDeck.Mod.Commands
         ToggleBrakes,
         SetGear,
         ToggleGear,
-        ActivateStage
+        ActivateStage,
+        SetView,
+        ToggleView
     }
 
     /// <summary>Commande validée, prête à être exécutée sur le thread principal du jeu.</summary>
@@ -37,6 +39,9 @@ namespace OrbitDeck.Mod.Commands
 
         /// <summary>Mode du SAS visé pour SetSasMode.</summary>
         public SasModeKind SasMode { get; set; }
+
+        /// <summary>Vue visée pour SetView.</summary>
+        public ViewKind View { get; set; }
     }
 
     /// <summary>Résultat de l'exécution d'une commande dans le jeu.</summary>

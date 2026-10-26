@@ -73,6 +73,7 @@
           "type": "object",
           "properties": { "enabled": { "type": "boolean" } }
         },
+        "view": { "enum": ["ship", "map"] },
         "stage": {
           "type": "object",
           "properties": { "count": { "type": "integer", "minimum": 0 }, "exhausted": { "type": "boolean" } }

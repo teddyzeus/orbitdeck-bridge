@@ -42,6 +42,7 @@ namespace OrbitDeck.Ksp1
                 StageCount = stageCount,
                 // Sur KSP 1, l'étage 0 est le dernier : la touche ne se grise que lorsqu'il n'y en a plus.
                 StageExhausted = vessel.currentStage <= 0,
+                View = MapView.MapIsEnabled ? ViewKind.Map : ViewKind.Ship,
                 AvailableSasModes = AvailableSasModesOf(autopilot)
             };
         }

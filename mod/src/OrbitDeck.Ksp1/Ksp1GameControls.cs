@@ -129,6 +129,28 @@ namespace OrbitDeck.Ksp1
             return CommandResult.Ok;
         }
 
+        public CommandResult SetView(ViewKind? view)
+        {
+            if (!TryGetVessel(out _, out var failure))
+                return failure;
+
+            // Comme la touche M du jeu : verrou de bascule, puis entrée ou sortie de la vue carte.
+            if (!InputLockManager.IsUnlocked(ControlTypes.MAP_TOGGLE) || MapView.fetch == null)
+                return CommandResult.Rejected("La vue carte est verrouillée par le jeu.");
+
+            var current = MapView.MapIsEnabled;
+            var desired = view.HasValue ? view.Value == ViewKind.Map : !current;
+            if (desired == current)
+                return CommandResult.Ok;
+
+            if (desired)
+                MapView.EnterMapView();
+            else
+                MapView.ExitMapView();
+
+            return CommandResult.Ok;
+        }
+
         public CommandResult SetLights(bool? enabled) =>
             SetActionGroup(KSPActionGroup.Light, ControlTypes.GROUP_LIGHTS, enabled, "Les phares", useSet: false);
 

@@ -97,6 +97,14 @@ namespace OrbitDeck.Mod.Commands
                 case "activateStage":
                     return Build(CommandKind.ActivateStage, null);
 
+                case "setView":
+                    return TryParseView(args, out var view)
+                        ? Build(CommandKind.SetView, c => c.View = view)
+                        : BadArgument("args.view doit valoir « ship » ou « map ».");
+
+                case "toggleView":
+                    return Build(CommandKind.ToggleView, null);
+
                 default:
                     return ValidationResult.Invalid(ErrorCodes.UnknownCommand, $"Commande « {Truncate(name)} » inconnue.");
             }
@@ -150,6 +158,21 @@ namespace OrbitDeck.Mod.Commands
                 case "surface": mode = SpeedMode.Surface; return true;
                 case "orbit": mode = SpeedMode.Orbit; return true;
                 case "target": mode = SpeedMode.Target; return true;
+                default: return false;
+            }
+        }
+
+        private static bool TryParseView(JObject args, out ViewKind view)
+        {
+            view = ViewKind.Ship;
+            var token = args["view"];
+            if (token == null || token.Type != JTokenType.String)
+                return false;
+
+            switch (token.Value<string>())
+            {
+                case "ship": view = ViewKind.Ship; return true;
+                case "map": view = ViewKind.Map; return true;
                 default: return false;
             }
         }
