@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using OrbitDeck.Mod.Telemetry;
 
 namespace OrbitDeck.Ksp1
@@ -40,8 +41,28 @@ namespace OrbitDeck.Ksp1
                 GearEnabled = vessel.ActionGroups[KSPActionGroup.Gear],
                 StageCount = stageCount,
                 // Sur KSP 1, l'étage 0 est le dernier : la touche ne se grise que lorsqu'il n'y en a plus.
-                StageExhausted = vessel.currentStage <= 0
+                StageExhausted = vessel.currentStage <= 0,
+                AvailableSasModes = AvailableSasModesOf(autopilot)
             };
+        }
+
+        /// <summary>
+        /// Modes du SAS sélectionnables : les mêmes vérifications que la commande « setSasMode » (SAS utilisable avec ce pilote ou
+        /// cette sonde, puis ce que le jeu accepte : cible, nœud de manœuvre, navball en mode orbite…).
+        /// </summary>
+        private static IReadOnlyList<SasModeKind> AvailableSasModesOf(VesselAutopilot autopilot)
+        {
+            var available = new List<SasModeKind>();
+            if (autopilot == null || !autopilot.SAS.CanEngageSAS())
+                return available;
+
+            foreach (SasModeKind mode in Enum.GetValues(typeof(SasModeKind)))
+            {
+                if (autopilot.CanSetMode(Ksp1GameControls.ToGameMode(mode)))
+                    available.Add(mode);
+            }
+
+            return available;
         }
 
         private static SpeedMode ToSpeedMode(FlightGlobals.SpeedDisplayModes mode)

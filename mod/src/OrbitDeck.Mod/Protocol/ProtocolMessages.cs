@@ -53,11 +53,20 @@ namespace OrbitDeck.Mod.Protocol
                     ["target"] = snapshot.SpeedTarget.HasValue ? Number(snapshot.SpeedTarget.Value, 2) : JValue.CreateNull()
                 };
                 message["throttle"] = Math.Round(Math.Min(1f, Math.Max(0f, snapshot.Throttle)), 3);
-                message["sas"] = new JObject
+                var sas = new JObject
                 {
                     ["enabled"] = snapshot.SasEnabled,
                     ["mode"] = snapshot.SasMode
                 };
+                if (snapshot.AvailableSasModes != null)
+                {
+                    var available = new JArray();
+                    foreach (var mode in snapshot.AvailableSasModes)
+                        available.Add(SasModeName(mode));
+                    sas["available"] = available;
+                }
+
+                message["sas"] = sas;
                 message["rcs"] = new JObject { ["enabled"] = snapshot.RcsEnabled };
 
                 // Champs ajoutés après la v1 initiale : absents quand le jeu ne les fournit pas.
@@ -90,6 +99,24 @@ namespace OrbitDeck.Mod.Protocol
         }
 
         public static string Pong() => Serialize(Base("pong", new JObject()));
+
+        /// <summary>Nom d'un mode du SAS dans le protocole (le même que celui de la commande « setSasMode »).</summary>
+        public static string SasModeName(SasModeKind mode)
+        {
+            switch (mode)
+            {
+                case SasModeKind.Prograde: return "prograde";
+                case SasModeKind.Retrograde: return "retrograde";
+                case SasModeKind.Normal: return "normal";
+                case SasModeKind.Antinormal: return "antinormal";
+                case SasModeKind.RadialIn: return "radialIn";
+                case SasModeKind.RadialOut: return "radialOut";
+                case SasModeKind.Target: return "target";
+                case SasModeKind.AntiTarget: return "antiTarget";
+                case SasModeKind.Maneuver: return "maneuver";
+                default: return "stabilityAssist";
+            }
+        }
 
         public static string StatusName(VesselStatus status)
         {

@@ -184,7 +184,7 @@ namespace OrbitDeck.Ksp1
             }
         }
 
-        private static VesselAutopilot.AutopilotMode ToGameMode(SasModeKind mode)
+        internal static VesselAutopilot.AutopilotMode ToGameMode(SasModeKind mode)
         {
             switch (mode)
             {

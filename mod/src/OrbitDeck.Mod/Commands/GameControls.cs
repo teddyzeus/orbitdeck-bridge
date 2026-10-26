@@ -240,7 +240,7 @@ namespace OrbitDeck.Mod.Commands
             }
         }
 
-        private static GameAutopilotMode ToGameMode(SasModeKind mode)
+        internal static GameAutopilotMode ToGameMode(SasModeKind mode)
         {
             switch (mode)
             {
