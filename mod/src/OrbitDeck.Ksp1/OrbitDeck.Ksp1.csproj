@@ -23,6 +23,13 @@
     <Reference Include="UnityEngine.CoreModule"><HintPath>$(Ksp1ManagedDir)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
 
+  <!-- Code commun avec le mod KSP 2 : types de télémétrie sans dépendance au jeu -->
+  <ItemGroup>
+    <Compile Include="..\OrbitDeck.Mod\Telemetry\TelemetrySnapshot.cs" Link="Shared\TelemetrySnapshot.cs" />
+    <Compile Include="..\OrbitDeck.Mod\Telemetry\IGameState.cs" Link="Shared\IGameState.cs" />
+    <Compile Include="..\OrbitDeck.Mod\Telemetry\SnapshotComparer.cs" Link="Shared\SnapshotComparer.cs" />
+  </ItemGroup>
+
   <!-- Déploiement : copie la DLL dans <jeu>\GameData\OrbitDeck\Plugins\ -->
   <Target Name="DeployToKsp1" AfterTargets="Build" Condition="Exists('$(Ksp1Dir)')">
     <PropertyGroup>
