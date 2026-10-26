@@ -3,8 +3,10 @@ using KSP.Game;
 using KSP.Messages;
 using KSP.Sim;
 using KSP.Sim.Definitions;
+using KSP.Sim.impl;
 using KSP.Sim.State;
 using OrbitDeck.Mod.Telemetry;
+using GameAutopilotMode = KSP.Sim.AutopilotMode;
 using GameSpeedMode = KSP.Sim.SpeedDisplayMode;
 
 namespace OrbitDeck.Mod.Commands
@@ -109,19 +111,125 @@ namespace OrbitDeck.Mod.Commands
             return CommandResult.Ok;
         }
 
-        // Modes du SAS, phares, freins et train d'atterrissage : pris en charge par le mod KSP 1 ; pas encore par celui de KSP 2.
-        private static CommandResult NotYetSupported() =>
-            CommandResult.Rejected("Cette commande n'est pas encore prise en charge dans le mod pour KSP 2.");
+        public CommandResult SetSasMode(SasModeKind mode)
+        {
+            if (!TryGetControllableVessel(out var vehicle, out var vessel, out var failure))
+                return failure;
 
-        public CommandResult SetSasMode(SasModeKind mode) => NotYetSupported();
+            if (vessel.ControlStatus == VesselControlState.NoControl)
+            {
+                vessel.NotifyInsufficientVesselControl();
+                return CommandResult.NotControllable("Contrôle insuffisant du véhicule pour utiliser le SAS.");
+            }
 
-        public CommandResult SetLights(bool? enabled) => NotYetSupported();
+            var target = ToGameMode(mode);
+            if ((mode == SasModeKind.Target || mode == SasModeKind.AntiTarget) && vessel.TargetObject == null)
+                return CommandResult.Rejected("Aucune cible sélectionnée.");
 
-        public CommandResult SetBrakes(bool? enabled) => NotYetSupported();
+            // Allume le SAS comme la touche du jeu, puis choisit le mode.
+            if (!vessel.AutopilotStatus.IsEnabled)
+            {
+                if (!vessel.SetAutopilotEnableDisable(true))
+                    return CommandResult.Rejected("Le SAS n'est pas disponible sur ce véhicule.");
 
-        public CommandResult SetGear(bool? enabled) => NotYetSupported();
+                vehicle.TriggerGroup(KSPActionGroup.SAS);
+            }
 
-        public CommandResult ActivateStage() => NotYetSupported();
+            var autopilot = vessel.Autopilot;
+            if (autopilot == null || !autopilot.CanSetMode(target) || !vessel.SetAutopilotMode(target))
+                return CommandResult.Rejected(DescribeUnavailableMode(mode));
+
+            return CommandResult.Ok;
+        }
+
+        public CommandResult SetLights(bool? enabled) => SetActionGroup(KSPActionGroup.Lights, enabled, "phares", useSet: false);
+
+        public CommandResult SetBrakes(bool? enabled) => SetActionGroup(KSPActionGroup.Brakes, enabled, "freins", useSet: true);
+
+        public CommandResult SetGear(bool? enabled) => SetActionGroup(KSPActionGroup.Gear, enabled, "train d'atterrissage", useSet: false);
+
+        /// <summary>Même chemin que les touches du jeu : le groupe d'actions est basculé (phares, train) ou réglé (freins).</summary>
+        private static CommandResult SetActionGroup(KSPActionGroup group, bool? enabled, string label, bool useSet)
+        {
+            if (!TryGetControllableVessel(out var vehicle, out var vessel, out var failure))
+                return failure;
+
+            var state = vessel.GetActionGroupState(group);
+            if (state == KSPActionGroupState.None)
+                return CommandResult.Rejected($"Ce véhicule n'a pas de {label}.");
+
+            var current = state == KSPActionGroupState.True;
+            var desired = enabled ?? !current;
+            if (desired == current)
+                return CommandResult.Ok;
+
+            if (useSet)
+                vehicle.SetGroup(group, desired);
+            else
+                vehicle.TriggerGroup(group);
+
+            return CommandResult.Ok;
+        }
+
+        // Le déclenchement d'étage passe, dans le jeu, par la gestion du lancement (séquence de pré-lancement, vol) :
+        // pas encore pris en charge pour KSP 2.
+        public CommandResult ActivateStage() =>
+            CommandResult.Rejected("Le déclenchement d'étage n'est pas encore pris en charge dans le mod pour KSP 2.");
+
+        private static bool TryGetControllableVessel(out VesselVehicle vehicle, out VesselComponent vessel, out CommandResult failure)
+        {
+            failure = null;
+            if (!GameAccess.TryGetFlightVessel(out vehicle, out vessel, out _))
+            {
+                failure = CommandResult.NoVessel();
+                return false;
+            }
+
+            if (vessel.IsKerbalEVA)
+            {
+                failure = CommandResult.Rejected("Cette commande n'est pas disponible en EVA.");
+                return false;
+            }
+
+            if (!vessel.IsControllable)
+            {
+                failure = CommandResult.NotControllable();
+                return false;
+            }
+
+            return true;
+        }
+
+        private static string DescribeUnavailableMode(SasModeKind mode)
+        {
+            switch (mode)
+            {
+                case SasModeKind.Maneuver:
+                    return "Aucun nœud de manœuvre.";
+                case SasModeKind.Target:
+                case SasModeKind.AntiTarget:
+                    return "Aucune cible sélectionnée.";
+                default:
+                    return "Ce mode du SAS n'est pas disponible dans la situation actuelle.";
+            }
+        }
+
+        private static GameAutopilotMode ToGameMode(SasModeKind mode)
+        {
+            switch (mode)
+            {
+                case SasModeKind.Prograde: return GameAutopilotMode.Prograde;
+                case SasModeKind.Retrograde: return GameAutopilotMode.Retrograde;
+                case SasModeKind.Normal: return GameAutopilotMode.Normal;
+                case SasModeKind.Antinormal: return GameAutopilotMode.Antinormal;
+                case SasModeKind.RadialIn: return GameAutopilotMode.RadialIn;
+                case SasModeKind.RadialOut: return GameAutopilotMode.RadialOut;
+                case SasModeKind.Target: return GameAutopilotMode.Target;
+                case SasModeKind.AntiTarget: return GameAutopilotMode.AntiTarget;
+                case SasModeKind.Maneuver: return GameAutopilotMode.Maneuver;
+                default: return GameAutopilotMode.StabilityAssist;
+            }
+        }
 
         private static float Clamp01(float value) => value < 0f ? 0f : value > 1f ? 1f : value;
 

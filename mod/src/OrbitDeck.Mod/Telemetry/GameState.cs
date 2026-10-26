@@ -26,8 +26,18 @@ namespace OrbitDeck.Mod.Telemetry
                 Throttle = vehicle.mainThrottle,
                 SasEnabled = autopilot != null && autopilot.Enabled,
                 SasMode = autopilot != null ? autopilot.AutopilotMode.ToString() : null,
-                RcsEnabled = vessel.IsRCSEnabled
+                RcsEnabled = vessel.IsRCSEnabled,
+                LightsEnabled = GroupState(vessel, KSP.Sim.KSPActionGroup.Lights),
+                BrakesEnabled = GroupState(vessel, KSP.Sim.KSPActionGroup.Brakes),
+                GearEnabled = GroupState(vessel, KSP.Sim.KSPActionGroup.Gear)
             };
+        }
+
+        /// <summary>État d'un groupe d'actions : null quand le véhicule n'a aucune pièce dans ce groupe (pas de phares, pas de train…).</summary>
+        private static bool? GroupState(KSP.Sim.impl.VesselComponent vessel, KSP.Sim.KSPActionGroup group)
+        {
+            var state = vessel.GetActionGroupState(group);
+            return state == KSP.Sim.KSPActionGroupState.None ? (bool?)null : state == KSP.Sim.KSPActionGroupState.True;
         }
 
         private static SpeedMode ToSpeedMode(GameSpeedMode mode)
