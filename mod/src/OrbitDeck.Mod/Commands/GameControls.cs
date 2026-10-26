@@ -202,6 +202,26 @@ namespace OrbitDeck.Mod.Commands
             return CommandResult.Ok;
         }
 
+        public CommandResult SetView(ViewKind? view)
+        {
+            // La carte se consulte aussi sans pilote : un véhicule actif suffit, contrôlable ou non.
+            if (!GameAccess.TryGetFlightVessel(out _, out _, out var gameStateName))
+                return CommandResult.NoVessel();
+
+            var current = GameAccess.IsMapView(gameStateName);
+            var desired = view.HasValue ? view.Value == ViewKind.Map : !current;
+            if (desired == current)
+                return CommandResult.Ok;
+
+            // Le même appel que le bouton « carte » du jeu : état Map3DView et carte, ou retour à l'état précédent.
+            var provider = GameManager.Instance.Game.ViewController.DataProvider;
+            if (provider == null)
+                return CommandResult.Rejected("La carte n'est pas disponible dans cette version du jeu.");
+
+            provider.SetMapEnabled(desired);
+            return CommandResult.Ok;
+        }
+
         private static bool TryGetControllableVessel(out VesselVehicle vehicle, out VesselComponent vessel, out CommandResult failure)
         {
             failure = null;

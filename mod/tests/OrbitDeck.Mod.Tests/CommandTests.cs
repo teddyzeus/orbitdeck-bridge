@@ -51,6 +51,8 @@ internal sealed class FakeGameControls : IGameControls
     public CommandResult SetGear(bool? enabled) => Record($"gear {Describe(enabled)}");
 
     public CommandResult ActivateStage() => Record("stage");
+
+    public CommandResult SetView(ViewKind? view) => Record($"view {(view.HasValue ? view.Value.ToString().ToLowerInvariant() : "toggle")}");
 }
 
 public class CommandValidatorTests

@@ -15,7 +15,7 @@
         "type": { "const": "command" },
         "id": { "type": "string", "minLength": 1, "maxLength": 64 },
         "name": {
-          "enum": ["setThrottle", "adjustThrottle", "setSas", "toggleSas", "setRcs", "toggleRcs", "setSpeedMode", "setSasMode", "setLights", "toggleLights", "setBrakes", "toggleBrakes", "setGear", "toggleGear", "activateStage"]
+          "enum": ["setThrottle", "adjustThrottle", "setSas", "toggleSas", "setRcs", "toggleRcs", "setSpeedMode", "setSasMode", "setLights", "toggleLights", "setBrakes", "toggleBrakes", "setGear", "toggleGear", "activateStage", "setView", "toggleView"]
         },
         "args": { "type": "object" }
       },

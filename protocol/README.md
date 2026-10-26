@@ -23,7 +23,7 @@ Reference (in French): [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 | `type` | Content | Schema |
 |--------|---------|--------|
 | `hello` | `mod` (mod version), `game` (game version) | [server-message.schema.json](schema/server-message.schema.json) |
-| `state` | `seq`, `status`, `gameState`, `vessel`, `altitude`, `speed`, `throttle`, `sas`, `rcs`, `lights`, `brakes`, `gear`, `stage` | same |
+| `state` | `seq`, `status`, `gameState`, `vessel`, `altitude`, `speed`, `throttle`, `sas`, `rcs`, `lights`, `brakes`, `gear`, `stage`, `view` | same |
 | `ack` | `id` of the accepted command | same |
 | `error` | `id` (optional), `code`, `message` | same |
 | `pong` | — | same |
@@ -37,6 +37,8 @@ Reference (in French): [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 `lights`, `brakes`, `gear`: objects `{ "enabled": boolean }`, **absent** when the game does not provide the information (a client must treat them as optional).
 
 `stage`: object `{ "count": integer, "exhausted": boolean }`, the number shown on the game's stage button and whether there is nothing left to fire (the button is greyed). `exhausted` is decided by the mod because the threshold depends on the game (KSP 2: one stage left; KSP 1: stage 0 reached) and may be absent: a client then treats `count <= 1` as exhausted. The whole object is **absent** when the vessel has no readable staging stack.
+
+`view`: `ship` (flight camera on the vessel) or `map` (orbit map). **Absent** with an older mod or when the game does not provide it (a client then treats it as unknown). The map is only reported while a vessel is active; in the menus and at the space centre the field is absent like the rest of the vessel data.
 
 An unavailable SAS mode (target, maneuver node or orbit-mode navball required) is refused with `REJECTED_BY_GAME`.
 
@@ -64,6 +66,7 @@ Error codes: `BAD_REQUEST`, `UNKNOWN_COMMAND`, `NO_VESSEL`, `NOT_CONTROLLABLE`, 
 | `setLights` / `toggleLights` | `enabled`: boolean / — | Turns the lights on or off |
 | `setBrakes` / `toggleBrakes` | `enabled`: boolean / — | Applies or releases the brakes |
 | `setGear` / `toggleGear` | `enabled`: boolean / — | Deploys or retracts the landing gear |
+| `setView` / `toggleView` | `view`: `ship` or `map` / — | Shows the vessel view or the map (the game's map key). Idempotent for `setView`. |
 | `activateStage` | — | Fires the next stage (space bar). **Not idempotent and irreversible**: every accepted command fires one stage; a client should ask the user for confirmation. |
 
 Rules:

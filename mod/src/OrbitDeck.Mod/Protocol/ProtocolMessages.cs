@@ -76,6 +76,8 @@ namespace OrbitDeck.Mod.Protocol
                     message["brakes"] = new JObject { ["enabled"] = snapshot.BrakesEnabled.Value };
                 if (snapshot.GearEnabled.HasValue)
                     message["gear"] = new JObject { ["enabled"] = snapshot.GearEnabled.Value };
+                if (snapshot.View.HasValue)
+                    message["view"] = snapshot.View.Value == ViewKind.Map ? "map" : "ship";
                 if (snapshot.StageCount.HasValue)
                 {
                     var stage = new JObject { ["count"] = snapshot.StageCount.Value };

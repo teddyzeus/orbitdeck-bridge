@@ -6,6 +6,9 @@ namespace OrbitDeck.Mod.Telemetry
     /// <summary>Accès commun au véhicule actif, partagé par la lecture (GameState) et les commandes (GameControls).</summary>
     internal static class GameAccess
     {
+        /// <summary>La vue carte du vol est l'état global « Map3DView ».</summary>
+        public static bool IsMapView(string gameStateName) => gameStateName == KSP.Game.GameState.Map3DView.ToString();
+
         /// <summary>
         /// Retourne le véhicule actif si le joueur est en vol. Hors vol (menu, centre spatial, éditeur…), le jeu peut
         /// conserver le dernier véhicule en mémoire : l'état global du jeu fait foi.
@@ -23,7 +26,8 @@ namespace OrbitDeck.Mod.Telemetry
 
             var stateConfig = manager.Game.GlobalGameState?.GetGameState();
             gameStateName = stateConfig?.GameState.ToString();
-            if (stateConfig != null && !stateConfig.IsFlightMode)
+            // La vue carte est un état à part du jeu (Map3DView) mais reste du vol : le véhicule y est toujours actif.
+            if (stateConfig != null && !stateConfig.IsFlightMode && !IsMapView(gameStateName))
                 return false;
 
             var viewController = manager.Game.ViewController;

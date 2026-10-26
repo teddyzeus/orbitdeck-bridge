@@ -33,6 +33,7 @@ namespace OrbitDeck.Mod.Telemetry
                    || previous.BrakesEnabled != current.BrakesEnabled
                    || previous.GearEnabled != current.GearEnabled
                    || previous.StageCount != current.StageCount
+                   || previous.View != current.View
                    || !SameModes(previous.AvailableSasModes, current.AvailableSasModes);
         }
 

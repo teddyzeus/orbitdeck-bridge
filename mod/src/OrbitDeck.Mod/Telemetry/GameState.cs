@@ -37,7 +37,8 @@ namespace OrbitDeck.Mod.Telemetry
                 StageCount = stageCount,
                 // Comme le bouton d'étage du jeu, grisé quand il ne reste qu'un étage.
                 StageExhausted = stageCount.HasValue ? stageCount.Value <= 1 : (bool?)null,
-                AvailableSasModes = AvailableSasModesOf(vessel)
+                AvailableSasModes = AvailableSasModesOf(vessel),
+                View = GameAccess.IsMapView(gameStateName) ? ViewKind.Map : ViewKind.Ship
             };
         }
 
