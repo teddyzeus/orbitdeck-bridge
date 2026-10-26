@@ -32,9 +32,16 @@
     <Compile Include="..\OrbitDeck.Mod\Telemetry\TelemetrySnapshot.cs;..\OrbitDeck.Mod\Telemetry\IGameState.cs;..\OrbitDeck.Mod\Telemetry\ITelemetrySource.cs;..\OrbitDeck.Mod\Telemetry\SnapshotComparer.cs" Link="Shared\Telemetry\%(Filename)%(Extension)" />
   </ItemGroup>
 
-  <!-- KSP 1 ne fournit pas Newtonsoft.Json : la DLL est livrée avec le mod -->
+  <!--
+    KSP 1 ne fournit pas Newtonsoft.Json : la DLL est livrée avec le mod. On prend la version « net20 » du paquet : les autres
+    (net35, net45…) exigent System.Runtime.Serialization, absent du dossier Managed de KSP 1, et plantent au premier appel.
+  -->
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" GeneratePathProperty="true" ExcludeAssets="all" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(PkgNewtonsoft_Json)\lib\net20\Newtonsoft.Json.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
   </ItemGroup>
 
   <!-- Déploiement : copie les DLL dans <jeu>\GameData\OrbitDeck\Plugins\ -->
