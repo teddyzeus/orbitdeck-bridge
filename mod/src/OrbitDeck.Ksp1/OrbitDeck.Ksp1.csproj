@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- KSP 1.12 tourne sur Mono (profil .NET 4.x) : pas de netstandard.dll dans Managed/ -->
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <AssemblyName>OrbitDeck.Ksp1</AssemblyName>
+    <RootNamespace>OrbitDeck.Ksp1</RootNamespace>
+    <Version>0.1.0</Version>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- Les DLL du jeu ne sont jamais copiées dans la sortie -->
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <Target Name="CheckKsp1Dir" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="!Exists('$(Ksp1ManagedDir)\Assembly-CSharp.dll')"
+           Text="Dossier du jeu introuvable : définir Ksp1Dir dans mod/Directory.Build.props.user ou la variable d'environnement KSP1_DIR (valeur actuelle : '$(Ksp1Dir)')." />
+  </Target>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp"><HintPath>$(Ksp1ManagedDir)\Assembly-CSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(Ksp1ManagedDir)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <!-- Déploiement : copie la DLL dans <jeu>\GameData\OrbitDeck\Plugins\ -->
+  <Target Name="DeployToKsp1" AfterTargets="Build" Condition="Exists('$(Ksp1Dir)')">
+    <PropertyGroup>
+      <ModDeployDir>$(Ksp1Dir)\GameData\OrbitDeck\Plugins</ModDeployDir>
+    </PropertyGroup>
+    <MakeDir Directories="$(ModDeployDir)" />
+    <Copy SourceFiles="$(OutputPath)OrbitDeck.Ksp1.dll" DestinationFolder="$(ModDeployDir)" />
+    <Message Importance="high" Text="OrbitDeck (KSP 1) déployé dans $(ModDeployDir)" />
+  </Target>
+
+</Project>

@@ -22,7 +22,7 @@ KSP 2 Redux v0.2.8.5.103184-beta, Windows 10/11. Un mod pour KSP 1 est prévu da
 
 ## Développement
 
-- **Mod** : `mod/` (SDK .NET 8, DLL du jeu référencées via `KSP2_DIR` ou `mod/Directory.Build.props.user`), tests : `dotnet test mod/OrbitDeck.Mod.sln`.
+- **Mod KSP 2** : `mod/src/OrbitDeck.Mod` ; **mod KSP 1** (en cours) : `mod/src/OrbitDeck.Ksp1` (SDK .NET 8, DLL des jeux référencées via `KSP2_DIR` / `KSP1_DIR` ou `mod/Directory.Build.props.user`), tests : `dotnet test mod/OrbitDeck.Mod.sln`.
 - **Release** : `node scripts/package.mjs` produit `release/OrbitDeck-Bridge-vX.Y.Z.zip`.
 - **Outils** : `tools/` (client et faux serveur en ligne de commande, pour essayer le protocole sans le jeu).
 
