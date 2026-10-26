@@ -60,6 +60,7 @@ Codes d'erreur : `BAD_REQUEST`, `UNKNOWN_COMMAND`, `NO_VESSEL`, `NOT_CONTROLLABL
 | `setLights` / `toggleLights` | `enabled` : booléen / — | Allume ou éteint les phares |
 | `setBrakes` / `toggleBrakes` | `enabled` : booléen / — | Actionne ou relâche les freins |
 | `setGear` / `toggleGear` | `enabled` : booléen / — | Sort ou rentre le train d'atterrissage |
+| `activateStage` | — | Déclenche l'étage suivant (touche Espace). **Non idempotente et irréversible** : chaque commande acceptée déclenche un étage ; un client doit demander une confirmation à l'utilisateur. |
 
 Règles :
 - Chaque commande reçoit **une réponse** : `ack` (même `id`) si le jeu l'a exécutée, sinon `error` (même `id`).

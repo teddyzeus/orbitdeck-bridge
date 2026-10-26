@@ -18,7 +18,8 @@ namespace OrbitDeck.Mod.Commands
         SetBrakes,
         ToggleBrakes,
         SetGear,
-        ToggleGear
+        ToggleGear,
+        ActivateStage
     }
 
     /// <summary>Commande validée, prête à être exécutée sur le thread principal du jeu.</summary>

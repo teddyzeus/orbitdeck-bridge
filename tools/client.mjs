@@ -11,7 +11,7 @@
 // En mode interactif, tapez une commande puis Entrée :
 //   ping | throttle 0.5 | throttle +0.1 | sas on|off|toggle | rcs on|off|toggle | speed surface|orbit|target
 //   sasmode prograde|retrograde|normal|antinormal|radialIn|radialOut|target|antiTarget|maneuver|stabilityAssist
-//   lights|brakes|gear on|off|toggle
+//   lights|brakes|gear on|off|toggle | stage   (déclenche l'étage suivant !)
 //   ou directement un objet JSON.
 
 import readline from 'node:readline';
@@ -89,6 +89,8 @@ function toMessage(line) {
       return value === 'toggle' ? command('toggleRcs') : command('setRcs', { enabled: value === 'on' });
     case 'speed':
       return command('setSpeedMode', { mode: value });
+    case 'stage':
+      return command('activateStage');
     case 'sasmode':
       return command('setSasMode', { mode: value });
     case 'lights':

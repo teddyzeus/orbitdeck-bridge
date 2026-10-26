@@ -141,6 +141,9 @@ function handleCommand(socket, message) {
       state.sas = { enabled: true, mode: SAS_MODE_NAMES[commandArgs.mode] };
       break;
     }
+    case 'activateStage':
+      state.stagesFired = (state.stagesFired ?? 0) + 1;
+      break;
     case 'setLights':
     case 'setBrakes':
     case 'setGear': {

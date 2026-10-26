@@ -1,4 +1,5 @@
 using System;
+using KSP.UI.Screens;
 using OrbitDeck.Mod.Commands;
 using OrbitDeck.Mod.Telemetry;
 
@@ -110,6 +111,22 @@ namespace OrbitDeck.Ksp1
             return applied && autopilot.Enabled && autopilot.Mode == target
                 ? CommandResult.Ok
                 : CommandResult.Rejected("Le jeu n'a pas appliqué ce mode du SAS.");
+        }
+
+        public CommandResult ActivateStage()
+        {
+            if (!TryGetControllableVessel(out var vessel, out var failure))
+                return failure;
+
+            // Mêmes garde-fous que la touche Espace : verrou des étages (Maj + L), puis blocage du groupe d'actions « étage ».
+            if (!InputLockManager.IsUnlocked(ControlTypes.STAGING))
+                return CommandResult.Rejected("Le déclenchement des étages est verrouillé par le jeu (Maj + L).");
+
+            if (!vessel.ActionControlBlocked(KSPActionGroup.Stage))
+                StageManager.ActivateNextStage();
+
+            vessel.ActionGroups.ToggleGroup(KSPActionGroup.Stage);
+            return CommandResult.Ok;
         }
 
         public CommandResult SetLights(bool? enabled) =>

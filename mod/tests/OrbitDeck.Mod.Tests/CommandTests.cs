@@ -49,6 +49,8 @@ internal sealed class FakeGameControls : IGameControls
     public CommandResult SetBrakes(bool? enabled) => Record($"brakes {Describe(enabled)}");
 
     public CommandResult SetGear(bool? enabled) => Record($"gear {Describe(enabled)}");
+
+    public CommandResult ActivateStage() => Record("stage");
 }
 
 public class CommandValidatorTests

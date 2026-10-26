@@ -94,6 +94,9 @@ namespace OrbitDeck.Mod.Commands
                 case "toggleGear":
                     return Build(CommandKind.ToggleGear, null);
 
+                case "activateStage":
+                    return Build(CommandKind.ActivateStage, null);
+
                 default:
                     return ValidationResult.Invalid(ErrorCodes.UnknownCommand, $"Commande « {Truncate(name)} » inconnue.");
             }

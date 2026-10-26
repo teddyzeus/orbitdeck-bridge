@@ -121,6 +121,8 @@ namespace OrbitDeck.Mod.Commands
 
         public CommandResult SetGear(bool? enabled) => NotYetSupported();
 
+        public CommandResult ActivateStage() => NotYetSupported();
+
         private static float Clamp01(float value) => value < 0f ? 0f : value > 1f ? 1f : value;
 
         private static GameSpeedMode ToGameMode(SpeedMode mode)

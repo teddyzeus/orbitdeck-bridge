@@ -30,5 +30,8 @@ namespace OrbitDeck.Mod.Commands
 
         /// <summary>Sort ou rentre le train d'atterrissage ; <paramref name="enabled"/> null = inverser.</summary>
         CommandResult SetGear(bool? enabled);
+
+        /// <summary>Déclenche l'étage suivant (touche Espace du jeu). Action irréversible : non idempotente.</summary>
+        CommandResult ActivateStage();
     }
 }

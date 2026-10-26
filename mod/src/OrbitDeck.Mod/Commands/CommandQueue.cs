@@ -124,6 +124,7 @@ namespace OrbitDeck.Mod.Commands
                 case CommandKind.ToggleBrakes: return controls.SetBrakes(null);
                 case CommandKind.SetGear: return controls.SetGear(command.Enabled);
                 case CommandKind.ToggleGear: return controls.SetGear(null);
+                case CommandKind.ActivateStage: return controls.ActivateStage();
                 default: return CommandResult.Fail(ErrorCodes.UnknownCommand, "Commande non supportée.");
             }
         }

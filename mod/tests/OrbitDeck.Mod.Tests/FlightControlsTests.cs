@@ -164,3 +164,28 @@ public class FlightControlsStateTests
         Assert.True(SnapshotComparer.HasModeChange(before, after));
     }
 }
+
+public class StageCommandTests
+{
+    [Fact]
+    public void ActivateStage_takes_no_arguments()
+    {
+        var result = CommandValidator.Validate("activateStage", new JObject());
+
+        Assert.True(result.IsValid);
+        Assert.Equal(CommandKind.ActivateStage, result.Command.Kind);
+    }
+
+    [Fact]
+    public void ActivateStage_calls_the_game_once_per_command()
+    {
+        var queue = new CommandQueue();
+        var controls = new FakeGameControls();
+
+        queue.TryEnqueue(new PendingCommand("a", new GameCommand { Kind = CommandKind.ActivateStage }, _ => { }));
+        queue.TryEnqueue(new PendingCommand("b", new GameCommand { Kind = CommandKind.ActivateStage }, _ => { }));
+        queue.ProcessPending(controls);
+
+        Assert.Equal(new[] { "stage", "stage" }, controls.Calls);
+    }
+}
