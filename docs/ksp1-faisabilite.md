@@ -76,8 +76,8 @@ Le plus simple : le projet KSP 1 inclut les fichiers communs par lien (`<Compile
 
 | Étape | Contenu | Validation |
 |---|---|---|
-| K0 | Cet état des lieux ✅ ; choix du découpage (§4) | vous |
-| K1 | Projet `ksp1` compilable (`net472`), mod « hello » chargé par KSP 1, journal | 🧪 vous (journal) |
+| K0 ✅ | Cet état des lieux ; choix du découpage (§4) | vous |
+| K1 ✅ | Projet `ksp1` compilable (`net472`), mod « hello » chargé par KSP 1, journal | 🧪 validé (journal du 26/10/2026) |
 | K2 | Lecture : altitude, vitesse, type de vitesse, poussée, SAS, RCS, contrôlable | 🧪 vous (client en ligne de commande) |
 | K3 | Serveur et protocole branchés (code commun) | 🧪 vous |
 | K4 | Commandes : SAS, RCS, type de vitesse, puis poussée (point délicat) | 🧪 vous |
