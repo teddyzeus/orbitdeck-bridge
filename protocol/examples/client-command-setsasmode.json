@@ -1,0 +1,9 @@
+{
+  "v": 1,
+  "type": "command",
+  "id": "sd-12",
+  "name": "setSasMode",
+  "args": {
+    "mode": "retrograde"
+  }
+}

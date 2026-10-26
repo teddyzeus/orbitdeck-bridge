@@ -18,5 +18,17 @@ namespace OrbitDeck.Mod.Commands
         CommandResult SetRcs(bool? enabled);
 
         CommandResult SetSpeedMode(SpeedMode mode);
+
+        /// <summary>Choisit le mode du SAS (l'active au besoin).</summary>
+        CommandResult SetSasMode(SasModeKind mode);
+
+        /// <summary>Allume ou éteint les phares ; <paramref name="enabled"/> null = inverser.</summary>
+        CommandResult SetLights(bool? enabled);
+
+        /// <summary>Actionne ou relâche les freins ; <paramref name="enabled"/> null = inverser.</summary>
+        CommandResult SetBrakes(bool? enabled);
+
+        /// <summary>Sort ou rentre le train d'atterrissage ; <paramref name="enabled"/> null = inverser.</summary>
+        CommandResult SetGear(bool? enabled);
     }
 }

@@ -23,7 +23,7 @@ Référence : [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 | `type` | Contenu | Schéma |
 |--------|---------|--------|
 | `hello` | `mod` (version du mod), `game` (version du jeu) | [server-message.schema.json](schema/server-message.schema.json) |
-| `state` | `seq`, `status`, `gameState`, `vessel`, `altitude`, `speed`, `throttle`, `sas`, `rcs` | idem |
+| `state` | `seq`, `status`, `gameState`, `vessel`, `altitude`, `speed`, `throttle`, `sas`, `rcs`, `lights`, `brakes`, `gear` | idem |
 | `ack` | `id` de la commande acceptée | idem |
 | `error` | `id` (optionnel), `code`, `message` | idem |
 | `pong` | — | idem |
@@ -31,6 +31,10 @@ Référence : [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 `status` : `connected`, `noVessel` ou `notControllable`.
 `gameState` : état global du jeu (`FlightView`, `MainMenu`, `KerbalSpaceCenter`, `Loading`…), informatif.
 `speed.mode` : `surface`, `orbit` ou `target` ; `speed.target` vaut `null` sans cible.
+`sas.mode` : mode courant du SAS, parmi `StabilityAssist`, `Prograde`, `Retrograde`, `Normal`, `Antinormal`, `RadialIn`, `RadialOut`, `Target`, `AntiTarget`, `Maneuver` (la casse peut varier d'un jeu à l'autre : comparez sans tenir compte de la casse).
+`lights`, `brakes`, `gear` : objets `{ "enabled": booléen }`, **absents** quand le jeu ne fournit pas l'information (un client doit les traiter comme facultatifs).
+
+Un mode du SAS indisponible (cible, nœud de manœuvre ou navball en mode orbite requis) est refusé avec `REJECTED_BY_GAME`.
 
 Codes d'erreur : `BAD_REQUEST`, `UNKNOWN_COMMAND`, `NO_VESSEL`, `NOT_CONTROLLABLE`, `REJECTED_BY_GAME`, `INTERNAL`.
 
@@ -52,6 +56,10 @@ Codes d'erreur : `BAD_REQUEST`, `UNKNOWN_COMMAND`, `NO_VESSEL`, `NOT_CONTROLLABL
 | `setRcs` | `enabled` : booléen | Active ou coupe le RCS |
 | `toggleRcs` | — | Inverse le RCS |
 | `setSpeedMode` | `mode` : `surface`, `orbit` ou `target` | Change le type de vitesse affiché par le jeu |
+| `setSasMode` | `mode` : `stabilityAssist`, `prograde`, `retrograde`, `normal`, `antinormal`, `radialIn`, `radialOut`, `target`, `antiTarget` ou `maneuver` | Choisit le mode du SAS et l'allume au besoin |
+| `setLights` / `toggleLights` | `enabled` : booléen / — | Allume ou éteint les phares |
+| `setBrakes` / `toggleBrakes` | `enabled` : booléen / — | Actionne ou relâche les freins |
+| `setGear` / `toggleGear` | `enabled` : booléen / — | Sort ou rentre le train d'atterrissage |
 
 Règles :
 - Chaque commande reçoit **une réponse** : `ack` (même `id`) si le jeu l'a exécutée, sinon `error` (même `id`).

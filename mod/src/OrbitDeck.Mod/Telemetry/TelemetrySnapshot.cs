@@ -21,6 +21,21 @@ namespace OrbitDeck.Mod.Telemetry
         NotControllable
     }
 
+    /// <summary>Modes du pilote automatique (SAS) pilotables depuis le Stream Deck.</summary>
+    public enum SasModeKind
+    {
+        StabilityAssist,
+        Prograde,
+        Retrograde,
+        Normal,
+        Antinormal,
+        RadialIn,
+        RadialOut,
+        Target,
+        AntiTarget,
+        Maneuver
+    }
+
     /// <summary>Type de vitesse affiché par le jeu.</summary>
     public enum SpeedMode
     {
@@ -68,5 +83,14 @@ namespace OrbitDeck.Mod.Telemetry
         public string SasMode { get; init; }
 
         public bool RcsEnabled { get; init; }
+
+        /// <summary>Phares allumés ; null si le jeu ne permet pas de le lire.</summary>
+        public bool? LightsEnabled { get; init; }
+
+        /// <summary>Freins actionnés ; null si le jeu ne permet pas de le lire.</summary>
+        public bool? BrakesEnabled { get; init; }
+
+        /// <summary>Train d'atterrissage sorti ; null si le jeu ne permet pas de le lire.</summary>
+        public bool? GearEnabled { get; init; }
     }
 }

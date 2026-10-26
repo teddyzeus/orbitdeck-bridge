@@ -10,6 +10,8 @@
 //
 // En mode interactif, tapez une commande puis Entrée :
 //   ping | throttle 0.5 | throttle +0.1 | sas on|off|toggle | rcs on|off|toggle | speed surface|orbit|target
+//   sasmode prograde|retrograde|normal|antinormal|radialIn|radialOut|target|antiTarget|maneuver|stabilityAssist
+//   lights|brakes|gear on|off|toggle
 //   ou directement un objet JSON.
 
 import readline from 'node:readline';
@@ -51,6 +53,7 @@ function describe(message) {
         `gaz=${Math.round((message.throttle ?? 0) * 100)}%`,
         `SAS=${message.sas?.enabled ? 'on' : 'off'}(${message.sas?.mode ?? '-'})`,
         `RCS=${message.rcs?.enabled ? 'on' : 'off'}`,
+        `phares=${onOff(message.lights)} freins=${onOff(message.brakes)} train=${onOff(message.gear)}`,
       ].join(' | ');
     }
     case 'ack':
@@ -86,6 +89,14 @@ function toMessage(line) {
       return value === 'toggle' ? command('toggleRcs') : command('setRcs', { enabled: value === 'on' });
     case 'speed':
       return command('setSpeedMode', { mode: value });
+    case 'sasmode':
+      return command('setSasMode', { mode: value });
+    case 'lights':
+    case 'brakes':
+    case 'gear': {
+      const name = word.charAt(0).toUpperCase() + word.slice(1);
+      return value === 'toggle' ? command(`toggle${name}`) : command(`set${name}`, { enabled: value === 'on' });
+    }
     default:
       throw new Error(`Commande inconnue : « ${text} »`);
   }
@@ -107,6 +118,7 @@ socket.on('open', () => {
 
 // Par défaut, un état n'est affiché que si un élément « discret » a changé (pas l'altitude ni les vitesses,
 // qui varient en continu). --all affiche tous les états.
+const onOff = (field) => (field === undefined ? '?' : field.enabled ? 'on' : 'off');
 let lastDiscrete = null;
 function discreteKey(message) {
   return JSON.stringify([
@@ -119,6 +131,9 @@ function discreteKey(message) {
     message.sas?.enabled,
     message.sas?.mode,
     message.rcs?.enabled,
+    message.lights?.enabled,
+    message.brakes?.enabled,
+    message.gear?.enabled,
   ]);
 }
 

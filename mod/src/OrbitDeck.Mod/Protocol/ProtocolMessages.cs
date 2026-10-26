@@ -59,6 +59,14 @@ namespace OrbitDeck.Mod.Protocol
                     ["mode"] = snapshot.SasMode
                 };
                 message["rcs"] = new JObject { ["enabled"] = snapshot.RcsEnabled };
+
+                // Champs ajoutés après la v1 initiale : absents quand le jeu ne les fournit pas.
+                if (snapshot.LightsEnabled.HasValue)
+                    message["lights"] = new JObject { ["enabled"] = snapshot.LightsEnabled.Value };
+                if (snapshot.BrakesEnabled.HasValue)
+                    message["brakes"] = new JObject { ["enabled"] = snapshot.BrakesEnabled.Value };
+                if (snapshot.GearEnabled.HasValue)
+                    message["gear"] = new JObject { ["enabled"] = snapshot.GearEnabled.Value };
             }
 
             return Serialize(message);

@@ -117,6 +117,13 @@ namespace OrbitDeck.Mod.Commands
                 case CommandKind.SetRcs: return controls.SetRcs(command.Enabled);
                 case CommandKind.ToggleRcs: return controls.SetRcs(null);
                 case CommandKind.SetSpeedMode: return controls.SetSpeedMode(command.Mode);
+                case CommandKind.SetSasMode: return controls.SetSasMode(command.SasMode);
+                case CommandKind.SetLights: return controls.SetLights(command.Enabled);
+                case CommandKind.ToggleLights: return controls.SetLights(null);
+                case CommandKind.SetBrakes: return controls.SetBrakes(command.Enabled);
+                case CommandKind.ToggleBrakes: return controls.SetBrakes(null);
+                case CommandKind.SetGear: return controls.SetGear(command.Enabled);
+                case CommandKind.ToggleGear: return controls.SetGear(null);
                 default: return CommandResult.Fail(ErrorCodes.UnknownCommand, "Commande non supportée.");
             }
         }

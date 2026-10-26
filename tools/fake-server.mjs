@@ -6,7 +6,7 @@
 //   node fake-server.mjs --scenario menu       reste dans le menu (aucun véhicule)
 //   node fake-server.mjs --scenario cycle      alterne menu → vol → véhicule non contrôlable
 //
-// Les commandes (setThrottle, adjustThrottle, setSas, toggleSas, setRcs, toggleRcs, setSpeedMode) modifient l'état simulé,
+// Les commandes (setThrottle, adjustThrottle, setSas, toggleSas, setRcs, toggleRcs, setSpeedMode, setSasMode, setLights/Brakes/Gear et leurs toggle) modifient l'état simulé,
 // comme le fera le vrai mod à l'étape T4. Arrêt : Ctrl+C.
 
 import { WebSocketServer } from 'ws';
@@ -34,12 +34,20 @@ const state = {
   speedMode: 'surface',
   sas: { enabled: true, mode: 'StabilityAssist' },
   rcs: false,
+  lights: false,
+  brakes: false,
+  gear: true,
   target: null,
 };
 
 let seq = 0;
 let lastSent = '';
 
+const SAS_MODE_NAMES = {
+  stabilityAssist: 'StabilityAssist', prograde: 'Prograde', retrograde: 'Retrograde', normal: 'Normal', antinormal: 'Antinormal',
+  radialIn: 'RadialIn', radialOut: 'RadialOut', target: 'Target', antiTarget: 'AntiTarget', maneuver: 'Maneuver',
+};
+const SAS_MODES = Object.keys(SAS_MODE_NAMES);
 const round = (value, decimals = 2) => Math.round(value * 10 ** decimals) / 10 ** decimals;
 const isNumberIn = (value, min, max) => typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
 
@@ -60,6 +68,9 @@ function snapshot() {
     throttle: round(state.throttle, 3),
     sas: state.sas,
     rcs: { enabled: state.rcs },
+    lights: { enabled: state.lights },
+    brakes: { enabled: state.brakes },
+    gear: { enabled: state.gear },
   };
 }
 
@@ -124,6 +135,26 @@ function handleCommand(socket, message) {
       if (commandArgs.mode === 'target' && state.target === null) return error(socket, id, 'REJECTED_BY_GAME', 'Aucune cible sélectionnée');
       state.speedMode = commandArgs.mode;
       break;
+    case 'setSasMode': {
+      if (!SAS_MODES.includes(commandArgs.mode)) return error(socket, id, 'BAD_REQUEST', 'args.mode : ' + SAS_MODES.join(', '));
+      if ((commandArgs.mode === 'target' || commandArgs.mode === 'antiTarget') && state.target === null) return error(socket, id, 'REJECTED_BY_GAME', 'Aucune cible sélectionnée.');
+      state.sas = { enabled: true, mode: SAS_MODE_NAMES[commandArgs.mode] };
+      break;
+    }
+    case 'setLights':
+    case 'setBrakes':
+    case 'setGear': {
+      if (typeof commandArgs.enabled !== 'boolean') return error(socket, id, 'BAD_REQUEST', 'args.enabled doit être un booléen.');
+      state[name.slice(3).toLowerCase()] = commandArgs.enabled;
+      break;
+    }
+    case 'toggleLights':
+    case 'toggleBrakes':
+    case 'toggleGear': {
+      const key = name.slice(6).toLowerCase();
+      state[key] = !state[key];
+      break;
+    }
     default:
       return error(socket, id, 'UNKNOWN_COMMAND', `Commande « ${name} » inconnue`);
   }

@@ -65,6 +65,35 @@ namespace OrbitDeck.Mod.Commands
                         ? Build(CommandKind.SetSpeedMode, c => c.Mode = mode)
                         : BadArgument("args.mode doit valoir « surface », « orbit » ou « target ».");
 
+                case "setSasMode":
+                    return TryParseSasMode(args, out var sasMode)
+                        ? Build(CommandKind.SetSasMode, c => c.SasMode = sasMode)
+                        : BadArgument("args.mode doit valoir « stabilityAssist », « prograde », « retrograde », « normal », « antinormal », « radialIn », « radialOut », « target », « antiTarget » ou « maneuver ».");
+
+                case "setLights":
+                    return TryBoolean(args, "enabled", out var lights)
+                        ? Build(CommandKind.SetLights, c => c.Enabled = lights)
+                        : BadArgument("args.enabled doit être un booléen.");
+
+                case "toggleLights":
+                    return Build(CommandKind.ToggleLights, null);
+
+                case "setBrakes":
+                    return TryBoolean(args, "enabled", out var brakes)
+                        ? Build(CommandKind.SetBrakes, c => c.Enabled = brakes)
+                        : BadArgument("args.enabled doit être un booléen.");
+
+                case "toggleBrakes":
+                    return Build(CommandKind.ToggleBrakes, null);
+
+                case "setGear":
+                    return TryBoolean(args, "enabled", out var gear)
+                        ? Build(CommandKind.SetGear, c => c.Enabled = gear)
+                        : BadArgument("args.enabled doit être un booléen.");
+
+                case "toggleGear":
+                    return Build(CommandKind.ToggleGear, null);
+
                 default:
                     return ValidationResult.Invalid(ErrorCodes.UnknownCommand, $"Commande « {Truncate(name)} » inconnue.");
             }
@@ -118,6 +147,29 @@ namespace OrbitDeck.Mod.Commands
                 case "surface": mode = SpeedMode.Surface; return true;
                 case "orbit": mode = SpeedMode.Orbit; return true;
                 case "target": mode = SpeedMode.Target; return true;
+                default: return false;
+            }
+        }
+
+        private static bool TryParseSasMode(JObject args, out SasModeKind mode)
+        {
+            mode = SasModeKind.StabilityAssist;
+            var token = args["mode"];
+            if (token == null || token.Type != JTokenType.String)
+                return false;
+
+            switch (token.Value<string>())
+            {
+                case "stabilityAssist": mode = SasModeKind.StabilityAssist; return true;
+                case "prograde": mode = SasModeKind.Prograde; return true;
+                case "retrograde": mode = SasModeKind.Retrograde; return true;
+                case "normal": mode = SasModeKind.Normal; return true;
+                case "antinormal": mode = SasModeKind.Antinormal; return true;
+                case "radialIn": mode = SasModeKind.RadialIn; return true;
+                case "radialOut": mode = SasModeKind.RadialOut; return true;
+                case "target": mode = SasModeKind.Target; return true;
+                case "antiTarget": mode = SasModeKind.AntiTarget; return true;
+                case "maneuver": mode = SasModeKind.Maneuver; return true;
                 default: return false;
             }
         }

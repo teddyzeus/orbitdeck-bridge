@@ -39,6 +39,16 @@ internal sealed class FakeGameControls : IGameControls
     public CommandResult SetRcs(bool? enabled) => Record($"rcs {(enabled.HasValue ? enabled.Value.ToString().ToLowerInvariant() : "toggle")}");
 
     public CommandResult SetSpeedMode(SpeedMode mode) => Record($"speed {mode}");
+
+    public CommandResult SetSasMode(SasModeKind mode) => Record($"sasmode {mode}");
+
+    private static string Describe(bool? enabled) => enabled.HasValue ? enabled.Value.ToString().ToLowerInvariant() : "toggle";
+
+    public CommandResult SetLights(bool? enabled) => Record($"lights {Describe(enabled)}");
+
+    public CommandResult SetBrakes(bool? enabled) => Record($"brakes {Describe(enabled)}");
+
+    public CommandResult SetGear(bool? enabled) => Record($"gear {Describe(enabled)}");
 }
 
 public class CommandValidatorTests

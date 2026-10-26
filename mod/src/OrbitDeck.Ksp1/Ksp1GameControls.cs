@@ -80,6 +80,110 @@ namespace OrbitDeck.Ksp1
                 : CommandResult.Rejected("Le jeu n'a pas changé l'état du RCS.");
         }
 
+        public CommandResult SetSasMode(SasModeKind mode)
+        {
+            if (!TryGetControllableVessel(out var vessel, out var failure))
+                return failure;
+
+            if (!InputLockManager.IsUnlocked(ControlTypes.SAS) || vessel.ActionControlBlocked(KSPActionGroup.SAS))
+                return CommandResult.Rejected("Le SAS est verrouillé par le jeu.");
+
+            var autopilot = vessel.Autopilot;
+            if (!autopilot.SAS.CanEngageSAS())
+                return CommandResult.Rejected("Le SAS n'est pas disponible sur ce véhicule (pilote ou sonde adaptée requis).");
+
+            var target = ToGameMode(mode);
+            if (!autopilot.CanSetMode(target))
+                return CommandResult.Rejected(DescribeUnavailable(mode));
+
+            // Allume le SAS comme la touche T, puis choisit le mode tout de suite : sinon le jeu le démarre en mode
+            // « stabilité » à l'image suivante et écrase notre choix.
+            if (!vessel.ActionGroups[KSPActionGroup.SAS])
+            {
+                FlightInputHandler.state.killRot = !FlightInputHandler.state.killRot;
+                vessel.ActionGroups.ToggleGroup(KSPActionGroup.SAS);
+                if (!vessel.ActionGroups[KSPActionGroup.SAS])
+                    return CommandResult.Rejected("Le jeu n'a pas allumé le SAS.");
+            }
+
+            var applied = autopilot.Enabled ? autopilot.SetMode(target) : autopilot.Enable(target);
+            return applied && autopilot.Enabled && autopilot.Mode == target
+                ? CommandResult.Ok
+                : CommandResult.Rejected("Le jeu n'a pas appliqué ce mode du SAS.");
+        }
+
+        public CommandResult SetLights(bool? enabled) =>
+            SetActionGroup(KSPActionGroup.Light, ControlTypes.GROUP_LIGHTS, enabled, "Les phares", useSet: false);
+
+        public CommandResult SetBrakes(bool? enabled) =>
+            SetActionGroup(KSPActionGroup.Brakes, ControlTypes.GROUP_BRAKES, enabled, "Les freins", useSet: true);
+
+        public CommandResult SetGear(bool? enabled) =>
+            SetActionGroup(KSPActionGroup.Gear, ControlTypes.GROUP_GEARS, enabled, "Le train d'atterrissage", useSet: false);
+
+        /// <summary>Même chemin que les touches du jeu : verrou de saisie, blocage du groupe, puis bascule du groupe d'actions.</summary>
+        private static CommandResult SetActionGroup(KSPActionGroup group, ControlTypes lockType, bool? enabled, string label, bool useSet)
+        {
+            if (!TryGetControllableVessel(out var vessel, out var failure))
+                return failure;
+
+            if (!InputLockManager.IsUnlocked(lockType) || vessel.ActionControlBlocked(group))
+                return CommandResult.Rejected($"{label} : commande verrouillée par le jeu.");
+
+            var current = vessel.ActionGroups[group];
+            var desired = enabled ?? !current;
+            if (desired == current)
+                return CommandResult.Ok;
+
+            // Les freins sont tenus par la touche (SetGroup) ; les phares et le train basculent (ToggleGroup).
+            if (useSet)
+                vessel.ActionGroups.SetGroup(group, desired);
+            else
+                vessel.ActionGroups.ToggleGroup(group);
+
+            return vessel.ActionGroups[group] == desired
+                ? CommandResult.Ok
+                : CommandResult.Rejected($"{label} : le jeu n'a pas changé l'état.");
+        }
+
+        private static string DescribeUnavailable(SasModeKind mode)
+        {
+            switch (mode)
+            {
+                case SasModeKind.Target:
+                case SasModeKind.AntiTarget:
+                    return "Aucune cible sélectionnée.";
+                case SasModeKind.Maneuver:
+                    return "Aucun nœud de manœuvre.";
+                case SasModeKind.Normal:
+                case SasModeKind.Antinormal:
+                case SasModeKind.RadialIn:
+                case SasModeKind.RadialOut:
+                    return FlightGlobals.speedDisplayMode != FlightGlobals.SpeedDisplayModes.Orbit
+                        ? "Ce mode du SAS n'est disponible qu'avec le navball en mode orbite."
+                        : "Ce mode du SAS n'est pas disponible dans la situation actuelle.";
+                default:
+                    return "Ce mode du SAS n'est pas disponible dans la situation actuelle.";
+            }
+        }
+
+        private static VesselAutopilot.AutopilotMode ToGameMode(SasModeKind mode)
+        {
+            switch (mode)
+            {
+                case SasModeKind.Prograde: return VesselAutopilot.AutopilotMode.Prograde;
+                case SasModeKind.Retrograde: return VesselAutopilot.AutopilotMode.Retrograde;
+                case SasModeKind.Normal: return VesselAutopilot.AutopilotMode.Normal;
+                case SasModeKind.Antinormal: return VesselAutopilot.AutopilotMode.Antinormal;
+                case SasModeKind.RadialIn: return VesselAutopilot.AutopilotMode.RadialIn;
+                case SasModeKind.RadialOut: return VesselAutopilot.AutopilotMode.RadialOut;
+                case SasModeKind.Target: return VesselAutopilot.AutopilotMode.Target;
+                case SasModeKind.AntiTarget: return VesselAutopilot.AutopilotMode.AntiTarget;
+                case SasModeKind.Maneuver: return VesselAutopilot.AutopilotMode.Maneuver;
+                default: return VesselAutopilot.AutopilotMode.StabilityAssist;
+            }
+        }
+
         public CommandResult SetSpeedMode(SpeedMode mode)
         {
             if (!TryGetVessel(out var vessel, out var failure))

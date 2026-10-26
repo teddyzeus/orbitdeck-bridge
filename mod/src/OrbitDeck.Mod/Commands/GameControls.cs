@@ -109,6 +109,18 @@ namespace OrbitDeck.Mod.Commands
             return CommandResult.Ok;
         }
 
+        // Modes du SAS, phares, freins et train d'atterrissage : pris en charge par le mod KSP 1 ; pas encore par celui de KSP 2.
+        private static CommandResult NotYetSupported() =>
+            CommandResult.Rejected("Cette commande n'est pas encore prise en charge dans le mod pour KSP 2.");
+
+        public CommandResult SetSasMode(SasModeKind mode) => NotYetSupported();
+
+        public CommandResult SetLights(bool? enabled) => NotYetSupported();
+
+        public CommandResult SetBrakes(bool? enabled) => NotYetSupported();
+
+        public CommandResult SetGear(bool? enabled) => NotYetSupported();
+
         private static float Clamp01(float value) => value < 0f ? 0f : value > 1f ? 1f : value;
 
         private static GameSpeedMode ToGameMode(SpeedMode mode)

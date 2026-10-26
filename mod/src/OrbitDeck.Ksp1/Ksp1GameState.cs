@@ -30,7 +30,10 @@ namespace OrbitDeck.Ksp1
                 Throttle = FlightInputHandler.state.mainThrottle,
                 SasEnabled = autopilot != null && autopilot.Enabled,
                 SasMode = autopilot != null ? autopilot.Mode.ToString() : null,
-                RcsEnabled = vessel.ActionGroups[KSPActionGroup.RCS]
+                RcsEnabled = vessel.ActionGroups[KSPActionGroup.RCS],
+                LightsEnabled = vessel.ActionGroups[KSPActionGroup.Light],
+                BrakesEnabled = vessel.ActionGroups[KSPActionGroup.Brakes],
+                GearEnabled = vessel.ActionGroups[KSPActionGroup.Gear]
             };
         }
 

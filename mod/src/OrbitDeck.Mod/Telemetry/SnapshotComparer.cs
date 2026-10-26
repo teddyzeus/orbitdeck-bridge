@@ -27,7 +27,10 @@ namespace OrbitDeck.Mod.Telemetry
                    || previous.SpeedMode != current.SpeedMode
                    || previous.SasEnabled != current.SasEnabled
                    || previous.SasMode != current.SasMode
-                   || previous.RcsEnabled != current.RcsEnabled;
+                   || previous.RcsEnabled != current.RcsEnabled
+                   || previous.LightsEnabled != current.LightsEnabled
+                   || previous.BrakesEnabled != current.BrakesEnabled
+                   || previous.GearEnabled != current.GearEnabled;
         }
 
         /// <summary>Changement d'un état discret : <see cref="HasModeChange"/> ou poussée au-delà du seuil.</summary>

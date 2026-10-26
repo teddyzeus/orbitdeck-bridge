@@ -11,7 +11,14 @@ namespace OrbitDeck.Mod.Commands
         ToggleSas,
         SetRcs,
         ToggleRcs,
-        SetSpeedMode
+        SetSpeedMode,
+        SetSasMode,
+        SetLights,
+        ToggleLights,
+        SetBrakes,
+        ToggleBrakes,
+        SetGear,
+        ToggleGear
     }
 
     /// <summary>Commande validée, prête à être exécutée sur le thread principal du jeu.</summary>
@@ -26,6 +33,9 @@ namespace OrbitDeck.Mod.Commands
         public bool Enabled { get; set; }
 
         public SpeedMode Mode { get; set; }
+
+        /// <summary>Mode du SAS visé pour SetSasMode.</summary>
+        public SasModeKind SasMode { get; set; }
     }
 
     /// <summary>Résultat de l'exécution d'une commande dans le jeu.</summary>

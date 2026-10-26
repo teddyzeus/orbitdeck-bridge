@@ -56,6 +56,18 @@
         "rcs": {
           "type": "object",
           "properties": { "enabled": { "type": "boolean" } }
+        },
+        "lights": {
+          "type": "object",
+          "properties": { "enabled": { "type": "boolean" } }
+        },
+        "brakes": {
+          "type": "object",
+          "properties": { "enabled": { "type": "boolean" } }
+        },
+        "gear": {
+          "type": "object",
+          "properties": { "enabled": { "type": "boolean" } }
         }
       },
       "required": ["v", "type", "seq", "status"]
