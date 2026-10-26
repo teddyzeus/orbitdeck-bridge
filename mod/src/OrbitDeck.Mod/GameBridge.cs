@@ -55,14 +55,26 @@ namespace OrbitDeck.Mod
         /// <summary>Remplace l'exécuteur de commandes (tests).</summary>
         internal IGameControls Controls { get; set; } = new GameControls();
 
+        /// <summary>
+        /// Appelé quand le jeu détruit ce composant alors qu'il continue de tourner (par exemple au retour au menu
+        /// principal, à la fin de « Game Shutdown ») : le serveur est alors arrêté, et le mod doit le relancer.
+        /// </summary>
+        internal Action HostDestroyed { get; set; }
+
+        private bool _quitting;
+
         private void OnDestroy()
         {
             _watcher?.Dispose();
             Server?.Stop();
+
+            if (!_quitting)
+                HostDestroyed?.Invoke();
         }
 
         private void OnApplicationQuit()
         {
+            _quitting = true;
             Server?.Stop();
         }
 

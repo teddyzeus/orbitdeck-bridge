@@ -6,7 +6,7 @@
     <Nullable>disable</Nullable>
     <AssemblyName>OrbitDeck.Mod</AssemblyName>
     <RootNamespace>OrbitDeck.Mod</RootNamespace>
-    <Version>0.4.0</Version>
+    <Version>0.4.1</Version>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <!-- Les DLL du jeu ne sont jamais copiées dans la sortie -->
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
@@ -34,8 +34,8 @@
     <None Include="..\..\package\swinfo.json" Link="package\swinfo.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <!-- Déploiement : copie la DLL et swinfo.json dans <jeu>\mods\orbitdeck\ -->
-  <Target Name="DeployToGame" AfterTargets="Build" Condition="Exists('$(Ksp2Dir)')">
+  <!-- Déploiement : copie la DLL et swinfo.json dans <jeu>\mods\orbitdeck\ (ignoré avec -p:NoDeploy=true, par exemple jeu ouvert) -->
+  <Target Name="DeployToGame" AfterTargets="Build" Condition="Exists('$(Ksp2Dir)') And '$(NoDeploy)' != 'true'">
     <PropertyGroup>
       <ModDeployDir>$(Ksp2Dir)\mods\orbitdeck</ModDeployDir>
     </PropertyGroup>
