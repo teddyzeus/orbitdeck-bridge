@@ -2,12 +2,14 @@
 
 Affichez et pilotez **Kerbal Space Program 2 (KSP 2 Redux)** depuis un **Stream Deck 15 touches**.
 
-> Statut : version 0.1.0 (MVP). Voir [docs/installation.md](docs/installation.md) pour installer le mod et le plugin.
+> Statut : version 0.1.0 (MVP). **[Télécharger la dernière version](https://github.com/teddyzeus/StreamPlug/releases/latest)**, puis suivre [docs/installation.md](docs/installation.md).
 
 ## Fonctionnalités (MVP)
 
-- Lecture : altitude (mer ↔ surface), vitesse (surface / orbitale / cible).
-- Commandes : throttle (0 / 50 / 100 %, ±10 %), SAS, RCS.
+- **Lecture** : altitude (sol par défaut, appui = mer ↔ sol), vitesse (type du navball : sol, orbite, cible ; appui = type suivant), poussée, état de la connexion.
+- **Commandes** : SAS et RCS (appui = activer/couper), poussée (fixer à 0 / 25 / 50 / 75 / 100 %, ±5 / 10 / 25 %).
+- Reconnexion automatique, touches grisées quand le jeu n'est pas lancé, croix rouge si une commande est refusée.
+- Interface en français ou en anglais selon le logiciel Stream Deck.
 
 ## Architecture
 
