@@ -80,7 +80,7 @@ Le plus simple : le projet KSP 1 inclut les fichiers communs par lien (`<Compile
 | K1 ✅ | Projet `ksp1` compilable (`net472`), mod « hello » chargé par KSP 1, journal | 🧪 validé (journal du 26/10/2026) |
 | K2 ✅ | Lecture : altitude, vitesse, type de vitesse, poussée, SAS, RCS, contrôlable | 🧪 validé en vol (journal du 26/10/2026) ; altitude sol = `radarAltitude` |
 | K3 ✅ | Serveur et protocole branchés (code commun) | 🧪 validé en jeu (client en ligne de commande et plugin, 26/10/2026) |
-| K4 | Commandes : SAS, RCS, type de vitesse, puis poussée (point délicat) | 🧪 vous |
+| K4 ✅ | Commandes : SAS, RCS, type de vitesse, puis poussée (point délicat) | 🧪 SAS, RCS et poussée validés en vol (journal du 26/10/2026) ; type de vitesse et cas refusés à confirmer dans la recette K5 |
 | K5 | Plugin Stream Deck avec KSP 1, recette complète, packaging, release | 🧪 vous |
 
 Même mode de travail que pour KSP 2 : vous testez dans le jeu après chaque étape et vous m'envoyez les journaux.
