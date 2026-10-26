@@ -1,8 +1,8 @@
 # OrbitDeck Bridge
 
-Mod gratuit et open source (licence MIT) qui expose en local les données de **Kerbal Space Program 2 (KSP 2 Redux)** et reçoit des commandes, par WebSocket sur `127.0.0.1:18765`. Il alimente le plugin Stream Deck **OrbitDeck**, mais le protocole est documenté et ouvert : vous pouvez écrire votre propre client.
+Mod gratuit et open source (licence MIT) pour **Kerbal Space Program 1** et **Kerbal Space Program 2 (Redux)** : il expose en local les données du jeu et reçoit des commandes, par WebSocket sur `127.0.0.1:18765`. Il alimente le plugin Stream Deck **OrbitDeck**, mais le protocole est documenté et ouvert : vous pouvez écrire votre propre client.
 
-> Statut : version 0.2.0. **[Télécharger la dernière version](https://github.com/teddyzeus/orbitdeck-bridge/releases/latest)**, puis suivre [docs/installation.md](docs/installation.md).
+> Statut : version 0.3.0. **[Télécharger la dernière version](https://github.com/teddyzeus/orbitdeck-bridge/releases/latest)**, puis suivre [docs/installation.md](docs/installation.md).
 
 ## Ce que le mod fournit
 
@@ -12,20 +12,27 @@ Mod gratuit et open source (licence MIT) qui expose en local les données de **K
 
 ## Documentation
 
-- [Installation](docs/installation.md)
+- [Installation](docs/installation.md) (KSP 1 et KSP 2)
 - [Protocole](protocol/README.md) (schémas JSON et exemples)
-- [Spécifications techniques](SPECS-TECHNIQUES.md)
+- [Recette de test](docs/test-checklist.md)
+- [Spécifications techniques](SPECS-TECHNIQUES.md) (KSP 2) et [étude de faisabilité KSP 1](docs/ksp1-faisabilite.md)
 
 ## Compatibilité
 
-KSP 2 Redux v0.2.8.5.103184-beta, Windows 10/11. Un mod pour KSP 1 est prévu dans ce même dépôt.
+| Jeu | Version testée | Dossier du mod |
+|-----|----------------|----------------|
+| KSP 2 (Redux) | v0.2.8.5.103184-beta | `mods\orbitdeck\` |
+| KSP 1 | 1.12.5 | `GameData\OrbitDeck\` |
+
+Windows 10/11.
 
 ## Développement
 
-- **Mod KSP 2** : `mod/src/OrbitDeck.Mod` ; **mod KSP 1** (en cours) : `mod/src/OrbitDeck.Ksp1` (SDK .NET 8, DLL des jeux référencées via `KSP2_DIR` / `KSP1_DIR` ou `mod/Directory.Build.props.user`), tests : `dotnet test mod/OrbitDeck.Mod.sln`.
-- **Release** : `node scripts/package.mjs` produit `release/OrbitDeck-Bridge-vX.Y.Z.zip`.
+- **Mod KSP 2** : `mod/src/OrbitDeck.Mod` ; **mod KSP 1** : `mod/src/OrbitDeck.Ksp1`. SDK .NET 8, DLL des jeux référencées via `KSP2_DIR` / `KSP1_DIR` ou `mod/Directory.Build.props.user`. Le serveur, le protocole et les commandes sont communs : le projet KSP 1 compile les mêmes fichiers (dossiers `Server`, `Protocol`, `Commands`, `Config`, `Telemetry` de `OrbitDeck.Mod`).
+- **Tests** : `dotnet test mod/OrbitDeck.Mod.sln`.
+- **Release** : `node scripts/package.mjs` produit `release/OrbitDeck-Bridge-KSP2-vX.Y.Z.zip` et `release/OrbitDeck-Bridge-KSP1-vX.Y.Z.zip`.
 - **Outils** : `tools/` (client et faux serveur en ligne de commande, pour essayer le protocole sans le jeu).
 
 ## Licence
 
-[MIT](LICENSE). Le nom « OrbitDeck » et le plugin Stream Deck ne sont pas couverts par cette licence.
+[MIT](LICENSE). Le nom « OrbitDeck » et le plugin Stream Deck ne sont pas couverts par cette licence. Le mod KSP 1 embarque Newtonsoft.Json (licence MIT, voir `LICENSE-Newtonsoft.Json.txt` dans l'archive).

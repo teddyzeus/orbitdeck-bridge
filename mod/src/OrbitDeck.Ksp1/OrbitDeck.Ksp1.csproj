@@ -7,7 +7,7 @@
     <Nullable>disable</Nullable>
     <AssemblyName>OrbitDeck.Ksp1</AssemblyName>
     <RootNamespace>OrbitDeck.Ksp1</RootNamespace>
-    <Version>0.1.0</Version>
+    <Version>0.3.0</Version>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <!-- Les DLL du jeu ne sont jamais copiées (Private=false) ; seule Newtonsoft.Json l'est -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
