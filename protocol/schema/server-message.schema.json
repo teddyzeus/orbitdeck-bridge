@@ -74,6 +74,23 @@
           "properties": { "enabled": { "type": "boolean" } }
         },
         "view": { "enum": ["ship", "map"] },
+        "time": {
+          "type": "object",
+          "required": ["ut", "rate", "index", "rates", "mode", "paused"],
+          "properties": {
+            "ut": { "type": "number" },
+            "rate": { "type": "number", "exclusiveMinimum": 0 },
+            "index": { "type": "integer", "minimum": 0 },
+            "rates": { "type": "array", "items": { "type": "number", "exclusiveMinimum": 0 } },
+            "mode": { "enum": ["rails", "physics"] },
+            "paused": { "type": "boolean" },
+            "pausable": { "type": "boolean" },
+            "maxIndex": { "type": "integer", "minimum": 0 },
+            "limit": { "enum": ["atmosphere", "altitude", "thrust", "ground", "proximity", "other"] },
+            "auto": { "type": "boolean" },
+            "day": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
         "stage": {
           "type": "object",
           "properties": { "count": { "type": "integer", "minimum": 0 }, "exhausted": { "type": "boolean" } }

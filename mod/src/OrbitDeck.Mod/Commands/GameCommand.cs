@@ -21,7 +21,13 @@ namespace OrbitDeck.Mod.Commands
         ToggleGear,
         ActivateStage,
         SetView,
-        ToggleView
+        ToggleView,
+        IncreaseWarp,
+        DecreaseWarp,
+        StopWarp,
+        SetWarpRate,
+        SetPause,
+        TogglePause
     }
 
     /// <summary>Commande validée, prête à être exécutée sur le thread principal du jeu.</summary>
@@ -32,8 +38,11 @@ namespace OrbitDeck.Mod.Commands
         /// <summary>Poussée visée (SetThrottle, entre 0 et 1) ou variation (AdjustThrottle, entre -1 et 1).</summary>
         public float Amount { get; set; }
 
-        /// <summary>État visé pour SetSas et SetRcs.</summary>
+        /// <summary>État visé pour SetSas et SetRcs (et SetPause : jeu en pause).</summary>
         public bool Enabled { get; set; }
+
+        /// <summary>Facteur de temps visé pour SetWarpRate.</summary>
+        public double Rate { get; set; }
 
         public SpeedMode Mode { get; set; }
 

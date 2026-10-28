@@ -29,7 +29,7 @@
     <Compile Include="..\OrbitDeck.Mod\Protocol\*.cs" Link="Shared\Protocol\%(Filename)%(Extension)" />
     <Compile Include="..\OrbitDeck.Mod\Commands\GameCommand.cs;..\OrbitDeck.Mod\Commands\IGameControls.cs;..\OrbitDeck.Mod\Commands\CommandValidator.cs;..\OrbitDeck.Mod\Commands\CommandQueue.cs" Link="Shared\Commands\%(Filename)%(Extension)" />
     <Compile Include="..\OrbitDeck.Mod\Config\OrbitDeckConfig.cs" Link="Shared\Config\%(Filename)%(Extension)" />
-    <Compile Include="..\OrbitDeck.Mod\Telemetry\TelemetrySnapshot.cs;..\OrbitDeck.Mod\Telemetry\IGameState.cs;..\OrbitDeck.Mod\Telemetry\ITelemetrySource.cs;..\OrbitDeck.Mod\Telemetry\SnapshotComparer.cs" Link="Shared\Telemetry\%(Filename)%(Extension)" />
+    <Compile Include="..\OrbitDeck.Mod\Telemetry\TelemetrySnapshot.cs;..\OrbitDeck.Mod\Telemetry\IGameState.cs;..\OrbitDeck.Mod\Telemetry\ITelemetrySource.cs;..\OrbitDeck.Mod\Telemetry\SnapshotComparer.cs;..\OrbitDeck.Mod\Telemetry\TimeInfo.cs" Link="Shared\Telemetry\%(Filename)%(Extension)" />
   </ItemGroup>
 
   <!--

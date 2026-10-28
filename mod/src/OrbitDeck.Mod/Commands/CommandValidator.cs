@@ -105,6 +105,28 @@ namespace OrbitDeck.Mod.Commands
                 case "toggleView":
                     return Build(CommandKind.ToggleView, null);
 
+                case "increaseWarp":
+                    return Build(CommandKind.IncreaseWarp, null);
+
+                case "decreaseWarp":
+                    return Build(CommandKind.DecreaseWarp, null);
+
+                case "stopWarp":
+                    return Build(CommandKind.StopWarp, null);
+
+                case "setWarpRate":
+                    return TryPositiveNumber(args, "rate", out var rate)
+                        ? Build(CommandKind.SetWarpRate, c => c.Rate = rate)
+                        : BadArgument("args.rate doit être un nombre strictement positif.");
+
+                case "setPause":
+                    return TryBoolean(args, "paused", out var paused)
+                        ? Build(CommandKind.SetPause, c => c.Enabled = paused)
+                        : BadArgument("args.paused doit être un booléen.");
+
+                case "togglePause":
+                    return Build(CommandKind.TogglePause, null);
+
                 default:
                     return ValidationResult.Invalid(ErrorCodes.UnknownCommand, $"Commande « {Truncate(name)} » inconnue.");
             }
@@ -132,6 +154,21 @@ namespace OrbitDeck.Mod.Commands
                 return false;
 
             value = (float)number;
+            return true;
+        }
+
+        private static bool TryPositiveNumber(JObject args, string key, out double value)
+        {
+            value = 0;
+            var token = args[key];
+            if (token == null || (token.Type != JTokenType.Float && token.Type != JTokenType.Integer))
+                return false;
+
+            var number = token.Value<double>();
+            if (double.IsNaN(number) || double.IsInfinity(number) || number <= 0)
+                return false;
+
+            value = number;
             return true;
         }
 

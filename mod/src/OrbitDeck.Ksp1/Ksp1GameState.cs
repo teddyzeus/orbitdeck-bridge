@@ -43,8 +43,22 @@ namespace OrbitDeck.Ksp1
                 // Sur KSP 1, l'étage 0 est le dernier : la touche ne se grise que lorsqu'il n'y en a plus.
                 StageExhausted = vessel.currentStage <= 0,
                 View = MapView.MapIsEnabled ? ViewKind.Map : ViewKind.Ship,
-                AvailableSasModes = AvailableSasModesOf(autopilot)
+                AvailableSasModes = AvailableSasModesOf(autopilot),
+                Time = TimeOf()
             };
+        }
+
+        /// <summary>Temps du jeu ; null si illisible (le reste de l'état reste publié).</summary>
+        private static TimeInfo TimeOf()
+        {
+            try
+            {
+                return Ksp1GameTime.TryGetFlight(out var timeWarp) ? Ksp1GameTime.Read(timeWarp) : null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         /// <summary>

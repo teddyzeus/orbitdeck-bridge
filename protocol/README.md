@@ -23,7 +23,7 @@ Reference (in French): [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 | `type` | Content | Schema |
 |--------|---------|--------|
 | `hello` | `mod` (mod version), `game` (game version) | [server-message.schema.json](schema/server-message.schema.json) |
-| `state` | `seq`, `status`, `gameState`, `vessel`, `altitude`, `speed`, `throttle`, `sas`, `rcs`, `lights`, `brakes`, `gear`, `stage`, `view` | same |
+| `state` | `seq`, `status`, `gameState`, `vessel`, `altitude`, `speed`, `throttle`, `sas`, `rcs`, `lights`, `brakes`, `gear`, `stage`, `view`, `time` | same |
 | `ack` | `id` of the accepted command | same |
 | `error` | `id` (optional), `code`, `message` | same |
 | `pong` | — | same |
@@ -39,6 +39,15 @@ Reference (in French): [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 `stage`: object `{ "count": integer, "exhausted": boolean }`, the number shown on the game's stage button and whether there is nothing left to fire (the button is greyed). `exhausted` is decided by the mod because the threshold depends on the game (KSP 2: one stage left; KSP 1: stage 0 reached) and may be absent: a client then treats `count <= 1` as exhausted. The whole object is **absent** when the vessel has no readable staging stack.
 
 `view`: `ship` (flight camera on the vessel) or `map` (orbit map). **Absent** with an older mod or when the game does not provide it (a client then treats it as unknown). The map is only reported while a vessel is active; in the menus and at the space centre the field is absent like the rest of the vessel data.
+
+`time`: the game's time, **absent** with an older mod, when the game does not provide it, and without a vessel.
+- `ut`: game time in seconds (it advances all the time and does **not** trigger a new `state`; a client estimates it between two states with `rate`, and stops when `paused`).
+- `rate`: the time factor applied now (1 = normal); during a ramp-up it differs from `rates[index]`, the step the game asked for.
+- `rates`, `index`: the steps of the **current mode**, from the slowest to the fastest, and the position of the requested step.
+- `mode`: `rails` (high warp, the vessel is frozen on its orbit) or `physics` (low warp, full simulation).
+- `paused`: the game is paused. `pausable`: the mod can pause it (absent = false).
+- `maxIndex`: the highest step allowed now; absent = unknown. `limit`: why the next step is refused (`atmosphere`, `altitude`, `thrust`, `ground`, `proximity`, `other`); absent when nothing refuses it or the game does not say.
+- `auto`: an automatic warp (to a given instant) is running. `day`: length of a game day in seconds; absent = unknown.
 
 An unavailable SAS mode (target, maneuver node or orbit-mode navball required) is refused with `REJECTED_BY_GAME`.
 
@@ -67,6 +76,10 @@ Error codes: `BAD_REQUEST`, `UNKNOWN_COMMAND`, `NO_VESSEL`, `NOT_CONTROLLABLE`, 
 | `setBrakes` / `toggleBrakes` | `enabled`: boolean / — | Applies or releases the brakes |
 | `setGear` / `toggleGear` | `enabled`: boolean / — | Deploys or retracts the landing gear |
 | `setView` / `toggleView` | `view`: `ship` or `map` / — | Shows the vessel view or the map (the game's map key). Idempotent for `setView`. |
+| `increaseWarp` / `decreaseWarp` | — | Moves to the next / previous time step of the current mode. From the pause, `increaseWarp` resumes at 1× then goes up one step; `decreaseWarp` does nothing at 1× or paused. **Not idempotent.** |
+| `stopWarp` | — | Back to 1× at once: cancels an automatic warp and leaves the pause. Idempotent; the emergency stop. |
+| `setWarpRate` | `rate`: number > 0 (the factor, for example `100`) | Selects the step whose factor is `rate` in the current mode; `REJECTED_BY_GAME` if there is none or the game refuses it. Leaves the pause. |
+| `setPause` / `togglePause` | `paused`: boolean / — | Pauses or resumes the game. |
 | `activateStage` | — | Fires the next stage (space bar). **Not idempotent and irreversible**: every accepted command fires one stage; a client should ask the user for confirmation. |
 
 Rules:

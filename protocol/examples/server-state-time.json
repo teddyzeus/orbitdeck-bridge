@@ -1,0 +1,26 @@
+{
+  "v": 1,
+  "type": "state",
+  "seq": 2210,
+  "status": "connected",
+  "gameState": "FlightView",
+  "vessel": { "name": "Kerbal X" },
+  "altitude": { "seaLevel": 85000, "surface": 85000 },
+  "speed": { "mode": "orbit", "surface": 2280.4, "orbital": 2246.1, "target": null },
+  "throttle": 0,
+  "sas": { "enabled": true, "mode": "Prograde" },
+  "rcs": { "enabled": false },
+  "time": {
+    "ut": 1234567.8,
+    "rate": 100,
+    "index": 4,
+    "rates": [1, 5, 10, 50, 100, 1000, 10000, 100000],
+    "mode": "rails",
+    "paused": false,
+    "pausable": true,
+    "maxIndex": 5,
+    "limit": "altitude",
+    "auto": false,
+    "day": 21600
+  }
+}

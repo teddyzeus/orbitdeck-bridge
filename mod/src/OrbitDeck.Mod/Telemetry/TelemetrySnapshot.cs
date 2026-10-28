@@ -119,5 +119,8 @@ namespace OrbitDeck.Mod.Telemetry
         /// manœuvre, navball hors mode orbite, SAS indisponible…). Liste vide : SAS inutilisable ; null : le jeu ne permet pas de le lire.
         /// </summary>
         public IReadOnlyList<SasModeKind> AvailableSasModes { get; init; }
+
+        /// <summary>Temps du jeu (vitesse, pause, paliers) ; null si le jeu ne permet pas de le lire.</summary>
+        public TimeInfo Time { get; init; }
     }
 }

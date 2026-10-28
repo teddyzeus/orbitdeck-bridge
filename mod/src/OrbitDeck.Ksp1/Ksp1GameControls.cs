@@ -129,6 +129,101 @@ namespace OrbitDeck.Ksp1
             return CommandResult.Ok;
         }
 
+        public CommandResult IncreaseWarp()
+        {
+            if (!TryGetFlightTime(out var timeWarp, out var failure))
+                return failure;
+
+            // Depuis la pause : reprise à 1× puis un palier de plus.
+            if (FlightDriver.Pause)
+            {
+                FlightDriver.SetPause(false, false);
+                TimeWarp.SetRate(0, true, false);
+            }
+
+            var rates = Ksp1GameTime.RatesOf(timeWarp);
+            var next = TimeWarp.CurrentRateIndex + 1;
+            if (next >= rates.Length)
+                return CommandResult.Rejected("Déjà au plus haut palier de temps.");
+
+            return SetRateIndex(timeWarp, next);
+        }
+
+        public CommandResult DecreaseWarp()
+        {
+            if (!TryGetFlightTime(out var timeWarp, out var failure))
+                return failure;
+
+            // À 1× ou en pause, rien à diminuer : sans effet, sans erreur.
+            if (FlightDriver.Pause || TimeWarp.CurrentRateIndex <= 0)
+                return CommandResult.Ok;
+
+            return SetRateIndex(timeWarp, TimeWarp.CurrentRateIndex - 1);
+        }
+
+        public CommandResult StopWarp()
+        {
+            // L'arrêt d'urgence ne demande pas de véhicule contrôlable ; en dehors du vol, il n'y a rien à arrêter.
+            if (!Ksp1GameTime.TryGetFlight(out var timeWarp))
+                return CommandResult.NoVessel();
+
+            if (Ksp1GameTime.AutoWarpEngaged(timeWarp))
+                timeWarp.CancelAutoWarp();
+
+            TimeWarp.SetRate(0, true, false);
+            if (FlightDriver.Pause)
+                FlightDriver.SetPause(false, false);
+
+            return CommandResult.Ok;
+        }
+
+        public CommandResult SetWarpRate(double rate)
+        {
+            if (!TryGetFlightTime(out var timeWarp, out var failure))
+                return failure;
+
+            var index = TimeInfo.IndexOfRate(Ksp1GameTime.RatesOf(timeWarp), rate);
+            if (index < 0)
+                return CommandResult.Rejected("Ce palier de temps n'existe pas dans le mode courant.");
+
+            if (FlightDriver.Pause)
+                FlightDriver.SetPause(false, false);
+
+            return index == TimeWarp.CurrentRateIndex ? CommandResult.Ok : SetRateIndex(timeWarp, index);
+        }
+
+        public CommandResult SetPaused(bool? paused)
+        {
+            if (!TryGetFlightTime(out _, out var failure))
+                return failure;
+
+            var desired = paused ?? !FlightDriver.Pause;
+            if (desired != FlightDriver.Pause)
+                FlightDriver.SetPause(desired, false);
+
+            return CommandResult.Ok;
+        }
+
+        /// <summary>Change de palier ; le jeu refuse (altitude, atmosphère, poussée…) en retournant faux sans rien modifier.</summary>
+        private static CommandResult SetRateIndex(TimeWarp timeWarp, int index)
+        {
+            TimeWarp.SetRate(index, false, false);
+            return TimeWarp.CurrentRateIndex == index
+                ? CommandResult.Ok
+                : CommandResult.Rejected("Palier de temps non autorisé en ce moment.");
+        }
+
+        /// <summary>Le temps se règle sans pilote : il suffit d'être en vol.</summary>
+        private static bool TryGetFlightTime(out TimeWarp timeWarp, out CommandResult failure)
+        {
+            failure = null;
+            if (Ksp1GameTime.TryGetFlight(out timeWarp))
+                return true;
+
+            failure = CommandResult.NoVessel();
+            return false;
+        }
+
         public CommandResult SetView(ViewKind? view)
         {
             if (!TryGetVessel(out _, out var failure))

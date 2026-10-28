@@ -143,6 +143,92 @@ namespace OrbitDeck.Mod.Commands
             return CommandResult.Ok;
         }
 
+        public CommandResult IncreaseWarp()
+        {
+            if (!TryGetFlightTime(out var game, out var timeWarp, out var failure))
+                return failure;
+
+            // Depuis la pause : reprise à 1× puis un palier de plus.
+            if (game.ViewController.IsPaused)
+            {
+                GameTime.SetPaused(game, false);
+                timeWarp.StopTimeWarp(true);
+            }
+
+            return timeWarp.IncreaseTimeWarp() ? CommandResult.Ok : CommandResult.Rejected("Palier de temps non autorisé en ce moment.");
+        }
+
+        public CommandResult DecreaseWarp()
+        {
+            if (!TryGetFlightTime(out var game, out var timeWarp, out var failure))
+                return failure;
+
+            // À 1× ou en pause, rien à diminuer : sans effet, sans erreur.
+            if (game.ViewController.IsPaused || timeWarp.CurrentRateIndex <= 0)
+                return CommandResult.Ok;
+
+            return timeWarp.DecreaseTimeWarp() ? CommandResult.Ok : CommandResult.Rejected("Impossible de ralentir le temps.");
+        }
+
+        public CommandResult StopWarp()
+        {
+            // L'arrêt d'urgence ne dépend pas d'un véhicule actif : seul le jeu doit être joignable.
+            if (!GameTime.TryGetTimeWarp(out var game, out var timeWarp))
+                return CommandResult.NoVessel();
+
+            if (timeWarp.IsAutoWarpEngaged)
+                timeWarp.CancelAutoWarp();
+
+            timeWarp.StopTimeWarp(true);
+            if (game.ViewController.IsPaused)
+                GameTime.SetPaused(game, false);
+
+            return CommandResult.Ok;
+        }
+
+        public CommandResult SetWarpRate(double rate)
+        {
+            if (!TryGetFlightTime(out var game, out var timeWarp, out var failure))
+                return failure;
+
+            var index = TimeInfo.IndexOfRate(GameTime.RatesOf(timeWarp, timeWarp.IsPhysicsTimeWarp), rate);
+            if (index < 0)
+                return CommandResult.Rejected("Ce palier de temps n'existe pas dans le mode courant.");
+
+            if (game.ViewController.IsPaused)
+                GameTime.SetPaused(game, false);
+
+            if (index == timeWarp.CurrentRateIndex)
+                return CommandResult.Ok;
+
+            return timeWarp.SetRateIndex(index, false) ? CommandResult.Ok : CommandResult.Rejected("Palier de temps non autorisé en ce moment.");
+        }
+
+        public CommandResult SetPaused(bool? paused)
+        {
+            if (!TryGetFlightTime(out var game, out var timeWarp, out var failure))
+                return failure;
+
+            var desired = paused ?? !game.ViewController.IsPaused;
+            return GameTime.SetPaused(game, desired) ? CommandResult.Ok : CommandResult.Rejected("Le jeu n'a pas changé son état de pause.");
+        }
+
+        /// <summary>Le temps se règle sans pilote : il suffit d'être en vol.</summary>
+        private static bool TryGetFlightTime(out GameInstance game, out TimeWarp timeWarp, out CommandResult failure)
+        {
+            game = null;
+            timeWarp = null;
+            failure = null;
+
+            if (!GameAccess.TryGetFlightVessel(out _, out _, out _) || !GameTime.TryGetTimeWarp(out game, out timeWarp))
+            {
+                failure = CommandResult.NoVessel();
+                return false;
+            }
+
+            return true;
+        }
+
         public CommandResult SetLights(bool? enabled) => SetActionGroup(KSPActionGroup.Lights, enabled, "phares", useSet: false);
 
         public CommandResult SetBrakes(bool? enabled) => SetActionGroup(KSPActionGroup.Brakes, enabled, "freins", useSet: true);

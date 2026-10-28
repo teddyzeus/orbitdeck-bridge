@@ -38,8 +38,22 @@ namespace OrbitDeck.Mod.Telemetry
                 // Comme le bouton d'étage du jeu, grisé quand il ne reste qu'un étage.
                 StageExhausted = stageCount.HasValue ? stageCount.Value <= 1 : (bool?)null,
                 AvailableSasModes = AvailableSasModesOf(vessel),
-                View = GameAccess.IsMapView(gameStateName) ? ViewKind.Map : ViewKind.Ship
+                View = GameAccess.IsMapView(gameStateName) ? ViewKind.Map : ViewKind.Ship,
+                Time = TimeOf()
             };
+        }
+
+        /// <summary>Temps du jeu ; null si illisible (le reste de l'état reste publié).</summary>
+        private static TimeInfo TimeOf()
+        {
+            try
+            {
+                return GameTime.TryGetTimeWarp(out var game, out var timeWarp) ? GameTime.Read(game, timeWarp) : null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         /// <summary>État d'un groupe d'actions : null quand le véhicule n'a aucune pièce dans ce groupe (pas de phares, pas de train…).</summary>

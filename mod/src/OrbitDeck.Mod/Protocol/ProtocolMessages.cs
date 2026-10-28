@@ -85,9 +85,56 @@ namespace OrbitDeck.Mod.Protocol
                         stage["exhausted"] = snapshot.StageExhausted.Value;
                     message["stage"] = stage;
                 }
+
+                if (snapshot.Time != null)
+                    message["time"] = TimeObject(snapshot.Time);
             }
 
             return Serialize(message);
+        }
+
+        /// <summary>Objet « time » de l'état : paliers, pause et instant de jeu. Les champs inconnus sont omis, jamais écrits à 0.</summary>
+        private static JObject TimeObject(TimeInfo time)
+        {
+            var rates = new JArray();
+            foreach (var rate in time.Rates)
+                rates.Add(Math.Round(rate, 3));
+
+            var body = new JObject
+            {
+                ["ut"] = Number(time.Ut, 1),
+                ["rate"] = Number(time.Rate, 3),
+                ["index"] = time.Index,
+                ["rates"] = rates,
+                ["mode"] = time.Mode == WarpMode.Physics ? "physics" : "rails",
+                ["paused"] = time.Paused
+            };
+
+            if (time.Pausable)
+                body["pausable"] = true;
+            if (time.MaxIndex.HasValue)
+                body["maxIndex"] = time.MaxIndex.Value;
+            if (time.Limit.HasValue)
+                body["limit"] = WarpLimitName(time.Limit.Value);
+            if (time.Auto)
+                body["auto"] = true;
+            if (time.DayLength.HasValue)
+                body["day"] = Number(time.DayLength.Value, 0);
+
+            return body;
+        }
+
+        public static string WarpLimitName(WarpLimit limit)
+        {
+            switch (limit)
+            {
+                case WarpLimit.Atmosphere: return "atmosphere";
+                case WarpLimit.Altitude: return "altitude";
+                case WarpLimit.Thrust: return "thrust";
+                case WarpLimit.Ground: return "ground";
+                case WarpLimit.Proximity: return "proximity";
+                default: return "other";
+            }
         }
 
         public static string Ack(string id) => Serialize(Base("ack", new JObject { ["id"] = id }));
