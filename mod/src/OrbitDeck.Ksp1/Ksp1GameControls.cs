@@ -9,8 +9,16 @@ namespace OrbitDeck.Ksp1
     /// Exécute les commandes dans KSP 1 (thread principal uniquement). Reproduit les chemins et les garde-fous de la
     /// saisie clavier du jeu (FlightInputHandler) : mêmes appels, mêmes verrous, mêmes refus.
     /// </summary>
-    public sealed class Ksp1GameControls : IGameControls
+    public sealed class Ksp1GameControls : IGameControls, IWarpDriver
     {
+        /// <summary>Suivi du warp jusqu'à la manœuvre, fourni par le pont avec le jeu.</summary>
+        public ManeuverWarpTracker Tracker { get; set; }
+
+        /// <summary>Durées de warp (secondes réelles) passées à WarpTo : le jeu en déduit le palier.</summary>
+        private const double WarpToMaxTimeWarping = 8;
+
+        private const double WarpToMinTimeWarping = 1;
+
         private const float ThrottleChangeEpsilon = 1e-5f;
 
         public CommandResult SetThrottle(float amount, bool relative)
@@ -163,6 +171,8 @@ namespace OrbitDeck.Ksp1
 
         public CommandResult StopWarp()
         {
+            Tracker?.NoteStopRequested();
+
             // L'arrêt d'urgence ne demande pas de véhicule contrôlable ; en dehors du vol, il n'y a rien à arrêter.
             if (!Ksp1GameTime.TryGetFlight(out var timeWarp))
                 return CommandResult.NoVessel();
@@ -191,6 +201,38 @@ namespace OrbitDeck.Ksp1
 
             return index == TimeWarp.CurrentRateIndex ? CommandResult.Ok : SetRateIndex(timeWarp, index);
         }
+
+        public CommandResult WarpToManeuver(double nodeUt, double margin, double? maxRate)
+        {
+            if (Tracker == null)
+                return CommandResult.Rejected("Le warp jusqu'à la manœuvre n'est pas disponible.");
+
+            return Tracker.Start(new Ksp1GameState().Read(), nodeUt, margin, maxRate, this);
+        }
+
+        /// <summary>Warp automatique du jeu jusqu'à un instant ; le jeu règle seul la descente des paliers.</summary>
+        bool IWarpDriver.WarpTo(double ut, double? maxRate)
+        {
+            if (!Ksp1GameTime.TryGetFlight(out var timeWarp))
+                return false;
+
+            if (FlightDriver.Pause)
+                FlightDriver.SetPause(false, false);
+
+            // Comme sur KSP 2, ces bornes sont des durées de warp en secondes réelles : un plafond de palier devient une durée minimale.
+            double maxSeconds = WarpToMaxTimeWarping;
+            if (maxRate.HasValue)
+            {
+                var remaining = ut - Planetarium.GetUniversalTime();
+                if (remaining > 0)
+                    maxSeconds = Math.Max(maxSeconds, remaining / maxRate.Value);
+            }
+
+            timeWarp.WarpTo(ut, maxSeconds, WarpToMinTimeWarping);
+            return true;
+        }
+
+        void IWarpDriver.StopWarp() => StopWarp();
 
         public CommandResult SetPaused(bool? paused)
         {

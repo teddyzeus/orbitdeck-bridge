@@ -23,7 +23,7 @@ Reference (in French): [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 | `type` | Content | Schema |
 |--------|---------|--------|
 | `hello` | `mod` (mod version), `game` (game version) | [server-message.schema.json](schema/server-message.schema.json) |
-| `state` | `seq`, `status`, `gameState`, `vessel`, `altitude`, `speed`, `throttle`, `sas`, `rcs`, `lights`, `brakes`, `gear`, `stage`, `view`, `time` | same |
+| `state` | `seq`, `status`, `gameState`, `vessel`, `altitude`, `speed`, `throttle`, `sas`, `rcs`, `lights`, `brakes`, `gear`, `stage`, `view`, `time`, `maneuver` | same |
 | `ack` | `id` of the accepted command | same |
 | `error` | `id` (optional), `code`, `message` | same |
 | `pong` | — | same |
@@ -48,6 +48,13 @@ Reference (in French): [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 - `paused`: the game is paused. `pausable`: the mod can pause it (absent = false).
 - `maxIndex`: the highest step allowed now; absent = unknown. `limit`: why the next step is refused (`atmosphere`, `altitude`, `thrust`, `ground`, `proximity`, `other`); absent when nothing refuses it or the game does not say.
 - `auto`: an automatic warp (to a given instant) is running. `day`: length of a game day in seconds; absent = unknown.
+
+`maneuver`: the maneuver plan of the active vessel, **absent** with an older mod, when the game does not provide it, and without a vessel. `count: 0` (with `nodes: []`) means the game provides the plan and there is no node, which is different from "unknown".
+- `nodes`: the planned nodes, nearest first, **eight at most** (`count` is the real number). A node is identified by its `ut` (game time of the node); there is no other identifier. `dv`: required delta-V (m/s). `burn`: estimated burn duration (s). `ignition`: game time at which the game recommends starting the burn; the mod decides the convention (half the burn before the node). Both are absent when unknown. `after`: orbit after the node.
+- Orbits (`before`, `after`): `ap`, `pe` are altitudes above the body (m); `ap` is absent for an open orbit, with `escape: true`. `atmosphere`: height of the atmosphere of that body (absent = none or unknown), to tell a periapsis in the air.
+- `dvAvailable`: the vessel's delta-V (m/s). `burning`: the first node's burn is under way (`remaining` m/s, `progress` 0 to 1); absent otherwise, and always absent when the game gives neither.
+
+- `warp`: the "warp to the maneuver" operation, **absent** at rest. `state`: `running` (`stop` = the instant the game is asked to stop at), `arrived` (stopped at 1× on `stop`), `late` (the request was refused, the stop was already past), `interrupted` (`reason`: `manual` the player took over, `nodeGone` the node was removed or moved, `vessel` another vessel became active, `control` the vessel is no longer controllable). A final state stays published for 5 seconds.
 
 An unavailable SAS mode (target, maneuver node or orbit-mode navball required) is refused with `REJECTED_BY_GAME`.
 
@@ -80,6 +87,7 @@ Error codes: `BAD_REQUEST`, `UNKNOWN_COMMAND`, `NO_VESSEL`, `NOT_CONTROLLABLE`, 
 | `stopWarp` | — | Back to 1× at once: cancels an automatic warp and leaves the pause. Idempotent; the emergency stop. |
 | `setWarpRate` | `rate`: number > 0 (the factor, for example `100`) | Selects the step whose factor is `rate` in the current mode; `REJECTED_BY_GAME` if there is none or the game refuses it. Leaves the pause. |
 | `setPause` / `togglePause` | `paused`: boolean / — | Pauses or resumes the game. |
+| `warpToManeuver` | `ut`: number (the node's instant), `margin`: number 0 to 3600 (seconds before the ignition), `maxRate`: number > 0, optional | Starts the game's automatic warp to `ignition − margin` of the node at `ut` (±1 s); without a known burn duration, to `ut − margin − 60`. The game slows down by itself on approach; the mod only watches it. Resumes from the pause. `REJECTED_BY_GAME` if the node does not exist, the stop instant has already passed (`maneuver.warp.state` becomes `late`) or the game refuses; `NOT_CONTROLLABLE` on an uncontrollable vessel. The game picks the step from the trip length (the warp lasts about ten real seconds); `maxRate` caps that step, which lengthens the trip. `stopWarp` cancels it. |
 | `activateStage` | — | Fires the next stage (space bar). **Not idempotent and irreversible**: every accepted command fires one stage; a client should ask the user for confirmation. |
 
 Rules:

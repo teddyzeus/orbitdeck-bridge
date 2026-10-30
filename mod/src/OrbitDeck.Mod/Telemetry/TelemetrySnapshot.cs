@@ -122,5 +122,22 @@ namespace OrbitDeck.Mod.Telemetry
 
         /// <summary>Temps du jeu (vitesse, pause, paliers) ; null si le jeu ne permet pas de le lire.</summary>
         public TimeInfo Time { get; init; }
+
+        /// <summary>Plan de manœuvre du véhicule actif ; null si le jeu ne permet pas de le lire (un plan vide a <c>Count</c> à 0).</summary>
+        public ManeuverInfo Maneuver
+        {
+            get => _maneuver;
+            init => _maneuver = value;
+        }
+
+        private ManeuverInfo _maneuver;
+
+        /// <summary>Copie du snapshot avec un autre plan de manœuvre (le snapshot est immuable).</summary>
+        public TelemetrySnapshot WithManeuver(ManeuverInfo maneuver)
+        {
+            var copy = (TelemetrySnapshot)MemberwiseClone();
+            copy._maneuver = maneuver;
+            return copy;
+        }
     }
 }

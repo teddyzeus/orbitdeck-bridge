@@ -88,6 +88,8 @@ namespace OrbitDeck.Mod.Protocol
 
                 if (snapshot.Time != null)
                     message["time"] = TimeObject(snapshot.Time);
+                if (snapshot.Maneuver != null)
+                    message["maneuver"] = ManeuverObject(snapshot.Maneuver);
             }
 
             return Serialize(message);
@@ -121,6 +123,90 @@ namespace OrbitDeck.Mod.Protocol
             if (time.DayLength.HasValue)
                 body["day"] = Number(time.DayLength.Value, 0);
 
+            return body;
+        }
+
+        /// <summary>Objet « maneuver » de l'état : nœuds (huit au plus), orbite actuelle, delta-V et combustion. Champs inconnus omis.</summary>
+        private static JObject ManeuverObject(ManeuverInfo maneuver)
+        {
+            var nodes = new JArray();
+            foreach (var node in maneuver.Nodes)
+            {
+                if (nodes.Count >= ManeuverInfo.MaxNodes)
+                    break;
+
+                var item = new JObject { ["ut"] = Number(node.Ut, 1), ["dv"] = Number(node.Dv, 1) };
+                if (node.Burn.HasValue)
+                    item["burn"] = Number(node.Burn.Value, 1);
+                if (node.Ignition.HasValue)
+                    item["ignition"] = Number(node.Ignition.Value, 1);
+                if (node.After != null)
+                    item["after"] = OrbitObject(node.After);
+                nodes.Add(item);
+            }
+
+            var body = new JObject { ["count"] = maneuver.Count, ["nodes"] = nodes };
+            if (maneuver.Before != null)
+                body["before"] = OrbitObject(maneuver.Before);
+            if (maneuver.DvAvailable.HasValue)
+                body["dvAvailable"] = Number(maneuver.DvAvailable.Value, 1);
+            if (maneuver.Burning != null)
+            {
+                var burning = new JObject();
+                if (maneuver.Burning.Remaining.HasValue)
+                    burning["remaining"] = Number(maneuver.Burning.Remaining.Value, 1);
+                if (maneuver.Burning.Progress.HasValue)
+                    burning["progress"] = Number(maneuver.Burning.Progress.Value, 3);
+                body["burning"] = burning;
+            }
+
+            if (maneuver.Warp != null)
+            {
+                var warp = new JObject { ["state"] = WarpStateName(maneuver.Warp.State) };
+                if (maneuver.Warp.Stop.HasValue)
+                    warp["stop"] = Number(maneuver.Warp.Stop.Value, 1);
+                if (maneuver.Warp.Reason.HasValue)
+                    warp["reason"] = WarpReasonName(maneuver.Warp.Reason.Value);
+                body["warp"] = warp;
+            }
+
+            return body;
+        }
+
+        private static string WarpStateName(ManeuverWarpState state)
+        {
+            switch (state)
+            {
+                case ManeuverWarpState.Running: return "running";
+                case ManeuverWarpState.Arrived: return "arrived";
+                case ManeuverWarpState.Late: return "late";
+                case ManeuverWarpState.Interrupted: return "interrupted";
+                default: return "idle";
+            }
+        }
+
+        private static string WarpReasonName(ManeuverWarpReason reason)
+        {
+            switch (reason)
+            {
+                case ManeuverWarpReason.NodeGone: return "nodeGone";
+                case ManeuverWarpReason.Vessel: return "vessel";
+                case ManeuverWarpReason.Control: return "control";
+                default: return "manual";
+            }
+        }
+
+        private static JObject OrbitObject(OrbitInfo orbit)
+        {
+            var body = new JObject();
+            if (orbit.Ap.HasValue)
+                body["ap"] = Number(orbit.Ap.Value, 0);
+            if (orbit.Pe.HasValue)
+                body["pe"] = Number(orbit.Pe.Value, 0);
+            if (orbit.Escape)
+                body["escape"] = true;
+            if (orbit.Atmosphere.HasValue)
+                body["atmosphere"] = Number(orbit.Atmosphere.Value, 0);
             return body;
         }
 

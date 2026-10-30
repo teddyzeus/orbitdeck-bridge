@@ -27,7 +27,8 @@ namespace OrbitDeck.Mod.Commands
         StopWarp,
         SetWarpRate,
         SetPause,
-        TogglePause
+        TogglePause,
+        WarpToManeuver
     }
 
     /// <summary>Commande validée, prête à être exécutée sur le thread principal du jeu.</summary>
@@ -43,6 +44,15 @@ namespace OrbitDeck.Mod.Commands
 
         /// <summary>Facteur de temps visé pour SetWarpRate.</summary>
         public double Rate { get; set; }
+
+        /// <summary>Instant du nœud visé pour WarpToManeuver.</summary>
+        public double NodeUt { get; set; }
+
+        /// <summary>Marge avant l'allumage (s) pour WarpToManeuver.</summary>
+        public double Margin { get; set; }
+
+        /// <summary>Palier maximal (facteur) pour WarpToManeuver ; null = aucun plafond.</summary>
+        public double? MaxRate { get; set; }
 
         public SpeedMode Mode { get; set; }
 

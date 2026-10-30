@@ -51,5 +51,8 @@ namespace OrbitDeck.Mod.Commands
 
         /// <summary>Met le jeu en pause ou le reprend ; <paramref name="paused"/> null = inverser.</summary>
         CommandResult SetPaused(bool? paused);
+
+        /// <summary>Warpe jusqu'à <paramref name="margin"/> secondes avant l'allumage du nœud d'instant <paramref name="nodeUt"/>.</summary>
+        CommandResult WarpToManeuver(double nodeUt, double margin, double? maxRate);
     }
 }

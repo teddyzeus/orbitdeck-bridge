@@ -63,6 +63,8 @@ internal sealed class FakeGameControls : IGameControls
     public CommandResult SetWarpRate(double rate) => Record($"warp rate {rate.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
 
     public CommandResult SetPaused(bool? paused) => Record($"pause {Describe(paused)}");
+
+    public CommandResult WarpToManeuver(double nodeUt, double margin, double? maxRate) => Record($"warpToManeuver {nodeUt} {margin} {maxRate}");
 }
 
 public class CommandValidatorTests

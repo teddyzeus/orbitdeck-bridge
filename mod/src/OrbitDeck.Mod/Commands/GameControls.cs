@@ -16,8 +16,16 @@ namespace OrbitDeck.Mod.Commands
     /// Exécute les commandes dans le jeu (thread principal uniquement). Reproduit les chemins et les garde-fous
     /// de la saisie clavier du jeu (FlightInputHandler) : mêmes appels, mêmes refus.
     /// </summary>
-    public sealed class GameControls : IGameControls
+    public sealed class GameControls : IGameControls, IWarpDriver
     {
+        /// <summary>Durées de warp (secondes réelles) par défaut du jeu pour WarpTo : de 1 à 10 s.</summary>
+        private const float WarpToMinSeconds = 1f;
+
+        private const float WarpToMaxSeconds = 10f;
+
+        /// <summary>Suivi du warp jusqu'à la manœuvre, fourni par le pont avec le jeu.</summary>
+        public ManeuverWarpTracker Tracker { get; set; }
+
         private const float ThrottleChangeEpsilon = 1e-5f;
 
         public CommandResult SetThrottle(float amount, bool relative)
@@ -172,6 +180,8 @@ namespace OrbitDeck.Mod.Commands
 
         public CommandResult StopWarp()
         {
+            Tracker?.NoteStopRequested();
+
             // L'arrêt d'urgence ne dépend pas d'un véhicule actif : seul le jeu doit être joignable.
             if (!GameTime.TryGetTimeWarp(out var game, out var timeWarp))
                 return CommandResult.NoVessel();
@@ -212,6 +222,40 @@ namespace OrbitDeck.Mod.Commands
             var desired = paused ?? !game.ViewController.IsPaused;
             return GameTime.SetPaused(game, desired) ? CommandResult.Ok : CommandResult.Rejected("Le jeu n'a pas changé son état de pause.");
         }
+
+        public CommandResult WarpToManeuver(double nodeUt, double margin, double? maxRate)
+        {
+            if (Tracker == null)
+                return CommandResult.Rejected("Le warp jusqu'à la manœuvre n'est pas disponible.");
+
+            return Tracker.Start(new Telemetry.GameState().Read(), nodeUt, margin, maxRate, this);
+        }
+
+        /// <summary>Warp automatique du jeu jusqu'à un instant, au palier plafonné par <paramref name="maxRate"/> (arrondi au palier inférieur).</summary>
+        bool IWarpDriver.WarpTo(double ut, double? maxRate)
+        {
+            if (!TryGetFlightTime(out var game, out var timeWarp, out _))
+                return false;
+
+            if (game.ViewController.IsPaused)
+                GameTime.SetPaused(game, false);
+
+            // Les deux bornes de WarpTo sont des durées de warp en secondes réelles (vérifié dans le code du jeu : elles choisissent le
+            // palier tel que le trajet dure entre elles), pas des facteurs de temps. Un plafond de palier se traduit donc par une
+            // durée minimale : trajet / plafond.
+            double maxSeconds = WarpToMaxSeconds;
+            if (maxRate.HasValue)
+            {
+                var remaining = ut - game.ViewController.universalTime;
+                if (remaining > 0)
+                    maxSeconds = Math.Max(maxSeconds, remaining / maxRate.Value);
+            }
+
+            timeWarp.WarpTo(ut, WarpToMinSeconds, (float)maxSeconds);
+            return true;
+        }
+
+        void IWarpDriver.StopWarp() => StopWarp();
 
         /// <summary>Le temps se règle sans pilote : il suffit d'être en vol.</summary>
         private static bool TryGetFlightTime(out GameInstance game, out TimeWarp timeWarp, out CommandResult failure)

@@ -5,7 +5,7 @@
   "author": "teddyzeus",
   "description": "Expose les données de KSP 2 en local (WebSocket) pour le plugin Stream Deck OrbitDeck.",
   "source": "https://github.com/teddyzeus/orbitdeck-bridge",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "main_assembly": "OrbitDeck.Mod.dll",
   "ksp2_version": { "min": "*", "max": "*" }
 }

@@ -15,6 +15,7 @@ namespace OrbitDeck.Mod.Telemetry
 
             var autopilot = vessel.Autopilot;
             var stageCount = StageCountOf(vessel);
+            var time = TimeOf();
 
             return new TelemetrySnapshot
             {
@@ -39,8 +40,25 @@ namespace OrbitDeck.Mod.Telemetry
                 StageExhausted = stageCount.HasValue ? stageCount.Value <= 1 : (bool?)null,
                 AvailableSasModes = AvailableSasModesOf(vessel),
                 View = GameAccess.IsMapView(gameStateName) ? ViewKind.Map : ViewKind.Ship,
-                Time = TimeOf()
+                Time = time,
+                Maneuver = ManeuverOf(vessel, time)
             };
+        }
+
+        /// <summary>Plan de manœuvre ; null si illisible ou sans temps de jeu (le reste de l'état reste publié).</summary>
+        private static ManeuverInfo ManeuverOf(KSP.Sim.impl.VesselComponent vessel, TimeInfo time)
+        {
+            if (time == null)
+                return null;
+
+            try
+            {
+                return GameManeuver.Read(vessel, time.Ut);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         /// <summary>Temps du jeu ; null si illisible (le reste de l'état reste publié).</summary>
