@@ -1,0 +1,66 @@
+{
+  "v": 1,
+  "type": "state",
+  "seq": 2310,
+  "status": "connected",
+  "gameState": "FlightView",
+  "vessel": {
+    "name": "Kerbal X"
+  },
+  "altitude": {
+    "seaLevel": 85000,
+    "surface": 85000
+  },
+  "speed": {
+    "mode": "orbit",
+    "surface": 2280.4,
+    "orbital": 2246.1,
+    "target": null
+  },
+  "throttle": 0,
+  "sas": {
+    "enabled": true,
+    "mode": "Prograde"
+  },
+  "rcs": {
+    "enabled": false
+  },
+  "maneuver": {
+    "count": 2,
+    "nodes": [
+      {
+        "ut": 1250000,
+        "dv": 1243.5,
+        "burn": 48.2,
+        "ignition": 1249975.9,
+        "after": {
+          "ap": 200000,
+          "pe": 180000,
+          "atmosphere": 70000
+        }
+      },
+      {
+        "ut": 1262000,
+        "dv": 310,
+        "after": {
+          "pe": -120000,
+          "escape": true
+        }
+      }
+    ],
+    "before": {
+      "ap": 85000,
+      "pe": 84000,
+      "atmosphere": 70000
+    },
+    "dvAvailable": 2800,
+    "burning": {
+      "remaining": 312,
+      "progress": 0.74
+    },
+    "warp": {
+      "state": "running",
+      "stop": 1249945.9
+    }
+  }
+}

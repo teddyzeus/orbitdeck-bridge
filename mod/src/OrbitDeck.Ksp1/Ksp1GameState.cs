@@ -20,6 +20,7 @@ namespace OrbitDeck.Ksp1
             // « ActivateNextStage » déclenche l'étage currentStage - 1 : c'est le numéro du prochain étage (les étages de KSP 1
             // vont jusqu'à 0, d'où le « - 1 »), celui qu'affiche la pile d'étagement.
             var stageCount = Math.Max(0, vessel.currentStage - 1);
+            var time = TimeOf();
 
             return new TelemetrySnapshot
             {
@@ -43,8 +44,39 @@ namespace OrbitDeck.Ksp1
                 // Sur KSP 1, l'étage 0 est le dernier : la touche ne se grise que lorsqu'il n'y en a plus.
                 StageExhausted = vessel.currentStage <= 0,
                 View = MapView.MapIsEnabled ? ViewKind.Map : ViewKind.Ship,
-                AvailableSasModes = AvailableSasModesOf(autopilot)
+                AvailableSasModes = AvailableSasModesOf(autopilot),
+                Time = time,
+                Maneuver = ManeuverOf(vessel, time)
             };
+        }
+
+        /// <summary>Plan de manœuvre ; null si illisible ou sans temps de jeu (le reste de l'état reste publié).</summary>
+        private static ManeuverInfo ManeuverOf(Vessel vessel, TimeInfo time)
+        {
+            if (time == null)
+                return null;
+
+            try
+            {
+                return Ksp1GameManeuver.Read(vessel, time.Ut);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>Temps du jeu ; null si illisible (le reste de l'état reste publié).</summary>
+        private static TimeInfo TimeOf()
+        {
+            try
+            {
+                return Ksp1GameTime.TryGetFlight(out var timeWarp) ? Ksp1GameTime.Read(timeWarp) : null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         /// <summary>

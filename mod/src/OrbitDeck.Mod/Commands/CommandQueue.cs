@@ -127,6 +127,13 @@ namespace OrbitDeck.Mod.Commands
                 case CommandKind.ActivateStage: return controls.ActivateStage();
                 case CommandKind.SetView: return controls.SetView(command.View);
                 case CommandKind.ToggleView: return controls.SetView(null);
+                case CommandKind.IncreaseWarp: return controls.IncreaseWarp();
+                case CommandKind.DecreaseWarp: return controls.DecreaseWarp();
+                case CommandKind.StopWarp: return controls.StopWarp();
+                case CommandKind.SetWarpRate: return controls.SetWarpRate(command.Rate);
+                case CommandKind.SetPause: return controls.SetPaused(command.Enabled);
+                case CommandKind.TogglePause: return controls.SetPaused(null);
+                case CommandKind.WarpToManeuver: return controls.WarpToManeuver(command.NodeUt, command.Margin, command.MaxRate);
                 default: return CommandResult.Fail(ErrorCodes.UnknownCommand, "Commande non supportée.");
             }
         }

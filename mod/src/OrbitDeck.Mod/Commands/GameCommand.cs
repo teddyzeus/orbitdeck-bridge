@@ -21,7 +21,14 @@ namespace OrbitDeck.Mod.Commands
         ToggleGear,
         ActivateStage,
         SetView,
-        ToggleView
+        ToggleView,
+        IncreaseWarp,
+        DecreaseWarp,
+        StopWarp,
+        SetWarpRate,
+        SetPause,
+        TogglePause,
+        WarpToManeuver
     }
 
     /// <summary>Commande validée, prête à être exécutée sur le thread principal du jeu.</summary>
@@ -32,8 +39,20 @@ namespace OrbitDeck.Mod.Commands
         /// <summary>Poussée visée (SetThrottle, entre 0 et 1) ou variation (AdjustThrottle, entre -1 et 1).</summary>
         public float Amount { get; set; }
 
-        /// <summary>État visé pour SetSas et SetRcs.</summary>
+        /// <summary>État visé pour SetSas et SetRcs (et SetPause : jeu en pause).</summary>
         public bool Enabled { get; set; }
+
+        /// <summary>Facteur de temps visé pour SetWarpRate.</summary>
+        public double Rate { get; set; }
+
+        /// <summary>Instant du nœud visé pour WarpToManeuver.</summary>
+        public double NodeUt { get; set; }
+
+        /// <summary>Marge avant l'allumage (s) pour WarpToManeuver.</summary>
+        public double Margin { get; set; }
+
+        /// <summary>Palier maximal (facteur) pour WarpToManeuver ; null = aucun plafond.</summary>
+        public double? MaxRate { get; set; }
 
         public SpeedMode Mode { get; set; }
 

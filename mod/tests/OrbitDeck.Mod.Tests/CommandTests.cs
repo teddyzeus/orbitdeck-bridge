@@ -53,6 +53,18 @@ internal sealed class FakeGameControls : IGameControls
     public CommandResult ActivateStage() => Record("stage");
 
     public CommandResult SetView(ViewKind? view) => Record($"view {(view.HasValue ? view.Value.ToString().ToLowerInvariant() : "toggle")}");
+
+    public CommandResult IncreaseWarp() => Record("warp up");
+
+    public CommandResult DecreaseWarp() => Record("warp down");
+
+    public CommandResult StopWarp() => Record("warp stop");
+
+    public CommandResult SetWarpRate(double rate) => Record($"warp rate {rate.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+
+    public CommandResult SetPaused(bool? paused) => Record($"pause {Describe(paused)}");
+
+    public CommandResult WarpToManeuver(double nodeUt, double margin, double? maxRate) => Record($"warpToManeuver {nodeUt} {margin} {maxRate}");
 }
 
 public class CommandValidatorTests

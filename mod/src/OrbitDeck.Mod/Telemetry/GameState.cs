@@ -15,6 +15,7 @@ namespace OrbitDeck.Mod.Telemetry
 
             var autopilot = vessel.Autopilot;
             var stageCount = StageCountOf(vessel);
+            var time = TimeOf();
 
             return new TelemetrySnapshot
             {
@@ -38,8 +39,39 @@ namespace OrbitDeck.Mod.Telemetry
                 // Comme le bouton d'étage du jeu, grisé quand il ne reste qu'un étage.
                 StageExhausted = stageCount.HasValue ? stageCount.Value <= 1 : (bool?)null,
                 AvailableSasModes = AvailableSasModesOf(vessel),
-                View = GameAccess.IsMapView(gameStateName) ? ViewKind.Map : ViewKind.Ship
+                View = GameAccess.IsMapView(gameStateName) ? ViewKind.Map : ViewKind.Ship,
+                Time = time,
+                Maneuver = ManeuverOf(vessel, time)
             };
+        }
+
+        /// <summary>Plan de manœuvre ; null si illisible ou sans temps de jeu (le reste de l'état reste publié).</summary>
+        private static ManeuverInfo ManeuverOf(KSP.Sim.impl.VesselComponent vessel, TimeInfo time)
+        {
+            if (time == null)
+                return null;
+
+            try
+            {
+                return GameManeuver.Read(vessel, time.Ut);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>Temps du jeu ; null si illisible (le reste de l'état reste publié).</summary>
+        private static TimeInfo TimeOf()
+        {
+            try
+            {
+                return GameTime.TryGetTimeWarp(out var game, out var timeWarp) ? GameTime.Read(game, timeWarp) : null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         /// <summary>État d'un groupe d'actions : null quand le véhicule n'a aucune pièce dans ce groupe (pas de phares, pas de train…).</summary>

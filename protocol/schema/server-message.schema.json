@@ -74,6 +74,60 @@
           "properties": { "enabled": { "type": "boolean" } }
         },
         "view": { "enum": ["ship", "map"] },
+        "time": {
+          "type": "object",
+          "required": ["ut", "rate", "index", "rates", "mode", "paused"],
+          "properties": {
+            "ut": { "type": "number" },
+            "rate": { "type": "number", "exclusiveMinimum": 0 },
+            "index": { "type": "integer", "minimum": 0 },
+            "rates": { "type": "array", "items": { "type": "number", "exclusiveMinimum": 0 } },
+            "mode": { "enum": ["rails", "physics"] },
+            "paused": { "type": "boolean" },
+            "pausable": { "type": "boolean" },
+            "maxIndex": { "type": "integer", "minimum": 0 },
+            "limit": { "enum": ["atmosphere", "altitude", "thrust", "ground", "proximity", "other"] },
+            "auto": { "type": "boolean" },
+            "day": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "maneuver": {
+          "type": "object",
+          "required": ["count", "nodes"],
+          "properties": {
+            "count": { "type": "integer", "minimum": 0 },
+            "nodes": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "required": ["ut", "dv"],
+                "properties": {
+                  "ut": { "type": "number" },
+                  "dv": { "type": "number", "minimum": 0 },
+                  "burn": { "type": "number", "minimum": 0 },
+                  "ignition": { "type": "number" },
+                  "after": { "type": "object", "properties": { "ap": { "type": "number" }, "pe": { "type": "number" }, "escape": { "type": "boolean" }, "atmosphere": { "type": "number", "minimum": 0 } } }
+                }
+              }
+            },
+            "before": { "type": "object", "properties": { "ap": { "type": "number" }, "pe": { "type": "number" }, "escape": { "type": "boolean" }, "atmosphere": { "type": "number", "minimum": 0 } } },
+            "dvAvailable": { "type": "number", "minimum": 0 },
+            "burning": {
+              "type": "object",
+              "properties": { "remaining": { "type": "number", "minimum": 0 }, "progress": { "type": "number", "minimum": 0, "maximum": 1 } }
+            },
+            "warp": {
+              "type": "object",
+              "required": ["state"],
+              "properties": {
+                "state": { "enum": ["running", "arrived", "late", "interrupted"] },
+                "stop": { "type": "number" },
+                "reason": { "enum": ["manual", "nodeGone", "vessel", "control"] }
+              }
+            }
+          }
+        },
         "stage": {
           "type": "object",
           "properties": { "count": { "type": "integer", "minimum": 0 }, "exhausted": { "type": "boolean" } }

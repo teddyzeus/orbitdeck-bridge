@@ -105,9 +105,74 @@ namespace OrbitDeck.Mod.Commands
                 case "toggleView":
                     return Build(CommandKind.ToggleView, null);
 
+                case "increaseWarp":
+                    return Build(CommandKind.IncreaseWarp, null);
+
+                case "decreaseWarp":
+                    return Build(CommandKind.DecreaseWarp, null);
+
+                case "stopWarp":
+                    return Build(CommandKind.StopWarp, null);
+
+                case "setWarpRate":
+                    return TryPositiveNumber(args, "rate", out var rate)
+                        ? Build(CommandKind.SetWarpRate, c => c.Rate = rate)
+                        : BadArgument("args.rate doit être un nombre strictement positif.");
+
+                case "setPause":
+                    return TryBoolean(args, "paused", out var paused)
+                        ? Build(CommandKind.SetPause, c => c.Enabled = paused)
+                        : BadArgument("args.paused doit être un booléen.");
+
+                case "togglePause":
+                    return Build(CommandKind.TogglePause, null);
+
+                case "warpToManeuver":
+                    return ValidateWarpToManeuver(args);
+
                 default:
                     return ValidationResult.Invalid(ErrorCodes.UnknownCommand, $"Commande « {Truncate(name)} » inconnue.");
             }
+        }
+
+        private const double MaxMargin = 3600;
+
+        private static ValidationResult ValidateWarpToManeuver(JObject args)
+        {
+            if (!TryNumber(args, "ut", out var ut))
+                return BadArgument("args.ut doit être un nombre (instant du nœud).");
+            if (!TryNumber(args, "margin", out var margin) || margin < 0 || margin > MaxMargin)
+                return BadArgument("args.margin doit être un nombre entre 0 et 3600 (secondes).");
+
+            double? maxRate = null;
+            if (args["maxRate"] != null && args["maxRate"].Type != JTokenType.Null)
+            {
+                if (!TryPositiveNumber(args, "maxRate", out var rate))
+                    return BadArgument("args.maxRate doit être un nombre strictement positif.");
+                maxRate = rate;
+            }
+
+            return Build(CommandKind.WarpToManeuver, c =>
+            {
+                c.NodeUt = ut;
+                c.Margin = margin;
+                c.MaxRate = maxRate;
+            });
+        }
+
+        private static bool TryNumber(JObject args, string key, out double value)
+        {
+            value = 0;
+            var token = args[key];
+            if (token == null || (token.Type != JTokenType.Float && token.Type != JTokenType.Integer))
+                return false;
+
+            var number = token.Value<double>();
+            if (double.IsNaN(number) || double.IsInfinity(number))
+                return false;
+
+            value = number;
+            return true;
         }
 
         private static ValidationResult Build(CommandKind kind, Action<GameCommand> configure)
@@ -132,6 +197,21 @@ namespace OrbitDeck.Mod.Commands
                 return false;
 
             value = (float)number;
+            return true;
+        }
+
+        private static bool TryPositiveNumber(JObject args, string key, out double value)
+        {
+            value = 0;
+            var token = args[key];
+            if (token == null || (token.Type != JTokenType.Float && token.Type != JTokenType.Integer))
+                return false;
+
+            var number = token.Value<double>();
+            if (double.IsNaN(number) || double.IsInfinity(number) || number <= 0)
+                return false;
+
+            value = number;
             return true;
         }
 

@@ -23,7 +23,7 @@ Reference (in French): [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 | `type` | Content | Schema |
 |--------|---------|--------|
 | `hello` | `mod` (mod version), `game` (game version) | [server-message.schema.json](schema/server-message.schema.json) |
-| `state` | `seq`, `status`, `gameState`, `vessel`, `altitude`, `speed`, `throttle`, `sas`, `rcs`, `lights`, `brakes`, `gear`, `stage`, `view` | same |
+| `state` | `seq`, `status`, `gameState`, `vessel`, `altitude`, `speed`, `throttle`, `sas`, `rcs`, `lights`, `brakes`, `gear`, `stage`, `view`, `time`, `maneuver` | same |
 | `ack` | `id` of the accepted command | same |
 | `error` | `id` (optional), `code`, `message` | same |
 | `pong` | — | same |
@@ -39,6 +39,22 @@ Reference (in French): [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 `stage`: object `{ "count": integer, "exhausted": boolean }`, the number shown on the game's stage button and whether there is nothing left to fire (the button is greyed). `exhausted` is decided by the mod because the threshold depends on the game (KSP 2: one stage left; KSP 1: stage 0 reached) and may be absent: a client then treats `count <= 1` as exhausted. The whole object is **absent** when the vessel has no readable staging stack.
 
 `view`: `ship` (flight camera on the vessel) or `map` (orbit map). **Absent** with an older mod or when the game does not provide it (a client then treats it as unknown). The map is only reported while a vessel is active; in the menus and at the space centre the field is absent like the rest of the vessel data.
+
+`time`: the game's time, **absent** with an older mod, when the game does not provide it, and without a vessel.
+- `ut`: game time in seconds (it advances all the time and does **not** trigger a new `state`; a client estimates it between two states with `rate`, and stops when `paused`).
+- `rate`: the time factor applied now (1 = normal); during a ramp-up it differs from `rates[index]`, the step the game asked for.
+- `rates`, `index`: the steps of the **current mode**, from the slowest to the fastest, and the position of the requested step.
+- `mode`: `rails` (high warp, the vessel is frozen on its orbit) or `physics` (low warp, full simulation).
+- `paused`: the game is paused. `pausable`: the mod can pause it (absent = false).
+- `maxIndex`: the highest step allowed now; absent = unknown. `limit`: why the next step is refused (`atmosphere`, `altitude`, `thrust`, `ground`, `proximity`, `other`); absent when nothing refuses it or the game does not say.
+- `auto`: an automatic warp (to a given instant) is running. `day`: length of a game day in seconds; absent = unknown.
+
+`maneuver`: the maneuver plan of the active vessel, **absent** with an older mod, when the game does not provide it, and without a vessel. `count: 0` (with `nodes: []`) means the game provides the plan and there is no node, which is different from "unknown".
+- `nodes`: the planned nodes, nearest first, **eight at most** (`count` is the real number). A node is identified by its `ut` (game time of the node); there is no other identifier. `dv`: required delta-V (m/s). `burn`: estimated burn duration (s). `ignition`: game time at which the game recommends starting the burn; the mod decides the convention (half the burn before the node). Both are absent when unknown. `after`: orbit after the node.
+- Orbits (`before`, `after`): `ap`, `pe` are altitudes above the body (m); `ap` is absent for an open orbit, with `escape: true`. `atmosphere`: height of the atmosphere of that body (absent = none or unknown), to tell a periapsis in the air.
+- `dvAvailable`: the vessel's delta-V (m/s). `burning`: the first node's burn is under way (`remaining` m/s, `progress` 0 to 1); absent otherwise, and always absent when the game gives neither.
+
+- `warp`: the "warp to the maneuver" operation, **absent** at rest. `state`: `running` (`stop` = the instant the game is asked to stop at), `arrived` (stopped at 1× on `stop`), `late` (the request was refused, the stop was already past), `interrupted` (`reason`: `manual` the player took over, `nodeGone` the node was removed or moved, `vessel` another vessel became active, `control` the vessel is no longer controllable). A final state stays published for 5 seconds.
 
 An unavailable SAS mode (target, maneuver node or orbit-mode navball required) is refused with `REJECTED_BY_GAME`.
 
@@ -67,6 +83,11 @@ Error codes: `BAD_REQUEST`, `UNKNOWN_COMMAND`, `NO_VESSEL`, `NOT_CONTROLLABLE`, 
 | `setBrakes` / `toggleBrakes` | `enabled`: boolean / — | Applies or releases the brakes |
 | `setGear` / `toggleGear` | `enabled`: boolean / — | Deploys or retracts the landing gear |
 | `setView` / `toggleView` | `view`: `ship` or `map` / — | Shows the vessel view or the map (the game's map key). Idempotent for `setView`. |
+| `increaseWarp` / `decreaseWarp` | — | Moves to the next / previous time step of the current mode. From the pause, `increaseWarp` resumes at 1× then goes up one step; `decreaseWarp` does nothing at 1× or paused. **Not idempotent.** |
+| `stopWarp` | — | Back to 1× at once: cancels an automatic warp and leaves the pause. Idempotent; the emergency stop. |
+| `setWarpRate` | `rate`: number > 0 (the factor, for example `100`) | Selects the step whose factor is `rate` in the current mode; `REJECTED_BY_GAME` if there is none or the game refuses it. Leaves the pause. |
+| `setPause` / `togglePause` | `paused`: boolean / — | Pauses or resumes the game. |
+| `warpToManeuver` | `ut`: number (the node's instant), `margin`: number 0 to 3600 (seconds before the ignition), `maxRate`: number > 0, optional | Starts the game's automatic warp to `ignition − margin` of the node at `ut` (±1 s); without a known burn duration, to `ut − margin − 60`. The game slows down by itself on approach; the mod only watches it. Resumes from the pause. `REJECTED_BY_GAME` if the node does not exist, the stop instant has already passed (`maneuver.warp.state` becomes `late`) or the game refuses; `NOT_CONTROLLABLE` on an uncontrollable vessel. The game picks the step from the trip length (the warp lasts about ten real seconds); `maxRate` caps that step, which lengthens the trip. `stopWarp` cancels it. |
 | `activateStage` | — | Fires the next stage (space bar). **Not idempotent and irreversible**: every accepted command fires one stage; a client should ask the user for confirmation. |
 
 Rules:

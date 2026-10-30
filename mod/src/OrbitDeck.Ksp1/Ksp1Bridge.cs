@@ -39,7 +39,16 @@ namespace OrbitDeck.Ksp1
 
         internal CommandQueue Commands { get; set; }
 
-        internal IGameControls Controls { get; set; } = new Ksp1GameControls();
+        internal IGameControls Controls
+        {
+            get => _controls ??= new Ksp1GameControls { Tracker = Tracker };
+            set => _controls = value;
+        }
+
+        private IGameControls _controls;
+
+        /// <summary>Suivi du warp jusqu'à la manœuvre ; avance à chaque image.</summary>
+        internal ManeuverWarpTracker Tracker { get; } = new ManeuverWarpTracker(() => Time.unscaledTime);
 
         private void OnDestroy() => Server?.Stop();
 
@@ -49,10 +58,19 @@ namespace OrbitDeck.Ksp1
         {
             try
             {
+                if (Tracker.Log == null)
+                    Tracker.Log = OrbitDeckAddon.Log;
                 // Les commandes d'abord, puis une relecture immédiate (et celle de l'image suivante, car certains
                 // effets du jeu ne sont visibles qu'après sa mise à jour) pour que le Stream Deck voie le résultat.
                 if (Commands != null && Commands.ProcessPending(Controls) > 0)
                     _forcedSamples = 2;
+
+                // Tant qu'un warp jusqu'à la manœuvre est en cours (ou que son résultat est publié), il est suivi à chaque image sur une lecture fraîche.
+                if (Tracker.Active)
+                {
+                    Tracker.Update(_gameState.Read(), Controls as IWarpDriver);
+                    _forcedSamples = Math.Max(_forcedSamples, 1);
+                }
 
                 var forced = _forcedSamples > 0;
                 if (forced)
@@ -74,7 +92,7 @@ namespace OrbitDeck.Ksp1
 
         private void Sample(float now)
         {
-            var next = _gameState.Read();
+            var next = Tracker.Decorate(_gameState.Read());
             var previous = _latest;
 
             if (!SnapshotComparer.HasChanged(previous, next))

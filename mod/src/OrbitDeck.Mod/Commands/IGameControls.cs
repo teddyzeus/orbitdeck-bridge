@@ -36,5 +36,23 @@ namespace OrbitDeck.Mod.Commands
 
         /// <summary>Affiche la vue du véhicule ou la carte ; <paramref name="view"/> null = basculer.</summary>
         CommandResult SetView(ViewKind? view);
+
+        /// <summary>Passe au palier de temps suivant (depuis la pause : reprend à 1× puis monte d'un palier).</summary>
+        CommandResult IncreaseWarp();
+
+        /// <summary>Passe au palier de temps précédent.</summary>
+        CommandResult DecreaseWarp();
+
+        /// <summary>Retour immédiat à 1× : annule un warp automatique et sort de la pause. Fonctionne toujours.</summary>
+        CommandResult StopWarp();
+
+        /// <summary>Fixe le palier dont le facteur vaut <paramref name="rate"/> dans le mode courant.</summary>
+        CommandResult SetWarpRate(double rate);
+
+        /// <summary>Met le jeu en pause ou le reprend ; <paramref name="paused"/> null = inverser.</summary>
+        CommandResult SetPaused(bool? paused);
+
+        /// <summary>Warpe jusqu'à <paramref name="margin"/> secondes avant l'allumage du nœud d'instant <paramref name="nodeUt"/>.</summary>
+        CommandResult WarpToManeuver(double nodeUt, double margin, double? maxRate);
     }
 }

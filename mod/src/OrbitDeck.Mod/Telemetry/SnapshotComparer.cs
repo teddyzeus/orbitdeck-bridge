@@ -34,7 +34,9 @@ namespace OrbitDeck.Mod.Telemetry
                    || previous.GearEnabled != current.GearEnabled
                    || previous.StageCount != current.StageCount
                    || previous.View != current.View
-                   || !SameModes(previous.AvailableSasModes, current.AvailableSasModes);
+                   || !SameModes(previous.AvailableSasModes, current.AvailableSasModes)
+                   || !TimeInfo.SameExceptUt(previous.Time, current.Time)
+                   || !ManeuverInfo.Same(previous.Maneuver, current.Maneuver);
         }
 
         /// <summary>Changement d'un état discret : <see cref="HasModeChange"/> ou poussée au-delà du seuil.</summary>
