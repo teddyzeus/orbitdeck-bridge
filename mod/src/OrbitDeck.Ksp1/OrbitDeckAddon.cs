@@ -51,7 +51,8 @@ namespace OrbitDeck.Ksp1
                 commands,
                 modVersion: assembly.GetName().Version.ToString(3),
                 gameVersion: Versioning.GetVersionString(),
-                logError: message => Debug.LogError($"[OrbitDeck] {message}"));
+                logError: message => Debug.LogError($"[OrbitDeck] {message}"),
+                features: OrbitDeck.Mod.Telemetry.Features.Announced);
 
             if (server.Start())
                 bridge.Server = server;

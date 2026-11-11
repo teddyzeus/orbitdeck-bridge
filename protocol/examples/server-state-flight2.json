@@ -1,0 +1,30 @@
+{
+  "v": 1,
+  "type": "state",
+  "seq": 2100,
+  "status": "connected",
+  "gameState": "FlightView",
+  "vessel": { "name": "Kerbal X" },
+  "altitude": { "seaLevel": 85012.3, "surface": 85010.1 },
+  "speed": { "mode": "orbit", "surface": 2245.3, "orbital": 2300.1, "target": 3.2 },
+  "throttle": 0,
+  "sas": { "enabled": true, "mode": "Prograde" },
+  "rcs": { "enabled": false },
+  "orbit": { "ap": 85100, "pe": 84000, "period": 2540.3, "inc": 28.46, "apUt": 1234800.0, "peUt": 1236100.0, "body": "Kerbin", "atmosphere": 70000 },
+  "resources": {
+    "fuel": { "amount": 1240.0, "max": 2000.0 },
+    "oxidizer": { "amount": 1515.2, "max": 2444.0 },
+    "electric": { "amount": 280.0, "max": 400.0 },
+    "stage": { "fuel": { "amount": 600.0, "max": 900.0 } }
+  },
+  "performance": { "dv": 2800.0, "dvStage": 940.0, "twr": 1.42 },
+  "landing": { "vspeed": -12.44, "hspeed": 3.1, "radar": 85.2, "impactUt": 1234590.2 },
+  "target": { "name": "Station", "distance": 1840.0, "rel": -3.2 },
+  "systems": {
+    "solar": { "count": 4, "state": "extended" },
+    "antennas": { "count": 2, "state": "retracted" },
+    "ladders": { "count": 0 },
+    "parachutes": { "count": 3, "state": "ready" }
+  },
+  "docking": { "ports": 2, "state": "armed", "armable": true, "canUndock": false }
+}

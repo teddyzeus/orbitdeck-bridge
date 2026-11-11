@@ -36,7 +36,15 @@ namespace OrbitDeck.Mod.Telemetry
                    || previous.View != current.View
                    || !SameModes(previous.AvailableSasModes, current.AvailableSasModes)
                    || !TimeInfo.SameExceptUt(previous.Time, current.Time)
-                   || !ManeuverInfo.Same(previous.Maneuver, current.Maneuver);
+                   || !ManeuverInfo.Same(previous.Maneuver, current.Maneuver)
+                   // 2.0 : chaque bloc porte ses seuils (valeurs continues) ou compare ses états (valeurs discrètes).
+                   || !CurrentOrbitInfo.Same(previous.Orbit, current.Orbit)
+                   || !ResourcesInfo.Same(previous.Resources, current.Resources)
+                   || !PerformanceInfo.Same(previous.Performance, current.Performance)
+                   || !LandingInfo.Same(previous.Landing, current.Landing)
+                   || !TargetInfo.Same(previous.Target, current.Target)
+                   || !SystemsInfo.Same(previous.Systems, current.Systems)
+                   || !DockingInfo.Same(previous.Docking, current.Docking);
         }
 
         /// <summary>Changement d'un état discret : <see cref="HasModeChange"/> ou poussée au-delà du seuil.</summary>

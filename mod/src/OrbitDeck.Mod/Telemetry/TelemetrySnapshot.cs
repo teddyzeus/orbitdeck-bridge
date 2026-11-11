@@ -132,6 +132,30 @@ namespace OrbitDeck.Mod.Telemetry
 
         private ManeuverInfo _maneuver;
 
+        // 2.0 : blocs ajoutés après la 1.1. Tous nuls par défaut (jamais zéro) : un adaptateur qui ne les renseigne pas produit le même
+        // état qu'avant (rétrocompatibilité, docs/SPEC-2.0.md §1 du dépôt du plugin).
+
+        /// <summary>Orbite courante ; null si le jeu ne permet pas de la lire.</summary>
+        public CurrentOrbitInfo Orbit { get; init; }
+
+        /// <summary>Ressources du véhicule ; null si illisibles.</summary>
+        public ResourcesInfo Resources { get; init; }
+
+        /// <summary>Delta-V et TWR ; null si illisibles.</summary>
+        public PerformanceInfo Performance { get; init; }
+
+        /// <summary>Aides à l'atterrissage ; null si illisibles.</summary>
+        public LandingInfo Landing { get; init; }
+
+        /// <summary>Cible ; <c>None</c> s'il n'y en a pas, null si le jeu ne permet pas de le savoir.</summary>
+        public TargetInfo Target { get; init; }
+
+        /// <summary>Panneaux, antennes, échelles, parachutes ; null si illisibles.</summary>
+        public SystemsInfo Systems { get; init; }
+
+        /// <summary>Ports d'amarrage ; null si illisibles.</summary>
+        public DockingInfo Docking { get; init; }
+
         /// <summary>Copie du snapshot avec un autre plan de manœuvre (le snapshot est immuable).</summary>
         public TelemetrySnapshot WithManeuver(ManeuverInfo maneuver)
         {

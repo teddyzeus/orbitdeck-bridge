@@ -7,6 +7,8 @@ namespace OrbitDeck.Ksp1
     /// <summary>Lecture de l'état de KSP 1 (thread principal Unity uniquement).</summary>
     public sealed class Ksp1GameState : IGameState
     {
+        private static readonly SafeReader Safe = new SafeReader(() => UnityEngine.Time.unscaledTime, null);
+
         public TelemetrySnapshot Read()
         {
             if (!HighLogic.LoadedSceneIsFlight)
@@ -46,7 +48,9 @@ namespace OrbitDeck.Ksp1
                 View = MapView.MapIsEnabled ? ViewKind.Map : ViewKind.Ship,
                 AvailableSasModes = AvailableSasModesOf(autopilot),
                 Time = time,
-                Maneuver = ManeuverOf(vessel, time)
+                Maneuver = ManeuverOf(vessel, time),
+                // 2.0 : chaque nouveau bloc est lu à part ; une panne l'omet sans toucher au reste de l'état.
+                Orbit = time == null ? null : Safe.Read("orbit", () => Ksp1GameOrbit.Read(vessel, time.Ut))
             };
         }
 

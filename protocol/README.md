@@ -58,6 +58,19 @@ Reference (in French): [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 
 An unavailable SAS mode (target, maneuver node or orbit-mode navball required) is refused with `REJECTED_BY_GAME`.
 
+### Additions of OrbitDeck 2.0 (all optional, protocol version stays **1**)
+Everything below is **added after `maneuver`** and only when readable: a state without these blocks is byte for byte the one of mod 0.5, and a client that does not know them ignores them (see "General rules"). Absent means unknown, never zero. Distances are meters, speeds m/s, angles degrees, durations seconds, and **instants are absolute game time (`ut`)** (a client estimates the current `ut` with `time.ut` and `time.rate`; times that advance on their own are not republished every frame).
+- `hello.features`: array of strings, the families this mod can read or command (`orbit`, `resources`, `performance`, `landing`, `target`, `systems`, `docking`, `quickSave`…). Absent with an older mod.
+- `orbit`: the vessel's **current** orbit, with or without a maneuver node (independent of `maneuver.before`). `ap`, `pe` (altitudes; `ap` absent when open), `period` (absent when open), `inc`, `apUt` / `peUt` (next passages), `body`, `escape` (only when `true`), `atmosphere`.
+- `resources`: `fuel`, `oxidizer`, `electric`, `monoprop`, each `{ amount, max }` for the whole vessel; a missing key is a resource the vessel does not have (not an empty tank). `stage` holds the same keys for the current stage.
+- `performance`: `dv`, `dvStage` (m/s), `twr` (absent without an active engine).
+- `landing`: `vspeed` (descent negative), `hspeed`, `radar` (height above the ground, absent out of range), `impactUt` (estimated instant, absent when no impact is predicted).
+- `target`: `{ "none": true }` when the game provides the information and there is no target; otherwise `name`, `distance`, `rel` (relative speed, negative when approaching). The whole block is absent when unknown.
+- `systems`: `solar`, `antennas`, `ladders`, `parachutes`, each `{ count, state?, retractable? }`. `count: 0` means no such module; a missing category means unreadable. `state` is `extended` / `retracted` / `mixed` / `moving` (parachutes: `ready` / `deployed` / `cut` / `mixed`). `retractable: false` appears when no module of the category retracts.
+- `docking`: `{ ports, state?, armable?, canUndock? }`; `state` is `disarmed`, `armed`, `approach` or `docked`; `armable` tells whether the game can arm and disarm a port (not KSP 1).
+
+The 2.0 commands (`setSolarPanels`, `setAntennas`, `setLadders`, `deployParachutes`, `setDockingArmed`, `undock`, `quickSave`, `quickLoad`) arrive with their feature and are documented then.
+
 Error codes: `BAD_REQUEST`, `UNKNOWN_COMMAND`, `NO_VESSEL`, `NOT_CONTROLLABLE`, `REJECTED_BY_GAME`, `INTERNAL`.
 
 ## Client → server messages

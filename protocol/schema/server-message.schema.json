@@ -14,7 +14,8 @@
       "properties": {
         "type": { "const": "hello" },
         "mod": { "type": "string" },
-        "game": { "type": "string" }
+        "game": { "type": "string" },
+        "features": { "type": "array", "items": { "type": "string" } }
       },
       "required": ["v", "type", "mod", "game"]
     },
@@ -131,6 +132,38 @@
         "stage": {
           "type": "object",
           "properties": { "count": { "type": "integer", "minimum": 0 }, "exhausted": { "type": "boolean" } }
+        },
+        "orbit": {
+          "type": "object",
+          "properties": { "ap": { "type": "number" }, "pe": { "type": "number" }, "period": { "type": "number", "minimum": 0 }, "inc": { "type": "number" }, "apUt": { "type": "number" }, "peUt": { "type": "number" }, "body": { "type": "string" }, "escape": { "type": "boolean" }, "atmosphere": { "type": "number", "minimum": 0 } }
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "fuel": { "type": "object", "required": ["amount", "max"], "properties": { "amount": { "type": "number", "minimum": 0 }, "max": { "type": "number", "minimum": 0 } } }, "oxidizer": { "type": "object", "required": ["amount", "max"], "properties": { "amount": { "type": "number", "minimum": 0 }, "max": { "type": "number", "minimum": 0 } } }, "electric": { "type": "object", "required": ["amount", "max"], "properties": { "amount": { "type": "number", "minimum": 0 }, "max": { "type": "number", "minimum": 0 } } }, "monoprop": { "type": "object", "required": ["amount", "max"], "properties": { "amount": { "type": "number", "minimum": 0 }, "max": { "type": "number", "minimum": 0 } } },
+            "stage": { "type": "object", "properties": { "fuel": { "type": "object", "required": ["amount", "max"], "properties": { "amount": { "type": "number", "minimum": 0 }, "max": { "type": "number", "minimum": 0 } } }, "oxidizer": { "type": "object", "required": ["amount", "max"], "properties": { "amount": { "type": "number", "minimum": 0 }, "max": { "type": "number", "minimum": 0 } } }, "electric": { "type": "object", "required": ["amount", "max"], "properties": { "amount": { "type": "number", "minimum": 0 }, "max": { "type": "number", "minimum": 0 } } }, "monoprop": { "type": "object", "required": ["amount", "max"], "properties": { "amount": { "type": "number", "minimum": 0 }, "max": { "type": "number", "minimum": 0 } } } } }
+          }
+        },
+        "performance": {
+          "type": "object",
+          "properties": { "dv": { "type": "number", "minimum": 0 }, "dvStage": { "type": "number", "minimum": 0 }, "twr": { "type": "number", "minimum": 0 } }
+        },
+        "landing": {
+          "type": "object",
+          "properties": { "vspeed": { "type": "number" }, "hspeed": { "type": "number" }, "radar": { "type": "number" }, "impactUt": { "type": "number" } }
+        },
+        "target": {
+          "type": "object",
+          "properties": { "none": { "type": "boolean" }, "name": { "type": "string" }, "distance": { "type": "number", "minimum": 0 }, "rel": { "type": "number" } }
+        },
+        "systems": {
+          "type": "object",
+          "properties": { "solar": { "type": "object", "required": ["count"], "properties": { "count": { "type": "integer", "minimum": 0 }, "state": { "enum": ["extended", "retracted", "mixed", "moving"] }, "retractable": { "type": "boolean" } } }, "antennas": { "type": "object", "required": ["count"], "properties": { "count": { "type": "integer", "minimum": 0 }, "state": { "enum": ["extended", "retracted", "mixed", "moving"] }, "retractable": { "type": "boolean" } } }, "ladders": { "type": "object", "required": ["count"], "properties": { "count": { "type": "integer", "minimum": 0 }, "state": { "enum": ["extended", "retracted", "mixed", "moving"] }, "retractable": { "type": "boolean" } } }, "parachutes": { "type": "object", "required": ["count"], "properties": { "count": { "type": "integer", "minimum": 0 }, "state": { "enum": ["ready", "deployed", "cut", "mixed"] }, "retractable": { "type": "boolean" } } } }
+        },
+        "docking": {
+          "type": "object",
+          "required": ["ports"],
+          "properties": { "ports": { "type": "integer", "minimum": 0 }, "state": { "enum": ["disarmed", "armed", "approach", "docked"] }, "armable": { "type": "boolean" }, "canUndock": { "type": "boolean" } }
         }
       },
       "required": ["v", "type", "seq", "status"]

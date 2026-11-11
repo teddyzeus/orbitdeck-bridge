@@ -24,6 +24,9 @@ namespace OrbitDeck.Mod.Server
         private readonly CommandQueue _commands;
         private readonly string _modVersion;
         private readonly string _gameVersion;
+
+        /// <summary>Familles que ce mod sait lire ou commander, annoncées dans « hello » (2.0) ; null ou vide : message de la 1.1.</summary>
+        private readonly System.Collections.Generic.IEnumerable<string> _features;
         private readonly Func<long> _clockMs;
         private readonly Action<string> _logError;
         private readonly object _sync = new object();
@@ -38,8 +41,10 @@ namespace OrbitDeck.Mod.Server
             string modVersion,
             string gameVersion,
             Func<long> clockMs = null,
-            Action<string> logError = null)
+            Action<string> logError = null,
+            System.Collections.Generic.IEnumerable<string> features = null)
         {
+            _features = features;
             _ws = ws;
             _source = source;
             _commands = commands;
@@ -137,7 +142,7 @@ namespace OrbitDeck.Mod.Server
             lock (_sync)
             {
                 var sequence = _source.Sequence;
-                client.Send(ProtocolMessages.Hello(_modVersion, _gameVersion));
+                client.Send(ProtocolMessages.Hello(_modVersion, _gameVersion, _features));
                 client.Send(ProtocolMessages.State(_source.Latest, sequence));
 
                 // Cet état vient d'être envoyé : inutile de le rediffuser à tout le monde au tick suivant.

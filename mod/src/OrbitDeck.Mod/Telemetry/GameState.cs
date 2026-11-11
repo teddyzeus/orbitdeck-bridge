@@ -8,6 +8,8 @@ namespace OrbitDeck.Mod.Telemetry
     /// <summary>Lecture de l'état du jeu via l'API de KSP 2 Redux (thread principal uniquement).</summary>
     public sealed class GameState : IGameState
     {
+        private static readonly SafeReader Safe = new SafeReader(() => UnityEngine.Time.unscaledTime, null);
+
         public TelemetrySnapshot Read()
         {
             if (!GameAccess.TryGetFlightVessel(out var vehicle, out var vessel, out var gameStateName))
@@ -41,7 +43,9 @@ namespace OrbitDeck.Mod.Telemetry
                 AvailableSasModes = AvailableSasModesOf(vessel),
                 View = GameAccess.IsMapView(gameStateName) ? ViewKind.Map : ViewKind.Ship,
                 Time = time,
-                Maneuver = ManeuverOf(vessel, time)
+                Maneuver = ManeuverOf(vessel, time),
+                // 2.0 : chaque nouveau bloc est lu à part ; une panne l'omet sans toucher au reste de l'état.
+                Orbit = time == null ? null : Safe.Read("orbit", () => GameOrbit.Read(vessel, time.Ut))
             };
         }
 
