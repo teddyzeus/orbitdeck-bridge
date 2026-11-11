@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using KSP.UI.Screens;
 using OrbitDeck.Mod.Commands;
 using OrbitDeck.Mod.Telemetry;
@@ -398,6 +399,142 @@ namespace OrbitDeck.Ksp1
             }
 
             return true;
+        }
+
+        public CommandResult SetSolarPanels(bool enabled)
+        {
+            if (!TryGetControllableVessel(out var vessel, out var failure))
+                return failure;
+
+            var found = 0;
+            foreach (var part in vessel.parts)
+            {
+                foreach (var panel in part.Modules.OfType<ModuleDeployableSolarPanel>())
+                {
+                    found++;
+                    if (enabled)
+                        panel.Extend();
+                    else if (panel.retractable)
+                        panel.Retract();
+                }
+            }
+
+            return found > 0 ? CommandResult.Ok : CommandResult.Rejected("Aucun panneau solaire.");
+        }
+
+        public CommandResult SetAntennas(bool enabled)
+        {
+            if (!TryGetControllableVessel(out var vessel, out var failure))
+                return failure;
+
+            var found = 0;
+            foreach (var part in vessel.parts)
+            {
+                foreach (var antenna in part.Modules.OfType<ModuleDeployableAntenna>())
+                {
+                    found++;
+                    if (enabled)
+                        antenna.Extend();
+                    else if (antenna.retractable)
+                        antenna.Retract();
+                }
+            }
+
+            return found > 0 ? CommandResult.Ok : CommandResult.Rejected("Aucune antenne déployable.");
+        }
+
+        public CommandResult SetLadders(bool enabled)
+        {
+            if (!TryGetControllableVessel(out var vessel, out var failure))
+                return failure;
+
+            var found = 0;
+            foreach (var part in vessel.parts)
+            {
+                foreach (var ladder in part.Modules.OfType<RetractableLadder>())
+                {
+                    found++;
+                    if (enabled)
+                        ladder.Extend();
+                    else
+                        ladder.Retract();
+                }
+            }
+
+            return found > 0 ? CommandResult.Ok : CommandResult.Rejected("Aucune échelle.");
+        }
+
+        public CommandResult DeployParachutes()
+        {
+            if (!TryGetControllableVessel(out var vessel, out var failure))
+                return failure;
+
+            var done = 0;
+            foreach (var part in vessel.parts)
+            {
+                foreach (var chute in part.Modules.OfType<ModuleParachute>())
+                {
+                    if (chute.deploymentState != ModuleParachute.deploymentStates.STOWED)
+                        continue;
+
+                    chute.Deploy();
+                    done++;
+                }
+            }
+
+            return done > 0 ? CommandResult.Ok : CommandResult.Rejected("Aucun parachute prêt à se déployer.");
+        }
+
+        public CommandResult SetDockingArmed(bool enabled) => CommandResult.Rejected("KSP 1 n'a pas d'armement de port d'amarrage.");
+
+        public CommandResult Undock()
+        {
+            if (!TryGetControllableVessel(out var vessel, out var failure))
+                return failure;
+
+            foreach (var part in vessel.parts)
+            {
+                foreach (var node in part.Modules.OfType<ModuleDockingNode>())
+                {
+                    if (Ksp1GameBlocks.DockOf(node) != OrbitDeck.Mod.Telemetry.DockingPortState.Docked)
+                        continue;
+
+                    if ((node.state ?? string.Empty).StartsWith("PreAttached", System.StringComparison.Ordinal))
+                        node.Decouple();
+                    else
+                        node.Undock();
+                    return CommandResult.Ok;
+                }
+            }
+
+            return CommandResult.Rejected("Rien n'est amarré.");
+        }
+
+        public CommandResult QuickSave()
+        {
+            if (!HighLogic.LoadedSceneIsFlight)
+                return CommandResult.NoVessel();
+
+            QuickSaveLoad.QuickSave();
+            return CommandResult.Ok;
+        }
+
+        public CommandResult QuickLoad()
+        {
+            if (!HighLogic.LoadedSceneIsFlight)
+                return CommandResult.NoVessel();
+
+            var fetch = QuickSaveLoad.fetch;
+            if (fetch == null)
+                return CommandResult.Rejected("Chargement indisponible.");
+
+            // « quickLoad » n'est pas publique : même appel que la touche F9 du jeu.
+            var method = typeof(QuickSaveLoad).GetMethod("quickLoad", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic, null, new[] { typeof(string), typeof(string) }, null);
+            if (method == null)
+                return CommandResult.Rejected("Chargement indisponible.");
+
+            method.Invoke(fetch, new object[] { string.IsNullOrEmpty(fetch.quicksaveFilename) ? "quicksave" : fetch.quicksaveFilename, HighLogic.SaveFolder });
+            return CommandResult.Ok;
         }
 
         private static float Clamp01(float value) => value < 0f ? 0f : value > 1f ? 1f : value;

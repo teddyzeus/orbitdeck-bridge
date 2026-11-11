@@ -50,9 +50,21 @@ namespace OrbitDeck.Ksp1
                 Time = time,
                 Maneuver = ManeuverOf(vessel, time),
                 // 2.0 : chaque nouveau bloc est lu à part ; une panne l'omet sans toucher au reste de l'état.
-                Orbit = time == null ? null : Safe.Read("orbit", () => Ksp1GameOrbit.Read(vessel, time.Ut))
+                Orbit = time == null ? null : Safe.Read("orbit", () => Ksp1GameOrbit.Read(vessel, time.Ut)),
+                // Blocs lourds (parcours des pièces) : au plus une lecture par seconde.
+                Resources = Safe.Read("resources", () => SlowResources.Get(() => Ksp1GameBlocks.Resources(vessel))),
+                Systems = Safe.Read("systems", () => SlowSystems.Get(() => Ksp1GameBlocks.Systems(vessel))),
+                Docking = Safe.Read("docking", () => SlowDocking.Get(() => Ksp1GameBlocks.Docking(vessel))),
+                Performance = Safe.Read("performance", () => SlowPerformance.Get(() => Ksp1GameBlocks.Performance(vessel))),
+                Landing = time == null ? null : Safe.Read("landing", () => Ksp1GameBlocks.Landing(vessel, time.Ut)),
+                Target = Safe.Read("target", () => Ksp1GameBlocks.Target(vessel))
             };
         }
+
+        private static readonly SlowRead<ResourcesInfo> SlowResources = new SlowRead<ResourcesInfo>(() => UnityEngine.Time.unscaledTime);
+        private static readonly SlowRead<SystemsInfo> SlowSystems = new SlowRead<SystemsInfo>(() => UnityEngine.Time.unscaledTime);
+        private static readonly SlowRead<DockingInfo> SlowDocking = new SlowRead<DockingInfo>(() => UnityEngine.Time.unscaledTime);
+        private static readonly SlowRead<PerformanceInfo> SlowPerformance = new SlowRead<PerformanceInfo>(() => UnityEngine.Time.unscaledTime, 0.25);
 
         /// <summary>Plan de manœuvre ; null si illisible ou sans temps de jeu (le reste de l'état reste publié).</summary>
         private static ManeuverInfo ManeuverOf(Vessel vessel, TimeInfo time)

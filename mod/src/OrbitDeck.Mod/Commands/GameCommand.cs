@@ -28,7 +28,15 @@ namespace OrbitDeck.Mod.Commands
         SetWarpRate,
         SetPause,
         TogglePause,
-        WarpToManeuver
+        WarpToManeuver,
+        SetSolarPanels,
+        SetAntennas,
+        SetLadders,
+        DeployParachutes,
+        SetDockingArmed,
+        Undock,
+        QuickSave,
+        QuickLoad
     }
 
     /// <summary>Commande validée, prête à être exécutée sur le thread principal du jeu.</summary>

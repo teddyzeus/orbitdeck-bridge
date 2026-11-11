@@ -101,6 +101,14 @@ Error codes: `BAD_REQUEST`, `UNKNOWN_COMMAND`, `NO_VESSEL`, `NOT_CONTROLLABLE`, 
 | `setWarpRate` | `rate`: number > 0 (the factor, for example `100`) | Selects the step whose factor is `rate` in the current mode; `REJECTED_BY_GAME` if there is none or the game refuses it. Leaves the pause. |
 | `setPause` / `togglePause` | `paused`: boolean / — | Pauses or resumes the game. |
 | `warpToManeuver` | `ut`: number (the node's instant), `margin`: number 0 to 3600 (seconds before the ignition), `maxRate`: number > 0, optional | Starts the game's automatic warp to `ignition − margin` of the node at `ut` (±1 s); without a known burn duration, to `ut − margin − 60`. The game slows down by itself on approach; the mod only watches it. Resumes from the pause. `REJECTED_BY_GAME` if the node does not exist, the stop instant has already passed (`maneuver.warp.state` becomes `late`) or the game refuses; `NOT_CONTROLLABLE` on an uncontrollable vessel. The game picks the step from the trip length (the warp lasts about ten real seconds); `maxRate` caps that step, which lengthens the trip. `stopWarp` cancels it. |
+| `setSolarPanels` | `enabled`: boolean | 2.0. Extends (`true`) or retracts (`false`) every solar panel of the vessel; panels that cannot retract are left alone when retracting. Idempotent. `REJECTED_BY_GAME` if the vessel has no panel. |
+| `setAntennas` | `enabled`: boolean | 2.0. Same for deployable antennas. |
+| `setLadders` | `enabled`: boolean | 2.0. Same for ladders. KSP 1 only: `REJECTED_BY_GAME` on KSP 2 (no ladder module). |
+| `deployParachutes` | none | 2.0. Deploys the ready parachutes. Not idempotent, irreversible. `REJECTED_BY_GAME` if none is ready. |
+| `setDockingArmed` | `enabled`: boolean | 2.0. Arms or disarms the docking ports; `REJECTED_BY_GAME` when the game has no arming (`docking.armable` is `false`; always the case in this version). |
+| `undock` | none | 2.0. Separates the vessel from the docked port. Irreversible. `REJECTED_BY_GAME` if nothing is docked. |
+| `quickSave` | none | 2.0. Quick save (announced by `features: ["quickSave"]`). |
+| `quickLoad` | none | 2.0. Quick load. Irreversible (progress is lost). |
 | `activateStage` | — | Fires the next stage (space bar). **Not idempotent and irreversible**: every accepted command fires one stage; a client should ask the user for confirmation. |
 
 Rules:

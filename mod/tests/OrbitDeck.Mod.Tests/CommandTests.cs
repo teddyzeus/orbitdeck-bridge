@@ -65,6 +65,22 @@ internal sealed class FakeGameControls : IGameControls
     public CommandResult SetPaused(bool? paused) => Record($"pause {Describe(paused)}");
 
     public CommandResult WarpToManeuver(double nodeUt, double margin, double? maxRate) => Record($"warpToManeuver {nodeUt} {margin} {maxRate}");
+
+    public CommandResult SetSolarPanels(bool enabled) => Record($"solar {enabled}");
+
+    public CommandResult SetAntennas(bool enabled) => Record($"antennas {enabled}");
+
+    public CommandResult SetLadders(bool enabled) => Record($"ladders {enabled}");
+
+    public CommandResult DeployParachutes() => Record("parachutes");
+
+    public CommandResult SetDockingArmed(bool enabled) => Record($"dockArmed {enabled}");
+
+    public CommandResult Undock() => Record("undock");
+
+    public CommandResult QuickSave() => Record("quicksave");
+
+    public CommandResult QuickLoad() => Record("quickload");
 }
 
 public class CommandValidatorTests

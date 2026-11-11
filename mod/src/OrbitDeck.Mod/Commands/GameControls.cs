@@ -390,6 +390,22 @@ namespace OrbitDeck.Mod.Commands
             }
         }
 
+        public CommandResult SetSolarPanels(bool enabled) => GameSystemActions.SetDeployables(true, enabled);
+
+        public CommandResult SetAntennas(bool enabled) => GameSystemActions.SetDeployables(false, enabled);
+
+        public CommandResult SetLadders(bool enabled) => CommandResult.Rejected("KSP 2 n'a pas d'échelle commandable.");
+
+        public CommandResult DeployParachutes() => GameSystemActions.DeployParachutes();
+
+        public CommandResult SetDockingArmed(bool enabled) => CommandResult.Rejected("L'armement des ports n'est pas commandable.");
+
+        public CommandResult Undock() => GameSystemActions.Undock();
+
+        public CommandResult QuickSave() => GameSystemActions.QuickSave();
+
+        public CommandResult QuickLoad() => GameSystemActions.QuickLoad();
+
         internal static GameAutopilotMode ToGameMode(SasModeKind mode)
         {
             switch (mode)

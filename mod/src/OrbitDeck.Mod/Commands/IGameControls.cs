@@ -54,5 +54,30 @@ namespace OrbitDeck.Mod.Commands
 
         /// <summary>Warpe jusqu'à <paramref name="margin"/> secondes avant l'allumage du nœud d'instant <paramref name="nodeUt"/>.</summary>
         CommandResult WarpToManeuver(double nodeUt, double margin, double? maxRate);
+
+        // 2.0 : systèmes du véhicule et sauvegarde rapide (ajouts à la fin, rien d'existant modifié).
+
+        /// <summary>Déploie ou rentre tous les panneaux solaires rétractables.</summary>
+        CommandResult SetSolarPanels(bool enabled);
+
+        /// <summary>Déploie ou rentre toutes les antennes déployables.</summary>
+        CommandResult SetAntennas(bool enabled);
+
+        /// <summary>Sort ou rentre les échelles (KSP 1 seulement).</summary>
+        CommandResult SetLadders(bool enabled);
+
+        /// <summary>Déploie les parachutes prêts. Irréversible.</summary>
+        CommandResult DeployParachutes();
+
+        /// <summary>Arme ou désarme les ports d'amarrage (refusé quand le jeu ne le permet pas).</summary>
+        CommandResult SetDockingArmed(bool enabled);
+
+        /// <summary>Sépare le véhicule du port amarré. Irréversible.</summary>
+        CommandResult Undock();
+
+        CommandResult QuickSave();
+
+        /// <summary>Recharge la sauvegarde rapide. Irréversible (perte de progression).</summary>
+        CommandResult QuickLoad();
     }
 }

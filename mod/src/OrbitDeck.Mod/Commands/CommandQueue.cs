@@ -134,6 +134,14 @@ namespace OrbitDeck.Mod.Commands
                 case CommandKind.SetPause: return controls.SetPaused(command.Enabled);
                 case CommandKind.TogglePause: return controls.SetPaused(null);
                 case CommandKind.WarpToManeuver: return controls.WarpToManeuver(command.NodeUt, command.Margin, command.MaxRate);
+                case CommandKind.SetSolarPanels: return controls.SetSolarPanels(command.Enabled);
+                case CommandKind.SetAntennas: return controls.SetAntennas(command.Enabled);
+                case CommandKind.SetLadders: return controls.SetLadders(command.Enabled);
+                case CommandKind.DeployParachutes: return controls.DeployParachutes();
+                case CommandKind.SetDockingArmed: return controls.SetDockingArmed(command.Enabled);
+                case CommandKind.Undock: return controls.Undock();
+                case CommandKind.QuickSave: return controls.QuickSave();
+                case CommandKind.QuickLoad: return controls.QuickLoad();
                 default: return CommandResult.Fail(ErrorCodes.UnknownCommand, "Commande non supportée.");
             }
         }

@@ -130,6 +130,38 @@ namespace OrbitDeck.Mod.Commands
                 case "warpToManeuver":
                     return ValidateWarpToManeuver(args);
 
+                case "setSolarPanels":
+                    return TryBoolean(args, "enabled", out var solar)
+                        ? Build(CommandKind.SetSolarPanels, c => c.Enabled = solar)
+                        : BadArgument("args.enabled doit être un booléen.");
+
+                case "setAntennas":
+                    return TryBoolean(args, "enabled", out var antennas)
+                        ? Build(CommandKind.SetAntennas, c => c.Enabled = antennas)
+                        : BadArgument("args.enabled doit être un booléen.");
+
+                case "setLadders":
+                    return TryBoolean(args, "enabled", out var ladders)
+                        ? Build(CommandKind.SetLadders, c => c.Enabled = ladders)
+                        : BadArgument("args.enabled doit être un booléen.");
+
+                case "deployParachutes":
+                    return Build(CommandKind.DeployParachutes, null);
+
+                case "setDockingArmed":
+                    return TryBoolean(args, "enabled", out var armed)
+                        ? Build(CommandKind.SetDockingArmed, c => c.Enabled = armed)
+                        : BadArgument("args.enabled doit être un booléen.");
+
+                case "undock":
+                    return Build(CommandKind.Undock, null);
+
+                case "quickSave":
+                    return Build(CommandKind.QuickSave, null);
+
+                case "quickLoad":
+                    return Build(CommandKind.QuickLoad, null);
+
                 default:
                     return ValidationResult.Invalid(ErrorCodes.UnknownCommand, $"Commande « {Truncate(name)} » inconnue.");
             }
