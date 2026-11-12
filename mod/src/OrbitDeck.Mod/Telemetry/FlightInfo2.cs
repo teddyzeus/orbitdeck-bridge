@@ -313,4 +313,36 @@ namespace OrbitDeck.Mod.Telemetry
             return a.Ports == b.Ports && a.State == b.State && a.Armable == b.Armable && a.CanUndock == b.CanUndock;
         }
     }
+
+    /// <summary>État d'un groupe d'actions personnalisé.</summary>
+    public enum ActionGroupState
+    {
+        Off,
+        On,
+        /// <summary>Les pièces du groupe ne sont pas d'accord entre elles.</summary>
+        Mixed,
+        /// <summary>Aucune pièce dans le groupe (connu seulement sur KSP 2).</summary>
+        None
+    }
+
+    /// <summary>Les dix groupes d'actions personnalisés (touches 1 à 0 du jeu), dans l'ordre : rang 0 = groupe 1.</summary>
+    public sealed class ActionGroupsInfo
+    {
+        public const int Count = 10;
+
+        public ActionGroupState[] Custom { get; init; }
+
+        public static bool Same(ActionGroupsInfo a, ActionGroupsInfo b)
+        {
+            if (ReferenceEquals(a, b))
+                return true;
+            if (a == null || b == null || a.Custom == null || b.Custom == null || a.Custom.Length != b.Custom.Length)
+                return false;
+
+            for (var i = 0; i < a.Custom.Length; i++)
+                if (a.Custom[i] != b.Custom[i])
+                    return false;
+            return true;
+        }
+    }
 }

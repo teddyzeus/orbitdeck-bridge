@@ -50,6 +50,8 @@ namespace OrbitDeck.Mod.Telemetry
                 Resources = Safe.Read("resources", () => SlowResources.Get(() => GameBlocks.Resources(vessel))),
                 Systems = Safe.Read("systems", () => SlowSystems.Get(() => GameBlocks.Systems(vessel))),
                 Docking = Safe.Read("docking", () => SlowDocking.Get(() => GameBlocks.Docking(vessel))),
+                // Dix lectures de booléens : à chaque état (le joueur voit l'effet de son appui tout de suite).
+                ActionGroups = Safe.Read("actionGroups", () => GameBlocks.ActionGroups(vessel)),
                 Performance = Safe.Read("performance", () => SlowPerformance.Get(() => GameBlocks.Performance(vessel))),
                 Landing = time == null ? null : Safe.Read("landing", () => GameBlocks.Landing(vessel, time.Ut)),
                 Target = time == null ? null : Safe.Read("target", () => GameBlocks.Target(vessel, time.Ut))

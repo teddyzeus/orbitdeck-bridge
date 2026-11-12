@@ -44,7 +44,8 @@ namespace OrbitDeck.Mod.Telemetry
                    || !LandingInfo.Same(previous.Landing, current.Landing)
                    || !TargetInfo.Same(previous.Target, current.Target)
                    || !SystemsInfo.Same(previous.Systems, current.Systems)
-                   || !DockingInfo.Same(previous.Docking, current.Docking);
+                   || !DockingInfo.Same(previous.Docking, current.Docking)
+                   || !ActionGroupsInfo.Same(previous.ActionGroups, current.ActionGroups);
         }
 
         /// <summary>Changement d'un état discret : <see cref="HasModeChange"/> ou poussée au-delà du seuil.</summary>

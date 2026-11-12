@@ -6,6 +6,6 @@ namespace OrbitDeck.Mod.Telemetry
     /// </summary>
     public static class Features
     {
-        public static readonly string[] Announced = { "orbit", "resources", "performance", "landing", "target", "systems", "docking", "quickSave" };
+        public static readonly string[] Announced = { "orbit", "resources", "performance", "landing", "target", "systems", "docking", "quickSave", "actionGroups" };
     }
 }

@@ -164,6 +164,11 @@
           "type": "object",
           "required": ["ports"],
           "properties": { "ports": { "type": "integer", "minimum": 0 }, "state": { "enum": ["disarmed", "armed", "approach", "docked"] }, "armable": { "type": "boolean" }, "canUndock": { "type": "boolean" } }
+        },
+        "actionGroups": {
+          "type": "object",
+          "required": ["custom"],
+          "properties": { "custom": { "type": "array", "minItems": 10, "maxItems": 10, "items": { "enum": ["on", "off", "mixed", "none"] } } }
         }
       },
       "required": ["v", "type", "seq", "status"]

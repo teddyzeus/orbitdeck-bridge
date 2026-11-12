@@ -142,6 +142,7 @@ namespace OrbitDeck.Mod.Commands
                 case CommandKind.Undock: return controls.Undock();
                 case CommandKind.QuickSave: return controls.QuickSave();
                 case CommandKind.QuickLoad: return controls.QuickLoad();
+                case CommandKind.ToggleActionGroup: return controls.ToggleActionGroup(command.Group);
                 default: return CommandResult.Fail(ErrorCodes.UnknownCommand, "Commande non supportée.");
             }
         }

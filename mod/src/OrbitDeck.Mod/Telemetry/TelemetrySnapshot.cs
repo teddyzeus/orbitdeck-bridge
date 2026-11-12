@@ -156,6 +156,9 @@ namespace OrbitDeck.Mod.Telemetry
         /// <summary>Ports d'amarrage ; null si illisibles.</summary>
         public DockingInfo Docking { get; init; }
 
+        /// <summary>Les dix groupes d'actions personnalisés ; null si illisibles.</summary>
+        public ActionGroupsInfo ActionGroups { get; init; }
+
         /// <summary>Copie du snapshot avec un autre plan de manœuvre (le snapshot est immuable).</summary>
         public TelemetrySnapshot WithManeuver(ManeuverInfo maneuver)
         {

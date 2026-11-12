@@ -81,6 +81,8 @@ internal sealed class FakeGameControls : IGameControls
     public CommandResult QuickSave() => Record("quicksave");
 
     public CommandResult QuickLoad() => Record("quickload");
+
+    public CommandResult ToggleActionGroup(int group) => Record($"actiongroup {group}");
 }
 
 public class CommandValidatorTests

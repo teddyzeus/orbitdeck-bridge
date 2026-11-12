@@ -96,6 +96,22 @@ namespace OrbitDeck.Ksp1
             return new SystemsInfo { Solar = solar.ToCategory(), Antennas = antennas.ToCategory(), Ladders = ladders.ToCategory(), Parachutes = chutes.ToCategory() };
         }
 
+        /// <summary>Les dix groupes d'actions personnalisés du jeu, dans l'ordre (rang 0 = groupe 1).</summary>
+        public static readonly KSPActionGroup[] CustomGroups =
+        {
+            KSPActionGroup.Custom01, KSPActionGroup.Custom02, KSPActionGroup.Custom03, KSPActionGroup.Custom04, KSPActionGroup.Custom05,
+            KSPActionGroup.Custom06, KSPActionGroup.Custom07, KSPActionGroup.Custom08, KSPActionGroup.Custom09, KSPActionGroup.Custom10
+        };
+
+        /// <summary>État des groupes d'actions personnalisés (KSP 1 ne dit pas si un groupe est vide : seulement allumé ou éteint).</summary>
+        public static ActionGroupsInfo ActionGroups(Vessel vessel)
+        {
+            var custom = new ActionGroupState[ActionGroupsInfo.Count];
+            for (var i = 0; i < custom.Length; i++)
+                custom[i] = vessel.ActionGroups[CustomGroups[i]] ? ActionGroupState.On : ActionGroupState.Off;
+            return new ActionGroupsInfo { Custom = custom };
+        }
+
         public static DockingInfo Docking(Vessel vessel)
         {
             var tally = new DockTally();

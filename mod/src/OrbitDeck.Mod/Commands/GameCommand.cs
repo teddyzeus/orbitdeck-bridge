@@ -36,7 +36,8 @@ namespace OrbitDeck.Mod.Commands
         SetDockingArmed,
         Undock,
         QuickSave,
-        QuickLoad
+        QuickLoad,
+        ToggleActionGroup
     }
 
     /// <summary>Commande validée, prête à être exécutée sur le thread principal du jeu.</summary>
@@ -69,6 +70,9 @@ namespace OrbitDeck.Mod.Commands
 
         /// <summary>Vue visée pour SetView.</summary>
         public ViewKind View { get; set; }
+
+        /// <summary>Groupe d'actions personnalisé visé pour ToggleActionGroup (1 à 10).</summary>
+        public int Group { get; set; }
     }
 
     /// <summary>Résultat de l'exécution d'une commande dans le jeu.</summary>

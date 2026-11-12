@@ -1,1 +1,1 @@
-{ "v": 1, "type": "hello", "mod": "0.6.0", "game": "0.2.8.5", "features": ["orbit", "resources", "performance", "landing", "target", "systems", "docking", "quickSave"] }
+{ "v": 1, "type": "hello", "mod": "0.6.0", "game": "0.2.8.5", "features": ["orbit", "resources", "performance", "landing", "target", "systems", "docking", "quickSave", "actionGroups"] }

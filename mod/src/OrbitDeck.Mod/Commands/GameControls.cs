@@ -406,6 +406,23 @@ namespace OrbitDeck.Mod.Commands
 
         public CommandResult QuickLoad() => GameSystemActions.QuickLoad();
 
+        /// <summary>Déclenche un groupe d'actions personnalisé comme la touche du clavier ; refusé quand le groupe est vide.</summary>
+        public CommandResult ToggleActionGroup(int group)
+        {
+            if (group < 1 || group > GameBlocks.CustomGroups.Length)
+                return CommandResult.Rejected($"Le groupe d'actions {group} n'existe pas (1 à 10).");
+
+            if (!TryGetControllableVessel(out var vehicle, out var vessel, out var failure))
+                return failure;
+
+            var kspGroup = GameBlocks.CustomGroups[group - 1];
+            if (vessel.GetActionGroupState(kspGroup) == KSPActionGroupState.None)
+                return CommandResult.Rejected($"Le groupe d'actions {group} est vide dans le jeu.");
+
+            vehicle.TriggerGroup(kspGroup);
+            return CommandResult.Ok;
+        }
+
         internal static GameAutopilotMode ToGameMode(SasModeKind mode)
         {
             switch (mode)

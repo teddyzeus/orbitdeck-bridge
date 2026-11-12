@@ -26,5 +26,6 @@
     "ladders": { "count": 0 },
     "parachutes": { "count": 3, "state": "ready" }
   },
-  "docking": { "ports": 2, "state": "armed", "armable": true, "canUndock": false }
+  "docking": { "ports": 2, "state": "armed", "armable": true, "canUndock": false },
+  "actionGroups": { "custom": ["on", "off", "off", "mixed", "off", "off", "off", "off", "off", "none"] }
 }

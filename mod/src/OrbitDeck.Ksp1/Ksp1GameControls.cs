@@ -510,6 +510,23 @@ namespace OrbitDeck.Ksp1
             return CommandResult.Rejected("Rien n'est amarré.");
         }
 
+        /// <summary>Déclenche un groupe d'actions personnalisé comme la touche du clavier (verrou de saisie, blocage du groupe, bascule).</summary>
+        public CommandResult ToggleActionGroup(int group)
+        {
+            if (group < 1 || group > Ksp1GameBlocks.CustomGroups.Length)
+                return CommandResult.Rejected($"Le groupe d'actions {group} n'existe pas (1 à 10).");
+
+            if (!TryGetControllableVessel(out var vessel, out var failure))
+                return failure;
+
+            var kspGroup = Ksp1GameBlocks.CustomGroups[group - 1];
+            if (!InputLockManager.IsUnlocked(ControlTypes.CUSTOM_ACTION_GROUPS) || vessel.ActionControlBlocked(kspGroup))
+                return CommandResult.Rejected($"Le groupe d'actions {group} est verrouillé par le jeu.");
+
+            vessel.ActionGroups.ToggleGroup(kspGroup);
+            return CommandResult.Ok;
+        }
+
         public CommandResult QuickSave()
         {
             if (!HighLogic.LoadedSceneIsFlight)

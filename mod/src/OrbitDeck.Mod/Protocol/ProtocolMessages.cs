@@ -106,6 +106,8 @@ namespace OrbitDeck.Mod.Protocol
                     message["systems"] = SystemsObject(snapshot.Systems);
                 if (snapshot.Docking != null)
                     message["docking"] = DockingObject(snapshot.Docking);
+                if (snapshot.ActionGroups != null && snapshot.ActionGroups.Custom != null)
+                    message["actionGroups"] = ActionGroupsObject(snapshot.ActionGroups);
             }
 
             return Serialize(message);
@@ -247,6 +249,14 @@ namespace OrbitDeck.Mod.Protocol
             if (systems.Parachutes != null)
                 body["parachutes"] = SystemCategoryObject(systems.Parachutes);
             return body;
+        }
+
+        private static JObject ActionGroupsObject(ActionGroupsInfo groups)
+        {
+            var custom = new JArray();
+            foreach (var state in groups.Custom)
+                custom.Add(state.ToString().ToLowerInvariant());
+            return new JObject { ["custom"] = custom };
         }
 
         private static JObject DockingObject(DockingInfo docking)

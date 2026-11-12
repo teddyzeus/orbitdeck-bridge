@@ -79,5 +79,8 @@ namespace OrbitDeck.Mod.Commands
 
         /// <summary>Recharge la sauvegarde rapide. Irréversible (perte de progression).</summary>
         CommandResult QuickLoad();
+
+        /// <summary>Déclenche le groupe d'actions personnalisé <paramref name="group"/> (1 à 10), comme la touche du clavier.</summary>
+        CommandResult ToggleActionGroup(int group);
     }
 }

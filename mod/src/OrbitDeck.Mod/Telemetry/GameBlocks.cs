@@ -141,6 +141,39 @@ namespace OrbitDeck.Mod.Telemetry
             };
         }
 
+        /// <summary>Les dix groupes d'actions personnalisés du jeu, dans l'ordre (rang 0 = groupe 1).</summary>
+        public static readonly KSP.Sim.KSPActionGroup[] CustomGroups =
+        {
+            KSP.Sim.KSPActionGroup.Custom01, KSP.Sim.KSPActionGroup.Custom02, KSP.Sim.KSPActionGroup.Custom03, KSP.Sim.KSPActionGroup.Custom04, KSP.Sim.KSPActionGroup.Custom05,
+            KSP.Sim.KSPActionGroup.Custom06, KSP.Sim.KSPActionGroup.Custom07, KSP.Sim.KSPActionGroup.Custom08, KSP.Sim.KSPActionGroup.Custom09, KSP.Sim.KSPActionGroup.Custom10
+        };
+
+        /// <summary>État des groupes d'actions personnalisés ; `None` du jeu = aucune pièce dans le groupe.</summary>
+        public static ActionGroupsInfo ActionGroups(VesselComponent vessel)
+        {
+            var custom = new ActionGroupState[ActionGroupsInfo.Count];
+            for (var i = 0; i < custom.Length; i++)
+            {
+                switch (vessel.GetActionGroupState(CustomGroups[i]))
+                {
+                    case KSP.Sim.KSPActionGroupState.True:
+                        custom[i] = ActionGroupState.On;
+                        break;
+                    case KSP.Sim.KSPActionGroupState.Mixed:
+                        custom[i] = ActionGroupState.Mixed;
+                        break;
+                    case KSP.Sim.KSPActionGroupState.None:
+                        custom[i] = ActionGroupState.None;
+                        break;
+                    default:
+                        custom[i] = ActionGroupState.Off;
+                        break;
+                }
+            }
+
+            return new ActionGroupsInfo { Custom = custom };
+        }
+
         public static DockingInfo Docking(VesselComponent vessel)
         {
             var owner = vessel.SimulationObject?.PartOwner;
