@@ -1,0 +1,44 @@
+setThrottle {"value":0.5} => OK kind=SetThrottle amount=0.5 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+setThrottle {"value":5} => BAD_REQUEST: args.value doit être un nombre entre 0 et 1.
+setThrottle {} => BAD_REQUEST: args.value doit être un nombre entre 0 et 1.
+setThrottle {"value":"x"} => BAD_REQUEST: args.value doit être un nombre entre 0 et 1.
+adjustThrottle {"delta":-0.1} => OK kind=AdjustThrottle amount=-0.1 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+adjustThrottle {"delta":2} => BAD_REQUEST: args.delta doit être un nombre entre -1 et 1.
+setSas {"enabled":true} => OK kind=SetSas amount=0 enabled=True rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+setSas {"enabled":1} => BAD_REQUEST: args.enabled doit être un booléen.
+toggleSas {} => OK kind=ToggleSas amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+setRcs {"enabled":false} => OK kind=SetRcs amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+toggleRcs {} => OK kind=ToggleRcs amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+setSpeedMode {"mode":"orbit"} => OK kind=SetSpeedMode amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Orbit sas=StabilityAssist view=Ship
+setSpeedMode {"mode":"nope"} => BAD_REQUEST: args.mode doit valoir « surface », « orbit » ou « target ».
+setSasMode {"mode":"prograde"} => OK kind=SetSasMode amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=Prograde view=Ship
+setSasMode {"mode":"antiTarget"} => OK kind=SetSasMode amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=AntiTarget view=Ship
+setSasMode {"mode":"maneuver"} => OK kind=SetSasMode amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=Maneuver view=Ship
+setSasMode {"mode":"x"} => BAD_REQUEST: args.mode doit valoir « stabilityAssist », « prograde », « retrograde », « normal », « antinormal », « radialIn », « radialOut », « target », « antiTarget » ou « maneuver ».
+setLights {"enabled":true} => OK kind=SetLights amount=0 enabled=True rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+toggleLights {} => OK kind=ToggleLights amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+setBrakes {"enabled":true} => OK kind=SetBrakes amount=0 enabled=True rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+toggleBrakes {} => OK kind=ToggleBrakes amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+setGear {"enabled":false} => OK kind=SetGear amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+toggleGear {} => OK kind=ToggleGear amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+activateStage {} => OK kind=ActivateStage amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+setView {"view":"map"} => OK kind=SetView amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Map
+setView {"view":"x"} => BAD_REQUEST: args.view doit valoir « ship » ou « map ».
+toggleView {} => OK kind=ToggleView amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+increaseWarp {} => OK kind=IncreaseWarp amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+decreaseWarp {} => OK kind=DecreaseWarp amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+stopWarp {} => OK kind=StopWarp amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+setWarpRate {"rate":100} => OK kind=SetWarpRate amount=0 enabled=False rate=100 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+setWarpRate {"rate":0} => BAD_REQUEST: args.rate doit être un nombre strictement positif.
+setWarpRate {"rate":-1} => BAD_REQUEST: args.rate doit être un nombre strictement positif.
+setPause {"paused":true} => OK kind=SetPause amount=0 enabled=True rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+setPause {} => BAD_REQUEST: args.paused doit être un booléen.
+togglePause {} => OK kind=TogglePause amount=0 enabled=False rate=0 nodeUt=0 margin=0 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+warpToManeuver {"ut":1600.5,"margin":30} => OK kind=WarpToManeuver amount=0 enabled=False rate=0 nodeUt=1600.5 margin=30 maxRate=- mode=Surface sas=StabilityAssist view=Ship
+warpToManeuver {"ut":1600.5,"margin":30,"maxRate":1000} => OK kind=WarpToManeuver amount=0 enabled=False rate=0 nodeUt=1600.5 margin=30 maxRate=1000 mode=Surface sas=StabilityAssist view=Ship
+warpToManeuver {"ut":1,"margin":4000} => BAD_REQUEST: args.margin doit être un nombre entre 0 et 3600 (secondes).
+warpToManeuver {"margin":30} => BAD_REQUEST: args.ut doit être un nombre (instant du nœud).
+warpToManeuver {"ut":1,"margin":0,"maxRate":0} => BAD_REQUEST: args.maxRate doit être un nombre strictement positif.
+unknownCommand {} => UNKNOWN_COMMAND: Commande « unknownCommand » inconnue.
+ {} => UNKNOWN_COMMAND: Commande «  » inconnue.
+setThrottle null => BAD_REQUEST: args.value doit être un nombre entre 0 et 1.

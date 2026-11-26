@@ -75,7 +75,8 @@ namespace OrbitDeck.Mod
                 commands,
                 modVersion: Assembly.GetExecutingAssembly().GetName().Version.ToString(3),
                 gameVersion: Application.version,
-                logError: message => SWLogger.LogError($"[OrbitDeck] {message}"));
+                logError: message => SWLogger.LogError($"[OrbitDeck] {message}"),
+                features: OrbitDeck.Mod.Telemetry.Features.Announced);
 
             if (server.Start())
             {

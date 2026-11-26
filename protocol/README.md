@@ -58,6 +58,20 @@ Reference (in French): [SPECS-TECHNIQUES.md](../SPECS-TECHNIQUES.md) §6.
 
 An unavailable SAS mode (target, maneuver node or orbit-mode navball required) is refused with `REJECTED_BY_GAME`.
 
+### Additions of OrbitDeck 2.0 (all optional, protocol version stays **1**)
+Everything below is **added after `maneuver`** and only when readable: a state without these blocks is byte for byte the one of mod 0.5, and a client that does not know them ignores them (see "General rules"). Absent means unknown, never zero. Distances are meters, speeds m/s, angles degrees, durations seconds, and **instants are absolute game time (`ut`)** (a client estimates the current `ut` with `time.ut` and `time.rate`; times that advance on their own are not republished every frame).
+- `hello.features`: array of strings, the families this mod can read or command (`orbit`, `resources`, `performance`, `landing`, `target`, `systems`, `docking`, `quickSave`, `actionGroups`…). Absent with an older mod.
+- `orbit`: the vessel's **current** orbit, with or without a maneuver node (independent of `maneuver.before`). `ap`, `pe` (altitudes; `ap` absent when open), `period` (absent when open), `inc`, `apUt` / `peUt` (next passages), `body`, `escape` (only when `true`), `atmosphere`.
+- `resources`: `fuel`, `oxidizer`, `electric`, `monoprop`, each `{ amount, max }` for the whole vessel; a missing key is a resource the vessel does not have (not an empty tank). `stage` holds the same keys for the current stage.
+- `performance`: `dv`, `dvStage` (m/s), `twr` (absent without an active engine).
+- `landing`: `vspeed` (descent negative), `hspeed`, `radar` (height above the ground, absent out of range), `impactUt` (estimated instant, absent when no impact is predicted).
+- `target`: `{ "none": true }` when the game provides the information and there is no target; otherwise `name`, `distance`, `rel` (relative speed, negative when approaching). The whole block is absent when unknown.
+- `systems`: `solar`, `antennas`, `ladders`, `parachutes`, each `{ count, state?, retractable? }`. `count: 0` means no such module; a missing category means unreadable. `state` is `extended` / `retracted` / `mixed` / `moving` (parachutes: `ready` / `deployed` / `cut` / `mixed`). `retractable: false` appears when no module of the category retracts.
+- `docking`: `{ ports, state?, armable?, canUndock? }`; `state` is `disarmed`, `armed`, `approach` or `docked`; `armable` tells whether the game can arm and disarm a port (not KSP 1).
+- `actionGroups`: `{ custom: [ ten strings ] }`, the ten custom action groups of the game (keys 1 to 0) in order: index 0 is group 1. Each value is `on`, `off`, `mixed` (the parts of the group disagree) or `none` (no part in the group; KSP 2 only: KSP 1 does not say, so it only sends `on` and `off`). The block is absent when unreadable.
+
+The 2.0 commands (`setSolarPanels`, `setAntennas`, `setLadders`, `deployParachutes`, `setDockingArmed`, `undock`, `quickSave`, `quickLoad`, `toggleActionGroup`) arrive with their feature and are documented then.
+
 Error codes: `BAD_REQUEST`, `UNKNOWN_COMMAND`, `NO_VESSEL`, `NOT_CONTROLLABLE`, `REJECTED_BY_GAME`, `INTERNAL`.
 
 ## Client → server messages
@@ -88,6 +102,15 @@ Error codes: `BAD_REQUEST`, `UNKNOWN_COMMAND`, `NO_VESSEL`, `NOT_CONTROLLABLE`, 
 | `setWarpRate` | `rate`: number > 0 (the factor, for example `100`) | Selects the step whose factor is `rate` in the current mode; `REJECTED_BY_GAME` if there is none or the game refuses it. Leaves the pause. |
 | `setPause` / `togglePause` | `paused`: boolean / — | Pauses or resumes the game. |
 | `warpToManeuver` | `ut`: number (the node's instant), `margin`: number 0 to 3600 (seconds before the ignition), `maxRate`: number > 0, optional | Starts the game's automatic warp to `ignition − margin` of the node at `ut` (±1 s); without a known burn duration, to `ut − margin − 60`. The game slows down by itself on approach; the mod only watches it. Resumes from the pause. `REJECTED_BY_GAME` if the node does not exist, the stop instant has already passed (`maneuver.warp.state` becomes `late`) or the game refuses; `NOT_CONTROLLABLE` on an uncontrollable vessel. The game picks the step from the trip length (the warp lasts about ten real seconds); `maxRate` caps that step, which lengthens the trip. `stopWarp` cancels it. |
+| `setSolarPanels` | `enabled`: boolean | 2.0. Extends (`true`) or retracts (`false`) every solar panel of the vessel; panels that cannot retract are left alone when retracting. Idempotent. `REJECTED_BY_GAME` if the vessel has no panel. |
+| `setAntennas` | `enabled`: boolean | 2.0. Same for deployable antennas. |
+| `setLadders` | `enabled`: boolean | 2.0. Same for ladders. KSP 1 only: `REJECTED_BY_GAME` on KSP 2 (no ladder module). |
+| `deployParachutes` | none | 2.0. Deploys the ready parachutes. Not idempotent, irreversible. `REJECTED_BY_GAME` if none is ready. |
+| `setDockingArmed` | `enabled`: boolean | 2.0. Arms or disarms the docking ports; `REJECTED_BY_GAME` when the game has no arming (`docking.armable` is `false`; always the case in this version). |
+| `undock` | none | 2.0. Separates the vessel from the docked port. Irreversible. `REJECTED_BY_GAME` if nothing is docked. |
+| `quickSave` | none | 2.0. Quick save (announced by `features: ["quickSave"]`). |
+| `quickLoad` | none | 2.0. Quick load. Irreversible (progress is lost). |
+| `toggleActionGroup` | `group`: integer 1 to 10 | 2.0 (announced by `features: ["actionGroups"]`). Triggers the custom action group like the keyboard key: parts that toggle are inverted at each call. `BAD_REQUEST` outside 1 to 10 or for a non-integer; `REJECTED_BY_GAME` for an empty group (KSP 2) or one the game locks. |
 | `activateStage` | — | Fires the next stage (space bar). **Not idempotent and irreversible**: every accepted command fires one stage; a client should ask the user for confirmation. |
 
 Rules:

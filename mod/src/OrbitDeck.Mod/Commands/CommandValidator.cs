@@ -130,12 +130,65 @@ namespace OrbitDeck.Mod.Commands
                 case "warpToManeuver":
                     return ValidateWarpToManeuver(args);
 
+                case "setSolarPanels":
+                    return TryBoolean(args, "enabled", out var solar)
+                        ? Build(CommandKind.SetSolarPanels, c => c.Enabled = solar)
+                        : BadArgument("args.enabled doit être un booléen.");
+
+                case "setAntennas":
+                    return TryBoolean(args, "enabled", out var antennas)
+                        ? Build(CommandKind.SetAntennas, c => c.Enabled = antennas)
+                        : BadArgument("args.enabled doit être un booléen.");
+
+                case "setLadders":
+                    return TryBoolean(args, "enabled", out var ladders)
+                        ? Build(CommandKind.SetLadders, c => c.Enabled = ladders)
+                        : BadArgument("args.enabled doit être un booléen.");
+
+                case "deployParachutes":
+                    return Build(CommandKind.DeployParachutes, null);
+
+                case "setDockingArmed":
+                    return TryBoolean(args, "enabled", out var armed)
+                        ? Build(CommandKind.SetDockingArmed, c => c.Enabled = armed)
+                        : BadArgument("args.enabled doit être un booléen.");
+
+                case "undock":
+                    return Build(CommandKind.Undock, null);
+
+                case "quickSave":
+                    return Build(CommandKind.QuickSave, null);
+
+                case "quickLoad":
+                    return Build(CommandKind.QuickLoad, null);
+
+                case "toggleActionGroup":
+                    return TryActionGroup(args, out var group)
+                        ? Build(CommandKind.ToggleActionGroup, c => c.Group = group)
+                        : BadArgument("args.group doit être un entier entre 1 et 10.");
+
                 default:
                     return ValidationResult.Invalid(ErrorCodes.UnknownCommand, $"Commande « {Truncate(name)} » inconnue.");
             }
         }
 
         private const double MaxMargin = 3600;
+
+        /// <summary>Numéro d'un groupe d'actions personnalisé : un entier de 1 à 10 (ni 1,5, ni 0, ni 11).</summary>
+        private static bool TryActionGroup(JObject args, out int group)
+        {
+            group = 0;
+            var token = args["group"];
+            if (token == null || token.Type != JTokenType.Integer)
+                return false;
+
+            var number = token.Value<long>();
+            if (number < 1 || number > ActionGroupsInfo.Count)
+                return false;
+
+            group = (int)number;
+            return true;
+        }
 
         private static ValidationResult ValidateWarpToManeuver(JObject args)
         {
